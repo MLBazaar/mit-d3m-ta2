@@ -1,0 +1,2 @@
+# -e git+git://gitlab.com/datadrivendiscovery/ta3ta2-api.git@aac29424d864576694af5988e7391819d3c4c166#egg=ta3ta2-api
+-e git+https://gitlab.com/datadrivendiscovery/ta3ta2-api.git@aac29424d864576694af5988e7391819d3c4c166#egg=ta3ta2-api

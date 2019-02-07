@@ -1,0 +1,26 @@
+id: e01cfc6c-f652-4b67-b247-707e3ec89840
+schema: https://metadata.datadrivendiscovery.org/schemas/v0/pipeline.json
+created: "2019-02-06T00:00:00.000000Z"
+context: TESTING
+inputs:
+  - name: predictions
+  - name: score dataset
+outputs:
+  - name: scores
+    data: steps.0.produce
+steps:
+  - type: PRIMITIVE
+    primitive:
+      id: 799802fb-2e11-4ab7-9c5e-dda09eb52a70
+      version: 0.1.0
+      python_path: d3m.primitives.evaluation.compute_scores.Common
+      name: Compute scores given the metrics to use
+    arguments:
+      inputs:
+        type: CONTAINER
+        data: inputs.0
+      score_dataset:
+        type: CONTAINER
+        data: inputs.1
+    outputs:
+      - id: produce

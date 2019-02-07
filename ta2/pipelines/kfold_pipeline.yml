@@ -1,0 +1,75 @@
+id: eb0103ad-927a-47a8-8b60-a096d1dbfe58
+schema: https://metadata.datadrivendiscovery.org/schemas/v0/pipeline.json
+created: "2019-02-06T00:00:00.000000Z"
+context: TESTING
+inputs:
+  - name: folds
+  - name: full dataset
+outputs:
+  - name: train datasets
+    data: steps.0.produce
+  - name: test datasets
+    data: steps.2.produce
+  - name: score datasets
+    data: steps.1.produce
+steps:
+  - type: PRIMITIVE
+    primitive:
+      id: bfedaf3a-6dd0-4a83-ad83-3a50fe882bf8
+      version: 0.1.0
+      python_path: d3m.primitives.evaluation.kfold_dataset_split.Common
+      name: K-fold cross-validation tabular dataset splits
+    arguments:
+      inputs:
+        type: CONTAINER
+        data: inputs.0
+      dataset:
+        type: CONTAINER
+        data: inputs.1
+    outputs:
+      - id: produce
+      - id: produce_score_data
+  - type: PRIMITIVE
+    primitive:
+      id: 744c4090-e2f6-489e-8efc-8b1e051bfad6
+      version: 0.2.0
+      python_path: d3m.primitives.evaluation.redact_columns.Common
+      name: Redact columns for evaluation
+    arguments:
+      inputs:
+        type: CONTAINER
+        data: steps.0.produce_score_data
+    outputs:
+      - id: produce
+    hyperparams:
+      semantic_types:
+        type: VALUE
+        data:
+          - https://metadata.datadrivendiscovery.org/types/PrivilegedData
+      add_semantic_types:
+        type: VALUE
+        data:
+          - https://metadata.datadrivendiscovery.org/types/RedactedPrivilegedData
+          - https://metadata.datadrivendiscovery.org/types/MissingData
+  - type: PRIMITIVE
+    primitive:
+      id: 744c4090-e2f6-489e-8efc-8b1e051bfad6
+      version: 0.2.0
+      python_path: d3m.primitives.evaluation.redact_columns.Common
+      name: Redact columns for evaluation
+    arguments:
+      inputs:
+        type: CONTAINER
+        data: steps.1.produce
+    outputs:
+      - id: produce
+    hyperparams:
+      semantic_types:
+        type: VALUE
+        data:
+          - https://metadata.datadrivendiscovery.org/types/TrueTarget
+      add_semantic_types:
+        type: VALUE
+        data:
+          - https://metadata.datadrivendiscovery.org/types/RedactedTarget
+          - https://metadata.datadrivendiscovery.org/types/MissingData

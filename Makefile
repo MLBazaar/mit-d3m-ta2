@@ -33,70 +33,20 @@ help:
 install: clean-build clean-pyc ## install the package to the active Python's site-packages
 	pip install .
 
-.PHONY: install-test
-install-test: clean-build clean-pyc ## install the package and test dependencies
-	pip install .[test]
-
-.PHONY: test
-test: ## run tests quickly with the default Python
-	python -m pytest
-
-.PHONY: lint
-lint: ## check style with flake8 and isort
-	flake8 ta2 tests
-	isort -c --recursive ta2 tests
-
 .PHONY: install-develop
 install-develop: clean-build clean-pyc ## install the package in editable mode and dependencies for development
 	pip install -e .[dev]
 
-.PHONY: test-all
-test-all: ## run tests on every Python version with tox
-	tox
+.PHONY: lint
+lint: ## check style with flake8 and isort
+	flake8 ta2
+	isort -c --recursive ta2
 
 .PHONY: fix-lint
 fix-lint: ## fix lint issues using autoflake, autopep8, and isort
 	find ta2 -name '*.py' | xargs autoflake --in-place --remove-all-unused-imports --remove-unused-variables
 	autopep8 --in-place --recursive --aggressive ta2
 	isort --apply --atomic --recursive ta2
-
-	find tests -name '*.py' | xargs autoflake --in-place --remove-all-unused-imports --remove-unused-variables
-	autopep8 --in-place --recursive --aggressive tests
-	isort --apply --atomic --recursive tests
-
-.PHONY: coverage
-coverage: ## check code coverage quickly with the default Python
-	coverage run --source ta2 -m pytest
-	coverage report -m
-	coverage html
-	$(BROWSER) htmlcov/index.html
-
-.PHONY: docs
-docs: clean-docs ## generate Sphinx HTML documentation, including API docs
-	sphinx-apidoc --module-first --separate -o docs/api/ ta2
-	$(MAKE) -C docs html
-
-.PHONY: view-docs
-view-docs: docs ## view docs in browser
-	$(BROWSER) docs/_build/html/index.html
-
-.PHONY: serve-docs
-serve-docs: view-docs ## compile the docs watching for changes
-	watchmedo shell-command -W -R -D -p '*.rst;*.md' -c '$(MAKE) -C docs html' .
-
-.PHONY: dist
-dist: clean ## builds source and wheel package
-	python setup.py sdist
-	python setup.py bdist_wheel
-	ls -l dist
-
-.PHONY: test-publish
-test-publish: dist ## package and upload a release on TestPyPI
-	twine upload --repository-url https://test.pypi.org/legacy/ dist/*
-
-.PHONY: publish
-publish: dist ## package and upload a release
-	twine upload dist/*
 
 .PHONY: bumpversion-release
 bumpversion-release: ## Merge master to stable and bumpversion release
@@ -133,7 +83,7 @@ ifeq ($(CHANGELOG_LINES),0)
 endif
 
 .PHONY: release
-release: check-release bumpversion-release publish bumpversion-patch
+release: check-release bumpversion-release bumpversion-patch
 
 .PHONY: release-minor
 release-minor: check-release bumpversion-minor release
@@ -142,7 +92,7 @@ release-minor: check-release bumpversion-minor release
 release-major: check-release bumpversion-major release
 
 .PHONY: clean
-clean: clean-build clean-pyc clean-test clean-coverage clean-docs ## remove all build, test, coverage, docs and Python artifacts
+clean: clean-build clean-pyc ## remove all build and Python artifacts
 
 .PHONY: clean-build
 clean-build: ## remove build artifacts
@@ -158,19 +108,3 @@ clean-pyc: ## remove Python file artifacts
 	find . -name '*.pyo' -exec rm -f {} +
 	find . -name '*~' -exec rm -f {} +
 	find . -name '__pycache__' -exec rm -fr {} +
-
-.PHONY: clean-coverage
-clean-coverage: ## remove coverage artifacts
-	rm -f .coverage
-	rm -f .coverage.*
-	rm -fr htmlcov/
-
-.PHONY: clean-test
-clean-test: ## remove test artifacts
-	rm -fr .tox/
-	rm -fr .pytest_cache
-
-.PHONY: clean-docs
-clean-docs: ## remove previously built docs
-	rm -f docs/api/*.rst
-	-$(MAKE) -C docs clean 2>/dev/null  # this fails if sphinx is not yet installed

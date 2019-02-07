@@ -10,16 +10,7 @@ with open('HISTORY.md') as history_file:
     history = history_file.read()
 
 install_requires = [
-]
-
-setup_requires = [
-    'pytest-runner>=2.11.1',
-]
-
-tests_require = [
-    'coverage>=4.5.1',
-    'pytest>=3.4.2',
-    'tox>=2.9.1',
+    'd3m==2019.1.21',
 ]
 
 development_requires = [
@@ -28,11 +19,6 @@ development_requires = [
     'pip>=9.0.1',
     'watchdog>=0.8.3',
 
-    # docs
-    'm2r>=0.2.0',
-    'Sphinx>=1.7.1',
-    'sphinx_rtd_theme>=0.2.4',
-
     # style check
     'flake8>=3.5.0',
     'isort>=4.3.4',
@@ -40,10 +26,6 @@ development_requires = [
     # fix style issues
     'autoflake>=1.1',
     'autopep8>=1.3.5',
-
-    # distribute on PyPI
-    'twine>=1.10.0',
-    'wheel>=0.30.0',
 ]
 
 setup(
@@ -55,15 +37,11 @@ setup(
         'License :: OSI Approved :: MIT License',
         'Natural Language :: English',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
     ],
     description="MIT D3M TA2",
     extras_require={
-        'test': tests_require,
-        'dev': development_requires + tests_require,
+        'dev': development_requires,
     },
     include_package_data=True,
     install_requires=install_requires,
@@ -73,10 +51,7 @@ setup(
     long_description_content_type='text/markdown',
     name='ta2',
     packages=find_packages(include=['ta2', 'ta2.*']),
-    python_requires='>=3.4',
-    setup_requires=setup_requires,
-    test_suite='tests',
-    tests_require=tests_require,
+    python_requires='>=3.6, <3.7',
     url='https://github.com/HDI-Project/mit-d3m-ta2',
     version='0.0.1-dev',
     zip_safe=False,
