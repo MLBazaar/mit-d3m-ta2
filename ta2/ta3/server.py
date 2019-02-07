@@ -7,7 +7,7 @@ from concurrent import futures
 import grpc
 from ta3ta2_api import core_pb2_grpc
 
-from ta2.logging import logging_setup
+from ta2 import logging_setup
 from ta2.ta3 import core_servicer
 
 _ONE_DAY_IN_SECONDS = 60 * 60 * 24
@@ -15,7 +15,8 @@ _ONE_DAY_IN_SECONDS = 60 * 60 * 24
 LOGGER = logging.getLogger(__name__)
 
 
-def serve(port, cs, daemon=False):
+def serve(port, input_dir, output_dir, timeout, debug, daemon=False):
+    cs = core_servicer.CoreServicer(input_dir, output_dir, timeout, debug)
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
 
     core_pb2_grpc.add_CoreServicer_to_server(cs, server)
@@ -43,8 +44,8 @@ if __name__ == '__main__':
     parser.add_argument('-v', '--verbose', action='count', default=0)
     parser.add_argument('-d', '--input', nargs='?')
     parser.add_argument('-o', '--output', nargs='?')
-    parser.add_argument('-T', '--timeout', type=int, nargs='?')
-    parser.add_argument('-L', '--logfile', type=str, nargs='?')
+    parser.add_argument('-t', '--timeout', type=int, nargs='?')
+    parser.add_argument('-l', '--logfile', type=str, nargs='?')
     parser.add_argument('--debug', action='store_true')
 
     args = parser.parse_args()
@@ -63,5 +64,4 @@ if __name__ == '__main__':
     logging_setup(args.verbose, args.logfile)
     logging.getLogger("d3m.metadata.pipeline_run").setLevel(logging.ERROR)
 
-    cs = core_servicer.CoreServicer(input_dir, output_dir, timeout, debug)
-    serve(args.port, cs)
+    serve(args.port, input_dir, output_dir, timeout, debug)

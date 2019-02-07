@@ -3,6 +3,7 @@ import itertools
 import json
 import logging
 import os
+import random
 from collections import defaultdict
 from datetime import datetime, timedelta
 
@@ -138,13 +139,14 @@ class PipelineSearcher:
 
         raise ValueError('Unsupported type of problem')
 
-    def __init__(self, input_dir='input', output_dir='output', pipelines_dir=None):
+    def __init__(self, input_dir='input', output_dir='output', pipelines_dir=None, dump=False):
         self.input = input_dir
         self.output = output_dir
         self.pipelines_dir = pipelines_dir or PIPELINES_DIR
+        self.dump = dump
 
-        self._ranked_dir = os.path.join(self.output, 'pipelines_ranked')
-        os.makedirs(self._ranked_dir, exist_ok=True)
+        self.ranked_dir = os.path.join(self.output, 'pipelines_ranked')
+        os.makedirs(self.ranked_dir, exist_ok=True)
 
         self.datasets = self._find_datasets(input_dir)
         self.data_pipeline = self._load_pipeline('kfold_pipeline.yml')
@@ -182,6 +184,16 @@ class PipelineSearcher:
         pipeline_json = pipeline.to_json_structure()
         pipeline_json['score'] = score
         self.solutions.append(pipeline_json)
+
+        if self.dump:
+            rank = (1 - pipeline.score) + random.random() * 1.e-12   # to avoid collisions
+            pipeline_json['pipeline_rank'] = rank
+
+            pipeline_filename = pipeline.id + '.json'
+            pipeline_path = os.path.join(self.ranked_dir, pipeline_filename)
+
+            with open(pipeline_path, 'w') as pipeline_file:
+                json.dump(pipeline_json, pipeline_file, indent=4)
 
     @staticmethod
     def _new_pipeline(pipeline, hyperparams=None):
@@ -225,6 +237,9 @@ class PipelineSearcher:
                 name=output['name'],
                 data_reference=output['data']
             )
+
+        new_pipeline.cv_scores = list()
+        new_pipeline.score = None
 
         return new_pipeline
 

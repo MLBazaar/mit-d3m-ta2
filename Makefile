@@ -32,10 +32,12 @@ help:
 .PHONY: install
 install: clean-build clean-pyc ## install the package to the active Python's site-packages
 	pip install .
+	pip install -r requirements.txt
 
 .PHONY: install-develop
 install-develop: clean-build clean-pyc ## install the package in editable mode and dependencies for development
 	pip install -e .[dev]
+	pip install -r requirements.txt
 
 .PHONY: lint
 lint: ## check style with flake8 and isort

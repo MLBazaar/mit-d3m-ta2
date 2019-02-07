@@ -1287,9 +1287,9 @@ class CoreServicer(core_pb2_grpc.CoreServicer):
         else:
             session = solution.pop('session')
             pipeline = Pipeline.from_json_structure(solution)
+            pipeline.cv_scores = list()
+            pipeline.score = solution.get('score')
             solution['session'] = session
-            if 'score' in solution:
-                pipeline.score = solution['score']
 
             return pipeline, session
 

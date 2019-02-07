@@ -2,12 +2,10 @@ import argparse
 import logging
 import os
 import time
-from threading import Thread
 
 from ta2.ta3.server import serve
-from ta2.ta3 import core_servicer
 from ta2.ta3.client import TA3APIClient
-from ta2.logging import logging_setup
+from ta2 import logging_setup
 
 
 def run_test(dataset, timeout):
@@ -25,7 +23,7 @@ def run_test(dataset, timeout):
     client.stop_search_solutions(search_id)
 
     print('### {} => client.DescribeSolution("{}")'.format(dataset, search_id))
-    description = client.describe_solution(solution_id)
+    client.describe_solution(solution_id)
 
     print('### {} => client.ScoreSolution("{}")'.format(dataset, solution_id))
     score_response = client.score_solution(solution_id, dataset)
@@ -47,7 +45,7 @@ def run_test(dataset, timeout):
     request_id = produce_response.request_id
 
     print('### {} => client.GetProduceSolutionsResults("{}")'.format(dataset, request_id))
-    produce_solutions = client.get_produce_solution_results(request_id)
+    client.get_produce_solution_results(request_id)
 
     print('### {} => client.SolutionExport("{}")'.format(dataset, fitted_solution_id))
     client.solution_export(fitted_solution_id, 1)
@@ -59,15 +57,25 @@ def run_test(dataset, timeout):
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='Test TA3 API')
-    parser.add_argument('--no-server', action='store_true')
-    parser.add_argument('--debug', action='store_true')
-    parser.add_argument('--port', type=int, default=45042)
-    parser.add_argument('-i', '--input', default='input', nargs='?')
-    parser.add_argument('-o', '--output', default='output', nargs='?')
-    parser.add_argument('-v', '--verbose', action='count', default=0)
-    parser.add_argument('-l', '--logfile', type=str, nargs='?')
-    parser.add_argument('-T', '--timeout', type=int, default=60)
-    parser.add_argument('-L', '--server-logfile', default='logs/ta3_api_server.log', nargs='?')
+    parser.add_argument('--no-server', action='store_true', help=(
+        'Do not start a server instance. Useful to start a separated instance for debug purposes'
+    ))
+    parser.add_argument('--debug', action='store_true',
+                        help='Start the server in sync mode. Needed for debugging.')
+    parser.add_argument('--port', type=int, default=45042,
+                        help='Port to use, both for client and server.')
+    parser.add_argument('-i', '--input', default='input',
+                        help='Path to the datsets root folder')
+    parser.add_argument('-o', '--output', default='output',
+                        help='Path to the folder where outputs will be stored')
+    parser.add_argument('-t', '--timeout', type=int,
+                        help='Maximum time allowed for the tuning, in number of seconds')
+    parser.add_argument('-v', '--verbose', action='count', default=0,
+                        help='Be verbose. Use -vv for increased verbosity')
+    parser.add_argument('-l', '--logfile', type=str,
+                        help='Path to the logging file. If not given, log to stdout')
+    parser.add_argument('-L', '--server-logfile', default='logs/ta3_api_server.log',
+                        help='Path to the server logging file')
     parser.add_argument('datasets', nargs='*')
 
     args = parser.parse_args()
@@ -78,18 +86,18 @@ if __name__ == '__main__':
     os.makedirs('logs', exist_ok=True)
     logging_setup(1 + args.verbose, args.server_logfile)
     logging_setup(1 + args.verbose, args.logfile, logger_name='mit_ta2.ta3_api.ta3_api_client')
+    logging.getLogger("d3m.metadata.pipeline_run").setLevel(logging.ERROR)
 
     server = None
     if not args.no_server:
-        cs = core_servicer.CoreServicer(
+        server = serve(
+            args.port,
             args.input,
             args.output,
             args.timeout,
-            args.debug
+            args.debug,
+            True
         )
-        server = serve(args.port, cs, True)
-        # server = Thread(target=serve, args=(args.port, cs, True))
-        # server.start()
         time.sleep(1)
 
     client = TA3APIClient(args.port, args.input)
