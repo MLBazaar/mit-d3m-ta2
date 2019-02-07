@@ -10,9 +10,6 @@ To install the project simply execute the following command:
 make install
 ```
 
-It will request a username and password for the D3M gitlab instance, as some of the dependencies
-are not public.
-
 For development, use the `make install-develop` command instead, which will install the project
 in editable mode and also install some additional code linting tools.
 
