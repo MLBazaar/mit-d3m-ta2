@@ -60,6 +60,9 @@ if __name__ == '__main__':
     parser.add_argument('--no-server', action='store_true', help=(
         'Do not start a server instance. Useful to start a separated instance for debug purposes'
     ))
+    parser.add_argument('--docker', action='store_true', help=(
+        'Adapt input paths to work with a dockerized TA2. Implies --no-server'
+    ))
     parser.add_argument('--debug', action='store_true',
                         help='Start the server in sync mode. Needed for debugging.')
     parser.add_argument('--port', type=int, default=45042,
@@ -89,7 +92,7 @@ if __name__ == '__main__':
     logging.getLogger("d3m.metadata.pipeline_run").setLevel(logging.ERROR)
 
     server = None
-    if not args.no_server:
+    if not args.no_server and not args.docker:
         server = serve(
             args.port,
             args.input,
@@ -100,7 +103,9 @@ if __name__ == '__main__':
         )
         time.sleep(1)
 
-    client = TA3APIClient(args.port, args.input)
+    local_input = args.input
+    remote_input = '/input' if args.docker else args.input
+    client = TA3APIClient(args.port, local_input, remote_input)
 
     print('### Hello ###')
     hello = client.hello()

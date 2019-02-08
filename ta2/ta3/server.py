@@ -50,8 +50,8 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    output_dir = args.output or os.getenv('D3MOUTPUTDIR', 'output')
     input_dir = args.input or os.getenv('D3MINPUTDIR', 'input')
+    output_dir = args.output or os.getenv('D3MOUTPUTDIR', 'output')
     timeout = args.timeout or os.getenv('D3MTIMEOUT', 600)
     debug = args.debug
 

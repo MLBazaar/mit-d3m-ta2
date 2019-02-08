@@ -110,3 +110,13 @@ clean-pyc: ## remove Python file artifacts
 	find . -name '*.pyo' -exec rm -f {} +
 	find . -name '*~' -exec rm -f {} +
 	find . -name '__pycache__' -exec rm -fr {} +
+
+login:
+	docker login registry.datadrivendiscovery.org
+
+build:
+	docker build -t mit-d3m-ta2 .
+
+submit: login build ## push to TA2 submission registry keeping a timestamped version in EC2
+	docker tag mit-d3m-ta2:latest registry.datadrivendiscovery.org/ta2-submissions/ta2-mit/winter-2019
+	docker push registry.datadrivendiscovery.org/ta2-submissions/ta2-mit/winter-2019

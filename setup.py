@@ -3,21 +3,15 @@
 
 from setuptools import setup, find_packages
 
-with open('README.md') as readme_file:
-    readme = readme_file.read()
-
-with open('HISTORY.md') as history_file:
-    history = history_file.read()
-
 install_requires = [
     'd3m==2019.1.21',
+    'baytune==0.2.4'
 ]
 
 development_requires = [
     # general
     'bumpversion>=0.5.3',
     'pip>=9.0.1',
-    'watchdog>=0.8.3',
 
     # style check
     'flake8>=3.5.0',
@@ -47,8 +41,6 @@ setup(
     install_requires=install_requires,
     keywords='ta2',
     license="MIT license",
-    long_description=readme + '\n\n' + history,
-    long_description_content_type='text/markdown',
     name='ta2',
     packages=find_packages(include=['ta2', 'ta2.*']),
     python_requires='>=3.6, <3.7',

@@ -25,79 +25,28 @@ def pythonize(name):
 
 class TA3APIClient(object):
 
-    def __init__(self, port, datasets_path='data/datasets', verbose=False):
-
+    def __init__(self, port, local_input='input', remote_input='input', verbose=False):
         channel = grpc.insecure_channel('localhost:' + str(port))
         self.stub = core_pb2_grpc.CoreStub(channel)
-        self.datasets = datasets_path
+        self.local_input = local_input
+        self.remote_input = remote_input
         self.verbose = verbose
 
     def _get_dataset_doc_path(self, dataset):
         return os.path.join(
-            'file://' + os.path.abspath(self.datasets),
+            'file://' + os.path.abspath(self.remote_input),
             dataset,
             'TRAIN/dataset_TRAIN/datasetDoc.json'
         )
 
     def _build_problem(self, dataset):
         problem_doc_path = os.path.join(
-            self.datasets,
+            self.local_input,
             dataset,
             'TRAIN/problem_TRAIN/problemDoc.json'
         )
         problem_description = parse_problem_description(problem_doc_path)
         return encode_problem_description(problem_description)
-
-    def _build_problem_old(self, dataset):
-
-        problem_doc_path = os.path.join(
-            self.datasets,
-            dataset,
-            'TRAIN/problem_TRAIN/problemDoc.json'
-        )
-
-        with open(problem_doc_path, 'r') as f:
-            problem_doc = json.load(f)
-
-        about = problem_doc['about']
-        inputs = problem_doc['inputs']
-
-        return ProblemDescription(
-            problem=Problem(
-                id=about['problemID'],
-                version=about['problemVersion'],
-                name=about['problemName'],
-                description=None,
-                task_type=TaskType.Value(about['taskType'].upper()),
-                task_subtype=TaskSubtype.Value(about['taskSubType'].upper()),
-                performance_metrics=[
-                    ProblemPerformanceMetric(
-                        metric=PerformanceMetric.Value(
-                            pythonize(performance_metric['metric'])
-                        ),
-                        # k=1,
-                        # pos_label='dummy'
-                    )
-                    for performance_metric in inputs['performanceMetrics']
-                ]
-            ),
-            inputs=[
-                ProblemInput(
-                    dataset_id=problem_input['datasetID'],
-                    targets=[
-                        ProblemTarget(
-                            target_index=target['targetIndex'],
-                            resource_id=target['resID'],
-                            column_index=target['colIndex'],
-                            column_name=target['colName'],
-                            # clusters_number=0
-                        )
-                        for target in problem_input['targets']
-                    ]
-                )
-                for problem_input in inputs['data']
-            ]
-        )
 
     def search_solutions(self, dataset, time_bound=1.):
 
