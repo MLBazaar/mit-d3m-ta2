@@ -63,7 +63,7 @@ def get_pipeline_tunables(pipeline):
                     param_range = [lower, upper]
 
             except AttributeError:
-                print('Warning! skipping', step, name, hyperparam)
+                LOGGER.warn('Warning! skipping: %s, %s, %s', step, name, hyperparam)
                 continue
 
             try:
@@ -73,7 +73,7 @@ def get_pipeline_tunables(pipeline):
                 defaults[key] = hyperparam.get_default()
 
             except OverflowError:
-                print('Warning! Overflow', step, name, hyperparam)
+                LOGGER.warn('Warning! Overflow: %s, %s, %s', step, name, hyperparam)
                 continue
 
     return tunables, tunable_keys, defaults
@@ -139,7 +139,7 @@ class PipelineSearcher:
 
         raise ValueError('Unsupported type of problem')
 
-    def __init__(self, input_dir='input', output_dir='output', pipelines_dir=None, dump=False):
+    def __init__(self, input_dir='input', output_dir='output', pipelines_dir=None, dump=True):
         self.input = input_dir
         self.output = output_dir
         self.pipelines_dir = pipelines_dir or PIPELINES_DIR
@@ -275,7 +275,7 @@ class PipelineSearcher:
 
         template = self._get_template(dataset, problem)
 
-        print("Getting the tuner")
+        LOGGER.info("Getting the tuner")
         tunables, tunable_keys, defaults = get_pipeline_tunables(template)
         tuner = GP(tunables)
 
@@ -294,24 +294,24 @@ class PipelineSearcher:
                 self.check_stop()
                 pipeline = self._new_pipeline(template, proposal)
 
-                print("Scoring pipeline {}: {}".format(i + 1, pipeline.id))
+                LOGGER.info("Scoring pipeline %s: %s", i + 1, pipeline.id)
                 try:
                     score = self.score_pipeline(dataset, problem, pipeline)
                     normalized_score = metric.normalize(score)
                 except Exception:
-                    print("Error scoring pipeline {}".format(pipeline.id))
+                    LOGGER.exception("Error scoring pipeline %s", pipeline.id)
                     normalized_score = 0
 
                 try:
                     self._save_pipeline(pipeline, normalized_score)
-                except Exception as e:
-                    print("Error saving pipeline {}: {}".format(pipeline.id, e))
+                except Exception:
+                    LOGGER.exception("Error saving pipeline %s", pipeline.id)
 
                 tuner.add(proposal, normalized_score)
-                print("Pipeline {} score: {}".format(pipeline.id, normalized_score))
+                LOGGER.info("Pipeline %s score: %s", pipeline.id, normalized_score)
 
                 if normalized_score > best_normalized:
-                    print("New best pipeline found! {} > {}".format(score, best_score))
+                    LOGGER.info("New best pipeline found! %s > %s", score, best_score)
                     best_pipeline = pipeline.id
                     best_score = score
                     best_normalized = normalized_score

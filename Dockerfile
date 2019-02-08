@@ -6,7 +6,8 @@ RUN mkdir -p /user_dev && \
     mkdir -p /output && \
     mkdir -p /input
 
-# RUN pip3 install --upgrade pip
+COPY requirements.txt /user_dev/
+RUN pip3 install -r /user_dev/requirements.txt
 
 # open the grpc listener port
 EXPOSE $D3MPORT
@@ -15,7 +16,7 @@ EXPOSE $D3MPORT
 COPY requirements.txt setup.py /user_dev/
 COPY ta2 /user_dev/ta2
 
-RUN pip3 install -e /user_dev -r /user_dev/requirements.txt
+RUN pip3 install -e /user_dev
 
 WORKDIR /user_dev
 ENTRYPOINT ["python3", "/user_dev/ta2/ta3/server.py", "-v"]

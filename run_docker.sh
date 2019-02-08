@@ -1,6 +1,6 @@
 #!/bin/bash
 
-docker build -t mit-d3m-ta2 .
+# docker build -t mit-d3m-ta2 .
 
 mkdir -p output
 chown $USER output
