@@ -1,2 +1,3 @@
-# -e git+git://gitlab.com/datadrivendiscovery/ta3ta2-api.git@aac29424d864576694af5988e7391819d3c4c166#egg=ta3ta2-api
 -e git+https://gitlab.com/datadrivendiscovery/ta3ta2-api.git@aac29424d864576694af5988e7391819d3c4c166#egg=ta3ta2-api
+-e git+https://gitlab.com/datadrivendiscovery/sklearn-wrap.git@379272c106fb4194e86dc71b7fa232133d3586c2#egg=sklearn_wrap
+-e git+https://gitlab.com/datadrivendiscovery/common-primitives.git@0324a0c1b98d25aaf984a04c4056a9988d437586#egg=common_primitives

@@ -4,12 +4,14 @@ import json
 import logging
 import os
 import random
+import yaml
 from collections import defaultdict
 from datetime import datetime, timedelta
 
 import numpy as np
 from btb.hyper_parameter import HyperParameter
 from btb.tuning import GP
+from d3m import index
 from d3m.container.dataset import Dataset
 from d3m.metadata.base import ArgumentType, Context
 from d3m.metadata.hyperparams import Union
@@ -19,6 +21,7 @@ from d3m.runtime import evaluate
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 PIPELINES_DIR = os.path.join(BASE_DIR, 'pipelines')
+TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')
 
 TUNING_PARAMETER = 'https://metadata.datadrivendiscovery.org/types/TuningParameter'
 
@@ -120,6 +123,60 @@ class PipelineSearcher:
 
         return datasets
 
+    def _load_template(self, template_name):
+        """load a simplified version of a yaml pipeline."""
+
+        template_path = os.path.join(TEMPLATES_DIR, template_name)
+        with open(template_path, 'r') as template_file:
+            template = yaml.safe_load(template_file)
+
+        steps = template['steps']
+
+        pipeline = Pipeline(context=Context.TESTING)
+        pipeline.add_input(name='inputs')
+
+        for step_num, primitive_config in enumerate(steps):
+            primitive_name = primitive_config['primitive']
+            primitive = index.get_primitive(primitive_name)
+            step = PrimitiveStep(primitive=primitive)
+
+            if step_num == 0:
+                data_reference = 'inputs.0'
+            else:
+                data_reference = 'steps.{}.produce'.format(step_num - 1)
+
+            arguments = primitive_config.get('arguments')
+            if not arguments:
+                arguments = {
+                    'inputs': {
+                        'type': 'CONTAINER',
+                        'data': data_reference,
+                    }
+                }
+
+            for name, argument in arguments.items():
+                step.add_argument(
+                    name=name,
+                    argument_type=ArgumentType[argument['type']],
+                    data_reference=argument['data']
+                )
+
+            hyperparams = primitive_config.get('hyperparams', dict())
+            for name, hyperparam in hyperparams.items():
+                step.add_hyperparameter(
+                    name=name,
+                    argument_type=ArgumentType[hyperparam.get('type', 'VALUE')],
+                    data=hyperparam['data']
+                )
+
+            step.add_output('produce')
+            pipeline.add_step(step)
+
+        data_reference = 'steps.{}.produce'.format(len(steps) - 1)
+        pipeline.add_output(name='output predictions', data_reference=data_reference)
+
+        return pipeline
+
     def _load_pipeline(self, pipeline):
         if pipeline.endswith('.yml'):
             loader = Pipeline.from_yaml
@@ -128,21 +185,22 @@ class PipelineSearcher:
             if not pipeline.endswith('.json'):
                 pipeline += '.json'
 
-        path = os.path.join(self.pipelines_dir, pipeline)
+        path = os.path.join(PIPELINES_DIR, pipeline)
         with open(path, 'r') as pipeline_file:
             return loader(string_or_file=pipeline_file)
 
     def _get_template(self, dataset, problem):
         task_type = problem['problem']['task_type']
         if task_type == TaskType.CLASSIFICATION:
-            return self._load_pipeline('random_forest_classification.yml')
+            return self._load_template('gradient_boosting_classification.yml')
+        elif task_type == TaskType.REGRESSION:
+            return self._load_template('gradient_boosting_regression.yml')
 
         raise ValueError('Unsupported type of problem')
 
-    def __init__(self, input_dir='input', output_dir='output', pipelines_dir=None, dump=True):
+    def __init__(self, input_dir='input', output_dir='output', dump=True):
         self.input = input_dir
         self.output = output_dir
-        self.pipelines_dir = pipelines_dir or PIPELINES_DIR
         self.dump = dump
 
         self.ranked_dir = os.path.join(self.output, 'pipelines_ranked')
