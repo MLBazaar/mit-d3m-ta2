@@ -1616,7 +1616,8 @@ class CoreServicer(core_pb2_grpc.CoreServicer):
         // Exports a solution for evaluation purposes based on NIST specifications.
         message SolutionExportRequest {
             // Found solution to export.
-            string fitted_solution_id = 1;
+            DEPRECTAED: string fitted_solution_id = 1;
+            string solution_id = 1;    # From 2019.2.27
             // Solution rank to be used for the exported solution. Lower numbers represent
             // better solutions. Presently NIST requirements are that ranks should be non-negative
             // and that each exported pipeline have a different rank. TA3 should make sure not to repeat ranks.
@@ -1626,7 +1627,7 @@ class CoreServicer(core_pb2_grpc.CoreServicer):
 
         message SolutionExportResponse {}
         """
-        fitted_solution_id = request.fitted_solution_id
+        fitted_solution_id = request.solution_id
         rank = request.rank
 
         runtime = self._get_fitted_solution(fitted_solution_id)

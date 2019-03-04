@@ -51,7 +51,7 @@ class TA3APIClient(object):
 
         request = core_pb2.SearchSolutionsRequest(
             user_agent='ta3_api_test.py',
-            version='2019.1.22',
+            version='2019.2.27',
             time_bound=time_bound,
             priority=0.,
             allowed_value_types=[
@@ -347,7 +347,7 @@ class TA3APIClient(object):
 
     def solution_export(self, fitted_solution_id, rank):
         request = core_pb2.SolutionExportRequest(
-            fitted_solution_id=fitted_solution_id,
+            solution_id=fitted_solution_id,
             rank=rank,
         )
 
