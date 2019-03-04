@@ -4,7 +4,7 @@
 from setuptools import setup, find_packages
 
 install_requires = [
-    'd3m==2019.1.21',
+    'd3m==2019.2.18',
     'baytune==0.2.4'
 ]
 

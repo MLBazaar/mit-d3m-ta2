@@ -4,20 +4,19 @@ import json
 import logging
 import os
 import random
-import yaml
+import warnings
 from collections import defaultdict
 from datetime import datetime, timedelta
 
 import numpy as np
-from btb.hyper_parameter import HyperParameter
 from btb.tuning import GP
-from d3m import index
 from d3m.container.dataset import Dataset
 from d3m.metadata.base import ArgumentType, Context
-from d3m.metadata.hyperparams import Union
 from d3m.metadata.pipeline import Pipeline, PrimitiveStep
 from d3m.metadata.problem import TaskType
 from d3m.runtime import evaluate
+
+from ta2.template import load_template
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 PIPELINES_DIR = os.path.join(BASE_DIR, 'pipelines')
@@ -27,59 +26,11 @@ TUNING_PARAMETER = 'https://metadata.datadrivendiscovery.org/types/TuningParamet
 
 LOGGER = logging.getLogger(__name__)
 
+warnings.filterwarnings("ignore", category=DeprecationWarning)
+
 
 class StopSearch(Exception):
     pass
-
-
-def get_pipeline_tunables(pipeline):
-    tunables = []
-    tunable_keys = []
-    defaults = dict()
-    for step, step_hyperparams in enumerate(pipeline.get_free_hyperparams()):
-        for name, hyperparam in step_hyperparams.items():
-            if TUNING_PARAMETER not in hyperparam.semantic_types:
-                continue
-
-            if isinstance(hyperparam, Union):
-                hyperparam = hyperparam.default_hyperparameter
-
-            key = (str(step), name)
-            try:
-                param_type = hyperparam.structural_type.__name__
-                param_type = 'string' if param_type == 'str' else param_type
-                if param_type == 'bool':
-                    param_range = [True, False]
-                elif hasattr(hyperparam, 'values'):
-                    param_range = hyperparam.values
-                else:
-                    lower = hyperparam.lower
-                    upper = hyperparam.upper
-                    if upper is None:
-                        upper = lower + 1000
-                    elif upper > lower:
-                        if param_type == 'int':
-                            upper = upper - 1
-                        elif param_type == 'float':
-                            upper = upper - 0.0001
-
-                    param_range = [lower, upper]
-
-            except AttributeError:
-                LOGGER.warn('Warning! skipping: %s, %s, %s', step, name, hyperparam)
-                continue
-
-            try:
-                value = HyperParameter(param_type, param_range)
-                tunables.append((key, value))
-                tunable_keys.append(key)
-                defaults[key] = hyperparam.get_default()
-
-            except OverflowError:
-                LOGGER.warn('Warning! Overflow: %s, %s, %s', step, name, hyperparam)
-                continue
-
-    return tunables, tunable_keys, defaults
 
 
 def to_dicts(hyperparameters):
@@ -123,60 +74,6 @@ class PipelineSearcher:
 
         return datasets
 
-    def _load_template(self, template_name):
-        """load a simplified version of a yaml pipeline."""
-
-        template_path = os.path.join(TEMPLATES_DIR, template_name)
-        with open(template_path, 'r') as template_file:
-            template = yaml.safe_load(template_file)
-
-        steps = template['steps']
-
-        pipeline = Pipeline(context=Context.TESTING)
-        pipeline.add_input(name='inputs')
-
-        for step_num, primitive_config in enumerate(steps):
-            primitive_name = primitive_config['primitive']
-            primitive = index.get_primitive(primitive_name)
-            step = PrimitiveStep(primitive=primitive)
-
-            if step_num == 0:
-                data_reference = 'inputs.0'
-            else:
-                data_reference = 'steps.{}.produce'.format(step_num - 1)
-
-            arguments = primitive_config.get('arguments')
-            if not arguments:
-                arguments = {
-                    'inputs': {
-                        'type': 'CONTAINER',
-                        'data': data_reference,
-                    }
-                }
-
-            for name, argument in arguments.items():
-                step.add_argument(
-                    name=name,
-                    argument_type=ArgumentType[argument['type']],
-                    data_reference=argument['data']
-                )
-
-            hyperparams = primitive_config.get('hyperparams', dict())
-            for name, hyperparam in hyperparams.items():
-                step.add_hyperparameter(
-                    name=name,
-                    argument_type=ArgumentType[hyperparam.get('type', 'VALUE')],
-                    data=hyperparam['data']
-                )
-
-            step.add_output('produce')
-            pipeline.add_step(step)
-
-        data_reference = 'steps.{}.produce'.format(len(steps) - 1)
-        pipeline.add_output(name='output predictions', data_reference=data_reference)
-
-        return pipeline
-
     def _load_pipeline(self, pipeline):
         if pipeline.endswith('.yml'):
             loader = Pipeline.from_yaml
@@ -191,10 +88,13 @@ class PipelineSearcher:
 
     def _get_template(self, dataset, problem):
         task_type = problem['problem']['task_type']
+
+        LOGGER.info("Loading pipeline for task type %s", task_type)
+
         if task_type == TaskType.CLASSIFICATION:
-            return self._load_template('gradient_boosting_classification.yml')
+            return load_template('gradient_boosting_classification.all_hp.yml')
         elif task_type == TaskType.REGRESSION:
-            return self._load_template('gradient_boosting_regression.yml')
+            return load_template('gradient_boosting_regression.all_hp.yml')
 
         raise ValueError('Unsupported type of problem')
 
@@ -238,14 +138,15 @@ class PipelineSearcher:
 
         return pipeline.score
 
-    def _save_pipeline(self, pipeline, score):
+    def _save_pipeline(self, pipeline, normalized_score):
         pipeline_json = pipeline.to_json_structure()
-        pipeline_json['score'] = score
+        pipeline_json['score'] = pipeline.score
         self.solutions.append(pipeline_json)
 
         if self.dump:
-            rank = (1 - pipeline.score) + random.random() * 1.e-12   # to avoid collisions
+            rank = (1 - normalized_score) + random.random() * 1.e-12   # to avoid collisions
             pipeline_json['pipeline_rank'] = rank
+            # pipeline_json['pipeline_rank'] = pipeline.rank
 
             pipeline_filename = pipeline.id + '.json'
             pipeline_path = os.path.join(self.ranked_dir, pipeline_filename)
@@ -321,7 +222,7 @@ class PipelineSearcher:
         if self.timeout:
             self.max_end_time = self.start_time + timedelta(seconds=self.timeout)
 
-        LOGGER.info("Timeout: %ss; Max end: %s", self.timeout, self.max_end_time)
+        LOGGER.info("Timeout: %s; Max end: %s", self.timeout, self.max_end_time)
 
     def search(self, problem, timeout=None, budget=None):
 
@@ -331,11 +232,9 @@ class PipelineSearcher:
         dataset = Dataset.load(self.datasets[dataset_id])
         metric = problem['problem']['performance_metrics'][0]['metric']
 
-        template = self._get_template(dataset, problem)
-
-        LOGGER.info("Getting the tuner")
-        tunables, tunable_keys, defaults = get_pipeline_tunables(template)
-        tuner = GP(tunables)
+        LOGGER.info("Loading the template and the tuner")
+        template, tunables, defaults = self._get_template(dataset, problem)
+        tuner = GP(tunables, r_minimum=10)
 
         best_pipeline = None
         best_score = None
@@ -352,13 +251,15 @@ class PipelineSearcher:
                 self.check_stop()
                 pipeline = self._new_pipeline(template, proposal)
 
-                LOGGER.info("Scoring pipeline %s: %s", i + 1, pipeline.id)
+                params = '\n'.join('{}: {}'.format(k, v) for k, v in proposal.items())
+                LOGGER.info("Scoring pipeline %s: %s\n%s", i + 1, pipeline.id, params)
                 try:
                     score = self.score_pipeline(dataset, problem, pipeline)
                     normalized_score = metric.normalize(score)
                 except Exception:
                     LOGGER.exception("Error scoring pipeline %s", pipeline.id)
-                    normalized_score = 0
+                    score = None
+                    normalized_score = 0.0
 
                 try:
                     self._save_pipeline(pipeline, normalized_score)
@@ -366,7 +267,7 @@ class PipelineSearcher:
                     LOGGER.exception("Error saving pipeline %s", pipeline.id)
 
                 tuner.add(proposal, normalized_score)
-                LOGGER.info("Pipeline %s score: %s", pipeline.id, normalized_score)
+                LOGGER.info("Pipeline %s score: %s - %s", pipeline.id, score, normalized_score)
 
                 if normalized_score > best_normalized:
                     LOGGER.info("New best pipeline found! %s > %s", score, best_score)
@@ -380,4 +281,4 @@ class PipelineSearcher:
             pass
 
         self.done = True
-        return best_pipeline
+        return best_pipeline, best_score

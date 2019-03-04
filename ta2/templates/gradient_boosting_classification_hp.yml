@@ -1,0 +1,70 @@
+steps:
+- {primitive: d3m.primitives.data_transformation.denormalize.Common}
+- {primitive: d3m.primitives.data_transformation.dataset_to_dataframe.Common}
+- {primitive: d3m.primitives.data_transformation.column_parser.DataFrameCommon}
+- hyperparams:
+    return_result: {data: replace}
+    use_semantic_types: {data: true}
+  primitive: d3m.primitives.data_cleaning.imputer.SKlearn
+- arguments:
+    inputs: {data: steps.3.produce, type: CONTAINER}
+    outputs: {data: steps.3.produce, type: CONTAINER}
+  hyperparams:
+    return_result: {data: replace}
+    use_semantic_types: {data: true}
+  primitive: d3m.primitives.classification.gradient_boosting.SKlearn
+- arguments:
+    inputs: {data: steps.4.produce, type: CONTAINER}
+    reference: {data: steps.2.produce, type: CONTAINER}
+  primitive: d3m.primitives.data_transformation.construct_predictions.DataFrameCommon
+tunable_hyperparameters:
+  '3':
+    strategy:
+      default: mean
+      range: [median, most_frequent, mean]
+      type: string
+  '4':
+    criterion:
+      default: friedman_mse
+      range: [friedman_mse, mse, mae]
+      type: string
+    learning_rate:
+      default: 0.1
+      range: [0.0001, 1]
+      type: float
+    loss:
+      default: deviance
+      range: [deviance, exponential]
+      type: string
+    max_depth:
+      default: 3
+      range: [1, 100]
+      type: int
+    min_impurity_decrease:
+      default: 0.0
+      range: [0.0, 1.0]
+      type: float
+    min_samples_leaf:
+      default: 1
+      range: [1, 1000]
+      type: int
+    min_samples_split:
+      default: 2
+      range: [1, 1000]
+      type: int
+    min_weight_fraction_leaf:
+      default: 0
+      range: [0.0001, 0.4999]
+      type: float
+    n_estimators:
+      default: 100
+      range: [10, 1000]
+      type: int
+    tol:
+      default: 0.0001
+      range: [0.0001, 0.01]
+      type: float
+    validation_fraction:
+      default: 0.1
+      range: [0.0001, 0.9999]
+      type: float

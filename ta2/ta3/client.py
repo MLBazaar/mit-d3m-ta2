@@ -1,4 +1,3 @@
-import json
 import logging
 import os
 import re
@@ -8,9 +7,6 @@ import grpc
 from d3m.metadata.problem import parse_problem_description
 from google.protobuf.timestamp_pb2 import Timestamp
 from ta3ta2_api import core_pb2, core_pb2_grpc
-from ta3ta2_api.problem_pb2 import (
-    PerformanceMetric, Problem, ProblemDescription, ProblemInput, ProblemPerformanceMetric,
-    ProblemTarget, TaskSubtype, TaskType)
 from ta3ta2_api.utils import encode_problem_description
 from ta3ta2_api.value_pb2 import Value, ValueType
 

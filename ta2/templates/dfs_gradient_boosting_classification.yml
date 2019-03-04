@@ -1,0 +1,29 @@
+steps:
+- primitive: d3m.primitives.feature_construction.deep_feature_synthesis.Featuretools
+- primitive: d3m.primitives.data_cleaning.imputer.SKlearn
+  hyperparams:
+    return_result:
+      data: replace
+    use_semantic_types:
+      data: true
+- primitive: d3m.primitives.classification.gradient_boosting.SKlearn
+  arguments:
+    inputs:
+      data: steps.1.produce
+      type: CONTAINER
+    outputs:
+      data: steps.1.produce
+      type: CONTAINER
+  hyperparams:
+    return_result:
+      data: replace
+    use_semantic_types:
+      data: true
+- primitive: d3m.primitives.data_transformation.construct_predictions.DataFrameCommon
+  arguments:
+    inputs:
+      data: steps.2.produce
+      type: CONTAINER
+    reference:
+      data: steps.0.produce
+      type: CONTAINER
