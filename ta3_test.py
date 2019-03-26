@@ -8,7 +8,7 @@ from ta2.ta3.client import TA3APIClient
 from ta2 import logging_setup
 
 
-def run_test(dataset, timeout):
+def run_test(client, dataset, timeout):
     print('### Testing dataset {} ###'.format(dataset))
 
     print('### {} => client.SearchSolutions("{}")'.format(dataset, dataset))
@@ -111,7 +111,7 @@ if __name__ == '__main__':
     hello = client.hello()
 
     for dataset in args.datasets:
-        run_test(dataset, args.timeout / 60)
+        run_test(client, dataset, args.timeout / 60)
 
     if server:
         server.stop(0)
