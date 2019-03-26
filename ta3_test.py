@@ -71,7 +71,7 @@ if __name__ == '__main__':
                         help='Path to the datsets root folder')
     parser.add_argument('-o', '--output', default='output',
                         help='Path to the folder where outputs will be stored')
-    parser.add_argument('-t', '--timeout', type=int,
+    parser.add_argument('-t', '--timeout', type=int, default=60,
                         help='Maximum time allowed for the tuning, in number of seconds')
     parser.add_argument('-v', '--verbose', action='count', default=0,
                         help='Be verbose. Use -vv for increased verbosity')
@@ -88,7 +88,7 @@ if __name__ == '__main__':
 
     os.makedirs('logs', exist_ok=True)
     logging_setup(1 + args.verbose, args.server_logfile)
-    logging_setup(1 + args.verbose, args.logfile, logger_name='mit_ta2.ta3_api.ta3_api_client')
+    logging_setup(1 + args.verbose, args.logfile, logger_name='ta2.ta3.client')
     logging.getLogger("d3m.metadata.pipeline_run").setLevel(logging.ERROR)
 
     server = None
