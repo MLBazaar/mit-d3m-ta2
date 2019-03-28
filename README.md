@@ -42,21 +42,31 @@ path. Example: `--input /path/to/d3m/datasets/repo/seed_datasets_current`
 #### Leaderboard
 
 The following leaderboard has been built using the `TA2 Standalone Mode` with `10` as
-the maximum number of tuning iterations to perform (`budget`) and `60s` as the maximum time
+the maximum number of tuning iterations to perform (`budget`) and `60` as the maximum time
 allowed for the tuning (`timeout`).
 
 | dataset | CV score | rank |
 |------|-------|------|
 | 299_libras_move | 27.740541 | 1 |
-| 196_autoMpg | 19.369635 | 2 |
-| 30_personae | 0.728893 | 3 |
-| 185_baseball | 0.646959 | 4 |
-| 27_wordLevels | 0.258386 | 5 |
-| 1567_poker_hand | 0.179153 | 6 |
-| 26_radon_seed | 0.030257 | 7 |
-| 1491_one_hundred_plants_margin | 0.009574 | 8 |
+| 534_cps_85_wages | 23.423093 | 2 |
+| 196_autoMpg | 19.369635 | 3 |
+| 38_sick | 0.940725 | 4 |
+| 30_personae | 0.728893 | 5 |
+| 57_hypothyroid | 0.862681 | 6 |
+| 185_baseball | 0.646959 | 7 |
+| 313_spectrometer | 0.281408 | 8 |
+| 27_wordLevels | 0.258386 | 9 |
+| 1567_poker_hand | 0.179153 | 10 |
+| 4550_MiceProtein | 0.167409 | 11 |
+| 26_radon_seed | 0.030257 | 12 |
+| 1491_one_hundred_plants_margin | 0.009574 | 13 |
 | 1491_one_hundred_plants_margin_clust | N/S | N/S |
 | 22_handgeometry | N/A | N/A |
+| 31_urbansound | N/A | N/A |
+| 32_wikiqa | N/A | N/A |
+| 49_facebook | N/S | N/S |
+| 56_sunspots | N/S | N/S |
+| 56_sunspots_monthly | N/S | N/S |
 
 ## Local Testing
 
