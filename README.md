@@ -47,8 +47,16 @@ allowed for the tuning (`timeout`).
 
 | dataset | CV score | rank |
 |------|-------|------|
-| 185_baseball | 0.6469594579013076 | 1 |
-| 1491_one_hundred_plants_margin | 0.009574031632855163 | 2 |
+| 299_libras_move | 27.740541 | 1 |
+| 196_autoMpg | 19.369635 | 2 |
+| 30_personae | 0.728893 | 3 |
+| 185_baseball | 0.646959 | 4 |
+| 27_wordLevels | 0.258386 | 5 |
+| 1567_poker_hand | 0.179153 | 6 |
+| 26_radon_seed | 0.030257 | 7 |
+| 1491_one_hundred_plants_margin | 0.009574 | 8 |
+| 1491_one_hundred_plants_margin_clust | N/S | N/S |
+| 22_handgeometry | N/A | N/A |
 
 ## Local Testing
 
