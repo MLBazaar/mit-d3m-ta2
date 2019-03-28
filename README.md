@@ -13,6 +13,18 @@ make install
 For development, use the `make install-develop` command instead, which will install the project
 in editable mode and also install some additional code linting tools.
 
+## Datasets
+
+For development and evaluation of pipelines, we use two kind of datasets:
+* [D3M seed datasets](https://gitlab.datadrivendiscovery.org/d3m/datasets/): A growing set of seed datasets
+released to D3M performers. These datasets have been converted to D3M format and schematized.
+* [D3M data dai datasets](https://d3m-data-dai.s3.amazonaws.com/index.html): A custom formatted version
+by [DAI Group](https://dai.lids.mit.edu/) of training
+datasets provided in [D3M datasets](https://gitlab.datadrivendiscovery.org/d3m/datasets/) to help D3M performers
+develop approaches to automatically create machine learning solutions to a variety of problems. Compared to the
+original datasets version, these datasets are already split in `SCORE`, `TEST` and `TRAIN` directories using the
+same approach as the seed datasets.
+
 ## Local Testing
 
 Two scripts are included in the repository for local testing:
