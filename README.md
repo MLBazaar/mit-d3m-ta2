@@ -25,6 +25,30 @@ develop approaches to automatically create machine learning solutions to a varie
 original datasets version, these datasets are already split in `SCORE`, `TEST` and `TRAIN` directories using the
 same approach as the seed datasets.
 
+### D3M Seed Datasets
+
+Before start, make sure you have the proper rights on the D3M datasets
+[repo](https://gitlab.datadrivendiscovery.org/d3m/datasets). You will need credentials and read permissions
+to download them.
+
+As specified in the `README` file, you will need [git-lfs](https://git-lfs.github.com/) to download files faster.
+As all datasets are around 54 GB, the recommended approach is to download only parts of the repository as needed, following
+instructions in the [Partial Downloading](https://gitlab.datadrivendiscovery.org/d3m/datasets#partial-downloading)
+section.
+
+Once downloaded the specific datasets, the local testing commands can be used with the `--input` option and the correspoding
+path. Example: `--input /path/to/d3m/datasets/seed_datasets_current`
+
+#### Leaderboard
+
+The following leaderboard has been built using the `TA2 Standalone Mode` with `10` as
+the maximum number of tuning iterations to perform (budget) and `60s` as the maximum time
+allowed for the tuning.
+
+| dataset | CV score | rank |
+|------|-------|------|
+| 185_baseball | 0.6469594579013076 | 1 |
+
 ## Local Testing
 
 Two scripts are included in the repository for local testing:
