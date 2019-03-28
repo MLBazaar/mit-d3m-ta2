@@ -56,7 +56,7 @@ For a full description of the script options, execute `python ta3_test.py --help
 
 ### Docker run
 
-In order to run TA2-TA3 server from docker, you first have to build the image and the
+In order to run TA2-TA3 server from docker, you first have to build the image and
 execute the `run_docker.sh` script.
 After that, in a different console, you can run the `ta3_test.py` script passing it the
 `--docker` flag to adapt the input paths accordingly:
