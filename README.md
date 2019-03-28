@@ -37,17 +37,18 @@ instructions in the [Partial Downloading](https://gitlab.datadrivendiscovery.org
 section.
 
 Once downloaded the specific datasets, the local testing commands can be used with the `--input` option and the correspoding
-path. Example: `--input /path/to/d3m/datasets/seed_datasets_current`
+path. Example: `--input /path/to/d3m/datasets/repo/seed_datasets_current`
 
 #### Leaderboard
 
 The following leaderboard has been built using the `TA2 Standalone Mode` with `10` as
-the maximum number of tuning iterations to perform (budget) and `60s` as the maximum time
-allowed for the tuning.
+the maximum number of tuning iterations to perform (`budget`) and `60s` as the maximum time
+allowed for the tuning (`timeout`).
 
 | dataset | CV score | rank |
 |------|-------|------|
 | 185_baseball | 0.6469594579013076 | 1 |
+| 1491_one_hundred_plants_margin | 0.009574031632855163 | 2 |
 
 ## Local Testing
 
