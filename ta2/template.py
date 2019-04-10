@@ -86,7 +86,6 @@ def load_template(template_name):
     pipeline = Pipeline(context=Context.TESTING)
     pipeline.add_input(name='inputs')
 
-    primitives = list()
     for step_num, primitive_config in enumerate(steps):
         primitive_name = primitive_config['primitive']
         print("Loading primitive {}".format(primitive_name))

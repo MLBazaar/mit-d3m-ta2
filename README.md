@@ -2,7 +2,19 @@
 
 MIT-Featuretools TA2 submission for the D3M program.
 
-## Setup
+## Getting Started
+
+### Requirements
+
+#### Python
+
+**mit-d3m-ta2** has been developed and runs on [Python 3.6](https://www.python.org/downloads/release/python-360/).
+
+Also, although it is not strictly required, the usage of a [virtualenv](https://virtualenv.pypa.io/en/latest/)
+is highly recommended in order to avoid interfering with other software installed in the system
+where you are trying to run **mit-d3m-ta2**.
+
+### Installation
 
 To install the project simply execute the following command:
 
