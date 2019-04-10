@@ -5,7 +5,7 @@ from setuptools import setup, find_packages
 
 
 def d3m_dependency(name, commit):
-    return f'{name} @ git+https://gitlab.com/datadrivendiscovery/{name}.git{commit}#egg={name}'
+    return f'{name} @ git+https://gitlab.com/datadrivendiscovery/{name}@{commit}#egg={name}'
 
 
 install_requires = [
@@ -71,6 +71,7 @@ setup(
     ],
     description='MIT-Featuretools TA2 submission for the D3M program.',
     extras_require={
+        'test': tests_require,
         'dev': development_requires + tests_require,
     },
     include_package_data=True,
