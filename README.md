@@ -1,6 +1,19 @@
-# MIT TA2
+<p align="left">
+<img width=15% src="https://dai.lids.mit.edu/wp-content/uploads/2018/06/Logo_DAI_highres.png" alt=“DAI-Lab” />
+<i>An open source project from Data to AI Lab at MIT.</i>
+</p>
+
+
+[![PyPi Shield](https://img.shields.io/pypi/v/mit-d3m-ta2.svg)](https://pypi.python.org/pypi/mit-d3m-ta2)
+[![Travis CI Shield](https://travis-ci.org/HDI-Project/mit-d3m-ta2.svg?branch=master)](https://travis-ci.org/HDI-Project/mit-d3m-ta2)
+
+
+# MIT-D3M-TA2
 
 MIT-Featuretools TA2 submission for the D3M program.
+
+- Free software: MIT license
+- Documentation: https://HDI-Project.github.io/mit-d3m-ta2
 
 ## Getting Started
 
