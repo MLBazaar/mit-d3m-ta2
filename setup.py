@@ -3,24 +3,60 @@
 
 from setuptools import setup, find_packages
 
+
+def d3m_dependency(name, commit):
+    return f'{name} @ git+https://gitlab.com/datadrivendiscovery/{name}@{commit}#egg={name}'
+
+
 install_requires = [
     'd3m==2019.2.18',
-    'baytune==0.2.4'
+    'baytune==0.2.4',
+    d3m_dependency('ta3ta2-api', '7c5f8b30c8002042cfb9c1f14629909d430daebc'),
+    d3m_dependency('common-primitives', '53c0af81d3bba3d6a22e8582c94b760948dd5798'),
+    d3m_dependency('sklearn-wrap', '21063add2b4398b6acf4217d4b13bdee227b292b'),
 ]
+
+
+setup_requires = [
+    'pytest-runner>=2.11.1',
+]
+
+
+tests_require = [
+    'pytest>=3.4.2',
+    'pytest-cov>=2.6.0',
+]
+
 
 development_requires = [
     # general
     'bumpversion>=0.5.3',
     'pip>=9.0.1',
+    'watchdog>=0.8.3',
+
+    # docs
+    'm2r>=0.2.0',
+    'Sphinx>=1.7.1',
+    'sphinx_rtd_theme>=0.2.4',
+    'recommonmark>=0.4.0',
 
     # style check
-    'flake8>=3.5.0',
+    'flake8>=3.7.7',
     'isort>=4.3.4',
 
     # fix style issues
     'autoflake>=1.1',
-    'autopep8>=1.3.5',
+    'autopep8>=1.4.3',
+
+    # distribute on PyPI
+    'twine>=1.10.0',
+    'wheel>=0.30.0',
+
+    # Advanced testing
+    'coverage>=4.5.1',
+    'tox>=2.9.1',
 ]
+
 
 setup(
     author="MIT Data To AI Lab",
@@ -33,18 +69,22 @@ setup(
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.6',
     ],
-    description="MIT D3M TA2",
+    description='MIT-Featuretools TA2 submission for the D3M program.',
     extras_require={
-        'dev': development_requires,
+        'test': tests_require,
+        'dev': development_requires + tests_require,
     },
     include_package_data=True,
     install_requires=install_requires,
-    keywords='ta2',
+    keywords='mit-d3m-ta2 ta2 d3m machine learning automl ml',
     license="MIT license",
-    name='ta2',
+    name='mit-d3m-ta2',
     packages=find_packages(include=['ta2', 'ta2.*']),
     python_requires='>=3.6, <3.7',
+    setup_requires=setup_requires,
+    test_suite='tests',
+    tests_require=tests_require,
     url='https://github.com/HDI-Project/mit-d3m-ta2',
-    version='0.0.1-dev',
+    version='0.1.0-dev',
     zip_safe=False,
 )
