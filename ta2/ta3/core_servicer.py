@@ -13,7 +13,7 @@ from urllib.parse import urlparse
 from d3m.container.dataset import Dataset
 from d3m.metadata.base import Context
 from d3m.metadata.pipeline import Pipeline
-from d3m.metadata.problem import parse_problem_description
+from d3m.metadata.problem import Problem
 from d3m.runtime import Runtime
 from google.protobuf.timestamp_pb2 import Timestamp
 from ta3ta2_api import core_pb2, core_pb2_grpc, pipeline_pb2, primitive_pb2, value_pb2
@@ -422,7 +422,7 @@ message ProblemInput {
 }
 
 // Problem description matches the parsed problem description by
-// the d3m_metadata.problem.parse_problem_description Python method.
+// the d3m_metadata.problem.Problem.load Python method.
 // Problem outputs are not necessary for the purpose of this API
 // and are needed only when executing an exported pipeline, but then
 // TA2 gets full problem description anyway directly.
@@ -722,7 +722,7 @@ class CoreServicer(core_pb2_grpc.CoreServicer):
         with tempfile.NamedTemporaryFile('w', delete=False) as tmp_file:
             json.dump(problem_dict, tmp_file)
 
-        return parse_problem_description(tmp_file.name)
+        return Problem.load(problem_uri='file://' + os.path.abspath(tmp_file.name))
 
     def _run_session(self, session, method, *args, **kwargs):
         exception = None

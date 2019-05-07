@@ -4,7 +4,7 @@ import re
 from datetime import datetime
 
 import grpc
-from d3m.metadata.problem import parse_problem_description
+from d3m.metadata.problem import Problem
 from google.protobuf.timestamp_pb2 import Timestamp
 from ta3ta2_api import core_pb2, core_pb2_grpc
 from ta3ta2_api.utils import encode_problem_description
@@ -35,14 +35,16 @@ class TA3APIClient(object):
             'TRAIN/dataset_TRAIN/datasetDoc.json'
         )
 
-    def _build_problem(self, dataset):
-        problem_doc_path = os.path.join(
-            self.local_input,
+    def _get_problem_doc_path(self, dataset):
+        return os.path.join(
+            'file://' + os.path.abspath(self.remote_input),
             dataset,
             'TRAIN/problem_TRAIN/problemDoc.json'
         )
-        problem_description = parse_problem_description(problem_doc_path)
-        return encode_problem_description(problem_description)
+
+    def _build_problem(self, dataset):
+        problem = Problem.load(problem_uri=self._get_problem_doc_path(dataset))
+        return encode_problem_description(problem)
 
     def search_solutions(self, dataset, time_bound=1.):
 
