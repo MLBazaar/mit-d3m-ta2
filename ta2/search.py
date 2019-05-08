@@ -119,7 +119,7 @@ class PipelineSearcher:
             'stratified': json.dumps(stratified),
             'shuffle': json.dumps(shuffle),
         }
-        results = evaluate(
+        all_scores, all_results = evaluate(
             pipeline,
             self.data_pipeline,
             self.scoring_pipeline,
@@ -133,7 +133,7 @@ class PipelineSearcher:
             scoring_random_seed=random_seed,
         )
 
-        pipeline.cv_scores = [result[0].value[0] for result in results]
+        pipeline.cv_scores = [score.value[0] for score in all_scores]
         pipeline.score = np.mean(pipeline.cv_scores)
 
         return pipeline.score
