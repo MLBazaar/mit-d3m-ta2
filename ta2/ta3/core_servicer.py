@@ -1238,7 +1238,8 @@ class CoreServicer(core_pb2_grpc.CoreServicer):
                     'fold': fold,
                     'value': score,
                     'targets': targets,
-                    'dataset_id': dataset_id
+                    'dataset_id': dataset_id,
+                    'random_seed': 0  # TODO: use a parameter for this
                 })
 
         if len(metric_fold_scores) > returned:
