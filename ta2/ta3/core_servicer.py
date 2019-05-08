@@ -819,7 +819,7 @@ class CoreServicer(core_pb2_grpc.CoreServicer):
         }
         """
         version = request.version
-        time_bound = request.time_bound
+        time_bound_search = request.time_bound_search
         problem_description = request.problem
         inputs = request.inputs
         allowed_value_types = request.allowed_value_types
@@ -836,8 +836,8 @@ class CoreServicer(core_pb2_grpc.CoreServicer):
 
         search_id = str(uuid.uuid4())
 
-        if time_bound:
-            timeout = int(time_bound * 60)
+        if time_bound_search:
+            timeout = int(time_bound_search * 60)
         else:
             timeout = self.timeout
 
