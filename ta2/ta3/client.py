@@ -46,7 +46,7 @@ class TA3APIClient(object):
         problem = Problem.load(problem_uri=self._get_problem_doc_path(dataset))
         return encode_problem_description(problem)
 
-    def search_solutions(self, dataset, time_bound=1.):
+    def search_solutions(self, dataset, time_bound_search=1.):
 
         created_at = Timestamp()
         created_at.FromDatetime(datetime.utcnow())
@@ -54,7 +54,7 @@ class TA3APIClient(object):
         request = core_pb2.SearchSolutionsRequest(
             user_agent='ta3_api_test.py',
             version='2019.2.27',
-            time_bound=time_bound,
+            time_bound_search=time_bound_search,
             priority=0.,
             allowed_value_types=[
                 ValueType.Value('RAW'),
