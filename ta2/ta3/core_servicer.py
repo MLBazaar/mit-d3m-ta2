@@ -1217,6 +1217,7 @@ class CoreServicer(core_pb2_grpc.CoreServicer):
             metric_pipelines=metric_pipelines,
             problem=problem,
             allowed_value_types=allowed_value_types,
+            configuration=configuration
         )
 
         return core_pb2.ScoreSolutionResponse(
@@ -1226,6 +1227,7 @@ class CoreServicer(core_pb2_grpc.CoreServicer):
     def _get_score_solution_results(self, session, returned):
         problem = session['problem']
         allowed_value_types = session['allowed_value_types']
+        configuration = session['configuration']
         targets = problem['inputs'][0]['targets']
         dataset_id = problem['inputs'][0]['dataset_id']
 
@@ -1239,7 +1241,7 @@ class CoreServicer(core_pb2_grpc.CoreServicer):
                     'value': score,
                     'targets': targets,
                     'dataset_id': dataset_id,
-                    'random_seed': 0  # TODO: use a parameter for this
+                    'random_seed': configuration.random_seed
                 })
 
         if len(metric_fold_scores) > returned:
