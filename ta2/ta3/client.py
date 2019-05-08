@@ -53,7 +53,7 @@ class TA3APIClient(object):
 
         request = core_pb2.SearchSolutionsRequest(
             user_agent='ta3_api_test.py',
-            version='2019.2.27',
+            version='2019.4.11',
             time_bound_search=time_bound_search,
             priority=0.,
             allowed_value_types=[
