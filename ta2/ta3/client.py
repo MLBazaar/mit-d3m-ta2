@@ -37,7 +37,7 @@ class TA3APIClient(object):
 
     def _get_problem_doc_path(self, dataset):
         return os.path.join(
-            'file://' + os.path.abspath(self.remote_input),
+            'file://' + os.path.abspath(self.local_input),
             dataset,
             'TRAIN/problem_TRAIN/problemDoc.json'
         )
