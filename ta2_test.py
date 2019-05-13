@@ -79,7 +79,7 @@ def box_print(message):
     print('#' * len(message))
 
 
-def process_dataset(dataset, args):
+def process_dataset(dataset, args, report_df):
     box_print("Processing dataset {}".format(dataset))
     dataset_root = os.path.join(args.input, dataset)
     problem = load_problem(dataset_root, 'TRAIN')
@@ -93,7 +93,11 @@ def process_dataset(dataset, args):
     test_score = score_pipeline(dataset_root, problem, best_path)
     box_print("Test Score for pipeline {}: {}".format(best_id, test_score))
 
-    return best_score, test_score
+    report_df.loc[dataset] = pd.Series({
+        'Dataset name': dataset,
+        'CV Score': best_score,
+        'Test Score': test_score
+    })
 
 
 if __name__ == '__main__':
@@ -121,12 +125,7 @@ if __name__ == '__main__':
     report = pd.DataFrame(columns=['Dataset name', 'CV Score', 'Test Score'], index=args.dataset)
 
     for dataset in args.dataset:
-        cv_score, test_score = process_dataset(dataset, args)
-        report.loc[dataset] = pd.Series({
-            'Dataset name': dataset,
-            'CV Score': cv_score,
-            'Test Score': test_score
-        })
+        process_dataset(dataset, args, report)
 
     if args.report:
         # dump to file
