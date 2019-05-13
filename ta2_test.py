@@ -2,6 +2,9 @@ import argparse
 import logging
 import os
 
+import pandas as pd
+import tabulate
+
 from d3m.container.dataset import Dataset
 from d3m.metadata.base import Context
 from d3m.metadata.pipeline import Pipeline
@@ -90,6 +93,8 @@ def process_dataset(dataset, args):
     test_score = score_pipeline(dataset_root, problem, best_path)
     box_print("Test Score for pipeline {}: {}".format(best_id, test_score))
 
+    return best_score, test_score
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Run TA2')
@@ -106,11 +111,31 @@ if __name__ == '__main__':
     parser.add_argument('-l', '--logfile', type=str, nargs='?',
                         help='Path to the logging file. If not given, log to stdout')
     parser.add_argument('dataset', nargs='+', help='Name of the dataset to use for the test')
-
+    parser.add_argument('-r', '--report', type=str, nargs='?',
+                        help='Path to the CSV file where scores will be dumped. If not given, print to stdout')
     args = parser.parse_args()
 
     logging_setup(args.verbose, args.logfile)
     logging.getLogger("d3m.metadata.pipeline_run").setLevel(logging.ERROR)
 
+    report = pd.DataFrame(columns=['Dataset name', 'CV Score', 'Test Score'], index=args.dataset)
+
     for dataset in args.dataset:
-        process_dataset(dataset, args)
+        cv_score, test_score = process_dataset(dataset, args)
+        report.loc[dataset] = pd.Series({
+            'Dataset name': dataset,
+            'CV Score': cv_score,
+            'Test Score': test_score
+        })
+
+    if args.report:
+        # dump to file
+        report.to_csv(args.report, index=False)
+    else:
+        # print to stdout
+        print(tabulate.tabulate(
+            report,
+            showindex=False,
+            tablefmt='github',
+            headers=report.columns
+        ))
