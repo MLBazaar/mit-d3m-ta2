@@ -87,8 +87,8 @@ def process_dataset(dataset, args):
     best_path = os.path.join(args.output, 'pipelines_ranked', best_id + '.json')
     box_print("Best Pipeline: {} - CV Score: {}".format(best_id, best_score))
 
-    # test_score = score_pipeline(dataset_root, problem, best_path)
-    # box_print("Test Score for pipeline {}: {}".format(best_id, test_score))
+    test_score = score_pipeline(dataset_root, problem, best_path)
+    box_print("Test Score for pipeline {}: {}".format(best_id, test_score))
 
 
 if __name__ == '__main__':
