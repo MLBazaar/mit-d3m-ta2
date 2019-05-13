@@ -14,6 +14,7 @@ install_requires = [
     d3m_dependency('ta3ta2-api', '58f2da314ea5fa5c2d517f9c2463a7aea4f719f3'),
     d3m_dependency('common-primitives', '3df2ad23e1801e43166c64dc5767d847f232181d'),
     d3m_dependency('sklearn-wrap', '2a3a1864473aa5b57421bf89fd2ad88b04a86e2c'),
+    'tabulate>=0.8.3,<0.9',
 ]
 
 
