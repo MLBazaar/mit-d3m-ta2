@@ -122,7 +122,12 @@ if __name__ == '__main__':
     logging_setup(args.verbose, args.logfile)
     logging.getLogger("d3m.metadata.pipeline_run").setLevel(logging.ERROR)
 
-    report = pd.DataFrame(columns=['Dataset name', 'CV Score', 'Test Score'], index=args.dataset)
+    report = pd.DataFrame(
+        columns=[
+            'Dataset name', 'Template name', 'CV Score',
+            'Test Score', 'Elapsed time', 'Tuning Iterations'],
+        index=args.dataset
+    )
 
     for dataset in args.dataset:
         process_dataset(dataset, args, report)
