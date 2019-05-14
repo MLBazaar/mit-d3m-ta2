@@ -8,7 +8,7 @@ import tabulate
 from d3m.container.dataset import Dataset
 from d3m.metadata.base import Context
 from d3m.metadata.pipeline import Pipeline
-from d3m.metadata.problem import Problem
+from d3m.metadata.problem import Problem, TaskType
 from d3m.runtime import Runtime, score
 
 from ta2 import logging_setup
@@ -79,7 +79,7 @@ def box_print(message):
     print('#' * len(message))
 
 
-def process_dataset(dataset, args, report_df):
+def process_dataset(dataset, args, report_df=None):
     box_print("Processing dataset {}".format(dataset))
     dataset_root = os.path.join(args.input, dataset)
     problem = load_problem(dataset_root, 'TRAIN')
@@ -93,13 +93,23 @@ def process_dataset(dataset, args, report_df):
     test_score = score_pipeline(dataset_root, problem, best_path)
     box_print("Test Score for pipeline {}: {}".format(best_id, test_score))
 
-    report_df.loc[dataset] = pd.Series({
-        'Dataset name': dataset,
-        'CV Score': best_score,
-        'Test Score': test_score,
-        'Elapsed Time': args.timeout,
-        'Tuning Iterations': args.budget
-    })
+    if report_df is not None:
+        template = None
+        task_type = problem['problem']['task_type']
+
+        if task_type == TaskType.CLASSIFICATION:
+            template = 'gradient_boosting_classification.all_hp.yml'
+        elif task_type == TaskType.REGRESSION:
+            template = 'gradient_boosting_regression.all_hp.yml'
+
+        report_df.loc[dataset] = pd.Series({
+            'Dataset Name': dataset,
+            'Template Name': template,
+            'CV Score': best_score,
+            'Test Score': test_score,
+            'Elapsed Time': args.timeout,
+            'Tuning Iterations': args.budget
+        })
 
 
 if __name__ == '__main__':
@@ -126,7 +136,7 @@ if __name__ == '__main__':
 
     report = pd.DataFrame(
         columns=[
-            'Dataset name', 'Template name', 'CV Score',
+            'Dataset Name', 'Template Name', 'CV Score',
             'Test Score', 'Elapsed Time', 'Tuning Iterations'],
         index=args.dataset
     )
