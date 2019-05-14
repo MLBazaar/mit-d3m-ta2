@@ -9,11 +9,11 @@ def d3m_dependency(name, commit):
 
 
 install_requires = [
-    'd3m==2019.2.18',
+    'd3m==2019.4.4',
     'baytune==0.2.4',
-    d3m_dependency('ta3ta2-api', '7c5f8b30c8002042cfb9c1f14629909d430daebc'),
-    d3m_dependency('common-primitives', '53c0af81d3bba3d6a22e8582c94b760948dd5798'),
-    d3m_dependency('sklearn-wrap', '21063add2b4398b6acf4217d4b13bdee227b292b'),
+    d3m_dependency('ta3ta2-api', '58f2da314ea5fa5c2d517f9c2463a7aea4f719f3'),
+    d3m_dependency('common-primitives', '3df2ad23e1801e43166c64dc5767d847f232181d'),
+    d3m_dependency('sklearn-wrap', '2a3a1864473aa5b57421bf89fd2ad88b04a86e2c'),
 ]
 
 

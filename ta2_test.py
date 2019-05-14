@@ -5,7 +5,7 @@ import os
 from d3m.container.dataset import Dataset
 from d3m.metadata.base import Context
 from d3m.metadata.pipeline import Pipeline
-from d3m.metadata.problem import parse_problem_description
+from d3m.metadata.problem import Problem
 from d3m.runtime import Runtime, score
 
 from ta2 import logging_setup
@@ -19,7 +19,7 @@ def load_dataset(root_path, phase):
 
 def load_problem(root_path, phase):
     path = os.path.join(root_path, phase, 'problem_' + phase, 'problemDoc.json')
-    return parse_problem_description(path)
+    return Problem.load(problem_uri='file://' + os.path.abspath(path))
 
 
 def load_pipeline(pipeline_path):
