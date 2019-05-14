@@ -116,7 +116,10 @@ def process_datasets(args):
     for d in args.dataset:
         results.append(process_dataset(d, args))
 
-    return pd.DataFrame(results)
+    return pd.DataFrame(
+        results,
+        columns=['dataset', 'template', 'cv_score', 'test_score', 'elapsed_time', 'tuning_iterations']
+    )
 
 
 if __name__ == '__main__':
