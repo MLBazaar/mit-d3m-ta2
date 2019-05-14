@@ -79,7 +79,7 @@ def box_print(message):
     print('#' * len(message))
 
 
-def process_dataset(dataset, args, report_df):
+def process_dataset(dataset, args):
     box_print("Processing dataset {}".format(dataset))
     dataset_root = os.path.join(args.input, dataset)
     problem = load_problem(dataset_root, 'TRAIN')
@@ -96,14 +96,22 @@ def process_dataset(dataset, args, report_df):
     test_score = score_pipeline(dataset_root, problem, best_path)
     box_print("Test Score for pipeline {}: {}".format(best_id, test_score))
 
-    report_df.loc[dataset] = pd.Series({
-        'Dataset Name': dataset,
-        'Template Name': template,
-        'CV Score': best_score,
-        'Test Score': test_score,
-        'Elapsed Time': args.timeout,
-        'Tuning Iterations': args.budget
-    })
+    return {
+        'dataset': dataset,
+        'template': template,
+        'cv_score': best_score,
+        'test_score': test_score,
+        'elapsed_time': args.timeout,
+        'tuning_iterations': args.budget
+    }
+
+
+def process_datasets(args):
+    results = list()
+    for d in args.dataset:
+        results.append(process_dataset(d, args))
+
+    return pd.DataFrame(results)
 
 
 if __name__ == '__main__':
@@ -128,15 +136,7 @@ if __name__ == '__main__':
     logging_setup(args.verbose, args.logfile)
     logging.getLogger("d3m.metadata.pipeline_run").setLevel(logging.ERROR)
 
-    report = pd.DataFrame(
-        columns=[
-            'Dataset Name', 'Template Name', 'CV Score',
-            'Test Score', 'Elapsed Time', 'Tuning Iterations'],
-        index=args.dataset
-    )
-
-    for dataset in args.dataset:
-        process_dataset(dataset, args, report)
+    report = process_datasets(args)
 
     if args.report:
         # dump to file
