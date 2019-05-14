@@ -8,7 +8,7 @@ import tabulate
 from d3m.container.dataset import Dataset
 from d3m.metadata.base import Context
 from d3m.metadata.pipeline import Pipeline
-from d3m.metadata.problem import Problem, TaskType
+from d3m.metadata.problem import Problem
 from d3m.runtime import Runtime, score
 
 from ta2 import logging_setup
@@ -79,13 +79,16 @@ def box_print(message):
     print('#' * len(message))
 
 
-def process_dataset(dataset, args, report_df=None):
+def process_dataset(dataset, args, report_df):
     box_print("Processing dataset {}".format(dataset))
     dataset_root = os.path.join(args.input, dataset)
     problem = load_problem(dataset_root, 'TRAIN')
 
     print("Searching Pipeline for dataset {}".format(dataset))
-    best_id, best_score = search(dataset_root, problem, args)
+    result = search(dataset_root, problem, args)
+    best_id = result['pipeline']
+    best_score = result['score']
+    template = result['template']
 
     best_path = os.path.join(args.output, 'pipelines_ranked', best_id + '.json')
     box_print("Best Pipeline: {} - CV Score: {}".format(best_id, best_score))
@@ -93,23 +96,14 @@ def process_dataset(dataset, args, report_df=None):
     test_score = score_pipeline(dataset_root, problem, best_path)
     box_print("Test Score for pipeline {}: {}".format(best_id, test_score))
 
-    if report_df is not None:
-        template = None
-        task_type = problem['problem']['task_type']
-
-        if task_type == TaskType.CLASSIFICATION:
-            template = 'gradient_boosting_classification.all_hp.yml'
-        elif task_type == TaskType.REGRESSION:
-            template = 'gradient_boosting_regression.all_hp.yml'
-
-        report_df.loc[dataset] = pd.Series({
-            'Dataset Name': dataset,
-            'Template Name': template,
-            'CV Score': best_score,
-            'Test Score': test_score,
-            'Elapsed Time': args.timeout,
-            'Tuning Iterations': args.budget
-        })
+    report_df.loc[dataset] = pd.Series({
+        'Dataset Name': dataset,
+        'Template Name': template,
+        'CV Score': best_score,
+        'Test Score': test_score,
+        'Elapsed Time': args.timeout,
+        'Tuning Iterations': args.budget
+    })
 
 
 if __name__ == '__main__':
