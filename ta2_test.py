@@ -96,7 +96,9 @@ def process_dataset(dataset, args, report_df):
     report_df.loc[dataset] = pd.Series({
         'Dataset name': dataset,
         'CV Score': best_score,
-        'Test Score': test_score
+        'Test Score': test_score,
+        'Elapsed Time': args.timeout,
+        'Tuning Iterations': args.budget
     })
 
 
@@ -125,7 +127,7 @@ if __name__ == '__main__':
     report = pd.DataFrame(
         columns=[
             'Dataset name', 'Template name', 'CV Score',
-            'Test Score', 'Elapsed time', 'Tuning Iterations'],
+            'Test Score', 'Elapsed Time', 'Tuning Iterations'],
         index=args.dataset
     )
 
