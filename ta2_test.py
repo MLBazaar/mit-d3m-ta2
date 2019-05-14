@@ -1,6 +1,7 @@
 import argparse
 import logging
 import os
+import time
 
 import pandas as pd
 import tabulate
@@ -80,6 +81,8 @@ def box_print(message):
 
 
 def process_dataset(dataset, args):
+    start_time = time.time()
+
     box_print("Processing dataset {}".format(dataset))
     dataset_root = os.path.join(args.input, dataset)
     problem = load_problem(dataset_root, 'TRAIN')
@@ -96,12 +99,14 @@ def process_dataset(dataset, args):
     test_score = score_pipeline(dataset_root, problem, best_path)
     box_print("Test Score for pipeline {}: {}".format(best_id, test_score))
 
+    end_time = time.time()
+
     return {
         'dataset': dataset,
         'template': template,
         'cv_score': best_score,
         'test_score': test_score,
-        'elapsed_time': args.timeout,
+        'elapsed_time': end_time - start_time,  # seconds
         'tuning_iterations': args.budget
     }
 
