@@ -1,7 +1,10 @@
-id: e01cfc6c-f652-4b67-b247-707e3ec89840
+id: f596cd77-25f8-4d4c-a350-bb30ab1e58f6
 schema: https://metadata.datadrivendiscovery.org/schemas/v0/pipeline.json
 created: "2019-02-06T00:00:00.000000Z"
 context: TESTING
+name: Scoring pipeline
+description: |
+  A general scoring pipeline.
 inputs:
   - name: predictions
   - name: score dataset

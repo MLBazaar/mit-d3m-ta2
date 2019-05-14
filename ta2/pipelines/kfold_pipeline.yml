@@ -1,7 +1,10 @@
-id: eb0103ad-927a-47a8-8b60-a096d1dbfe58
+id: c8ed65df-aa68-4ee0-bbb5-c5f76a40bcf8
 schema: https://metadata.datadrivendiscovery.org/schemas/v0/pipeline.json
 created: "2019-02-06T00:00:00.000000Z"
 context: TESTING
+name: K-fold split of tabular datasets
+description: |
+  K-fold split of tabular datasets for cross-validation.
 inputs:
   - name: folds
   - name: full dataset
