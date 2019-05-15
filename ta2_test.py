@@ -16,8 +16,9 @@ from ta2 import logging_setup
 from ta2.search import PipelineSearcher
 
 
-def load_dataset(root_path, phase):
-    path = os.path.join(root_path, phase, 'dataset_' + phase, 'datasetDoc.json')
+def load_dataset(root_path, phase, inner_phase=None):
+    inner_phase = inner_phase or phase
+    path = os.path.join(root_path, phase, 'dataset_' + inner_phase, 'datasetDoc.json')
     return Dataset.load(dataset_uri='file://' + os.path.abspath(path))
 
 
@@ -43,7 +44,7 @@ def search(dataset_root, problem, args):
 
 def score_pipeline(dataset_root, problem, pipeline_path):
     train_dataset = load_dataset(dataset_root, 'TRAIN')
-    test_dataset = load_dataset(dataset_root, 'TEST')
+    test_dataset = load_dataset(dataset_root, 'SCORE', 'TEST')
     pipeline = load_pipeline(pipeline_path)
 
     # Creating an instance on runtime with pipeline description and problem description.
