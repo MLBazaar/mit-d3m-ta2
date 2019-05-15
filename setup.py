@@ -7,9 +7,6 @@ from setuptools import setup, find_packages
 install_requires = [
     'd3m==2019.4.4',
     'baytune==0.2.4',
-    'ta3ta2-api',
-    'common-primitives',
-    'sklearn-wrap',
     'tabulate>=0.8.3,<0.9',
 ]
 
