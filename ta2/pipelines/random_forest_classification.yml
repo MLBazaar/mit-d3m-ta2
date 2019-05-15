@@ -1,7 +1,10 @@
-id: 08defd07-3a27-4c1d-837e-10a98b45e63f
+id: f4f445d1-8fed-478a-aebf-585cf67313db
 schema: https://metadata.datadrivendiscovery.org/schemas/v0/pipeline.json
 created: "2019-02-06T00:00:00.000000Z"
 context: TESTING
+name: Random Forest classifier pipeline
+description: |
+  A simple pipeline which runs Random Forest classifier on tabular data.
 inputs:
   - name: input dataset
 outputs:
@@ -47,9 +50,9 @@ steps:
   - type: PRIMITIVE
     primitive:
       id: d016df89-de62-3c53-87ed-c06bb6a23cde
-      version: v2019.1.21
+      version: 2019.4.4
       python_path: d3m.primitives.data_cleaning.imputer.SKlearn
-      name: sklearn.preprocessing.imputation.Imputer
+      name: sklearn.impute.SimpleImputer
     arguments:
       inputs:
         type: CONTAINER
@@ -66,7 +69,7 @@ steps:
   - type: PRIMITIVE
     primitive:
       id: 1dd82833-5692-39cb-84fb-2455683075f3
-      version: v2019.1.21
+      version: 2019.4.4
       python_path: d3m.primitives.classification.random_forest.SKlearn
       name: sklearn.ensemble.forest.RandomForestClassifier
     arguments:

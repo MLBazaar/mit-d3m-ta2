@@ -4,16 +4,13 @@
 from setuptools import setup, find_packages
 
 
-def d3m_dependency(name, commit):
-    return f'{name} @ git+https://gitlab.com/datadrivendiscovery/{name}@{commit}#egg={name}'
-
-
 install_requires = [
     'd3m==2019.4.4',
     'baytune==0.2.4',
-    d3m_dependency('ta3ta2-api', '58f2da314ea5fa5c2d517f9c2463a7aea4f719f3'),
-    d3m_dependency('common-primitives', '3df2ad23e1801e43166c64dc5767d847f232181d'),
-    d3m_dependency('sklearn-wrap', '2a3a1864473aa5b57421bf89fd2ad88b04a86e2c'),
+    'ta3ta2-api',
+    'common-primitives',
+    'sklearn-wrap',
+    'tabulate>=0.8.3,<0.9',
 ]
 
 
