@@ -108,4 +108,4 @@ In our case, the submission steps consist of:
 2. Copy the `kubernetes/ta2.yaml` file to the Jump Server and execute the validation command `/performer-toolbox/d3m_runner/d3m_runner.py --yaml-file ta2.yaml --mode ta2 --debug`
 3. If successful, copy the `ta2.yaml` file over to the submission repository folder and commit/push it.
 
-For winter-2019 evaluation, the submission repository was https://gitlab.datadrivendiscovery.org/ta2-submissions/ta2-mit/winter-2019
+For winter-2019 evaluation, the submission repository was https://gitlab.datadrivendiscovery.org/ta2-submissions/ta2-mit/may2019
