@@ -6,7 +6,7 @@ spec:
   restartPolicy: Never
   containers:
   - name: ta2-container
-    image: registry.datadrivendiscovery.org/ta2-submissions/ta2-mit/winter-2019:latest
+    image: registry.datadrivendiscovery.org/ta2-submissions/ta2-mit/may2019:latest
     env:
     - name: D3MRUN
       value: "ta2"
@@ -23,9 +23,9 @@ spec:
     - name: D3MCPU
       value: "8"
     - name: D3MRAM
-      value: "56"
+      value: "56Gi"
     - name: D3MTIMEOUT
-      value: "60"
+      value: "600"
     volumeMounts:
       - name: input-data
         mountPath: /input
@@ -64,7 +64,7 @@ spec:
     - name: D3MRAM
       value: "10Gi"
     - name: D3MTIMEOUT
-      value: "60"
+      value: "600"
     volumeMounts:
       - name: input-data
         mountPath: /input
