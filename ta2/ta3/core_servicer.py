@@ -13,7 +13,7 @@ from urllib.parse import urlparse
 from d3m.container.dataset import Dataset
 from d3m.metadata.base import Context
 from d3m.metadata.pipeline import Pipeline
-from d3m.metadata.problem import parse_problem_description
+from d3m.metadata.problem import Problem
 from d3m.runtime import Runtime
 from google.protobuf.timestamp_pb2 import Timestamp
 from ta3ta2_api import core_pb2, core_pb2_grpc, pipeline_pb2, primitive_pb2, value_pb2
@@ -422,7 +422,7 @@ message ProblemInput {
 }
 
 // Problem description matches the parsed problem description by
-// the d3m_metadata.problem.parse_problem_description Python method.
+// the d3m_metadata.problem.Problem.load Python method.
 // Problem outputs are not necessary for the purpose of this API
 // and are needed only when executing an exported pipeline, but then
 // TA2 gets full problem description anyway directly.
@@ -722,7 +722,7 @@ class CoreServicer(core_pb2_grpc.CoreServicer):
         with tempfile.NamedTemporaryFile('w', delete=False) as tmp_file:
             json.dump(problem_dict, tmp_file)
 
-        return parse_problem_description(tmp_file.name)
+        return Problem.load(problem_uri='file://' + os.path.abspath(tmp_file.name))
 
     def _run_session(self, session, method, *args, **kwargs):
         exception = None
@@ -819,7 +819,7 @@ class CoreServicer(core_pb2_grpc.CoreServicer):
         }
         """
         version = request.version
-        time_bound = request.time_bound
+        time_bound_search = request.time_bound_search
         problem_description = request.problem
         inputs = request.inputs
         allowed_value_types = request.allowed_value_types
@@ -836,8 +836,8 @@ class CoreServicer(core_pb2_grpc.CoreServicer):
 
         search_id = str(uuid.uuid4())
 
-        if time_bound:
-            timeout = int(time_bound * 60)
+        if time_bound_search:
+            timeout = int(time_bound_search * 60)
         else:
             timeout = self.timeout
 
@@ -1217,6 +1217,7 @@ class CoreServicer(core_pb2_grpc.CoreServicer):
             metric_pipelines=metric_pipelines,
             problem=problem,
             allowed_value_types=allowed_value_types,
+            configuration=configuration
         )
 
         return core_pb2.ScoreSolutionResponse(
@@ -1226,6 +1227,7 @@ class CoreServicer(core_pb2_grpc.CoreServicer):
     def _get_score_solution_results(self, session, returned):
         problem = session['problem']
         allowed_value_types = session['allowed_value_types']
+        configuration = session['configuration']
         targets = problem['inputs'][0]['targets']
         dataset_id = problem['inputs'][0]['dataset_id']
 
@@ -1238,7 +1240,8 @@ class CoreServicer(core_pb2_grpc.CoreServicer):
                     'fold': fold,
                     'value': score,
                     'targets': targets,
-                    'dataset_id': dataset_id
+                    'dataset_id': dataset_id,
+                    'random_seed': configuration.random_seed
                 })
 
         if len(metric_fold_scores) > returned:

@@ -10,4 +10,5 @@ Development Lead
 Contributors
 ------------
 
-None yet. Why not be the first?
+* Carles Sala <csala@csail.mit.edu>
+* Hector Dominguez <hedb12@gmail.com>

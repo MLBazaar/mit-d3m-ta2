@@ -1,25 +1,30 @@
 import argparse
 import logging
 import os
+import time
+
+import pandas as pd
+import tabulate
 
 from d3m.container.dataset import Dataset
 from d3m.metadata.base import Context
 from d3m.metadata.pipeline import Pipeline
-from d3m.metadata.problem import parse_problem_description
+from d3m.metadata.problem import Problem
 from d3m.runtime import Runtime, score
 
 from ta2 import logging_setup
 from ta2.search import PipelineSearcher
 
 
-def load_dataset(root_path, phase):
-    path = os.path.join(root_path, phase, 'dataset_' + phase, 'datasetDoc.json')
+def load_dataset(root_path, phase, inner_phase=None):
+    inner_phase = inner_phase or phase
+    path = os.path.join(root_path, phase, 'dataset_' + inner_phase, 'datasetDoc.json')
     return Dataset.load(dataset_uri='file://' + os.path.abspath(path))
 
 
 def load_problem(root_path, phase):
     path = os.path.join(root_path, phase, 'problem_' + phase, 'problemDoc.json')
-    return parse_problem_description(path)
+    return Problem.load(problem_uri='file://' + os.path.abspath(path))
 
 
 def load_pipeline(pipeline_path):
@@ -39,7 +44,7 @@ def search(dataset_root, problem, args):
 
 def score_pipeline(dataset_root, problem, pipeline_path):
     train_dataset = load_dataset(dataset_root, 'TRAIN')
-    test_dataset = load_dataset(dataset_root, 'TEST')
+    test_dataset = load_dataset(dataset_root, 'SCORE', 'TEST')
     pipeline = load_pipeline(pipeline_path)
 
     # Creating an instance on runtime with pipeline description and problem description.
@@ -77,18 +82,45 @@ def box_print(message):
 
 
 def process_dataset(dataset, args):
+    start_time = time.time()
+
     box_print("Processing dataset {}".format(dataset))
     dataset_root = os.path.join(args.input, dataset)
     problem = load_problem(dataset_root, 'TRAIN')
 
     print("Searching Pipeline for dataset {}".format(dataset))
-    best_id, best_score = search(dataset_root, problem, args)
+    result = search(dataset_root, problem, args)
+    best_id = result['pipeline']
+    best_score = result['score']
+    template = result['template']
 
     best_path = os.path.join(args.output, 'pipelines_ranked', best_id + '.json')
     box_print("Best Pipeline: {} - CV Score: {}".format(best_id, best_score))
 
-    # test_score = score_pipeline(dataset_root, problem, best_path)
-    # box_print("Test Score for pipeline {}: {}".format(best_id, test_score))
+    test_score = score_pipeline(dataset_root, problem, best_path)
+    box_print("Test Score for pipeline {}: {}".format(best_id, test_score))
+
+    end_time = time.time()
+
+    return {
+        'dataset': dataset,
+        'template': template,
+        'cv_score': best_score,
+        'test_score': test_score,
+        'elapsed_time': end_time - start_time,  # seconds
+        'tuning_iterations': args.budget
+    }
+
+
+def process_datasets(args):
+    results = list()
+    for d in args.dataset:
+        results.append(process_dataset(d, args))
+
+    return pd.DataFrame(
+        results,
+        columns=['dataset', 'template', 'cv_score', 'test_score', 'elapsed_time', 'tuning_iterations']
+    )
 
 
 if __name__ == '__main__':
@@ -106,11 +138,23 @@ if __name__ == '__main__':
     parser.add_argument('-l', '--logfile', type=str, nargs='?',
                         help='Path to the logging file. If not given, log to stdout')
     parser.add_argument('dataset', nargs='+', help='Name of the dataset to use for the test')
-
+    parser.add_argument('-r', '--report', type=str, nargs='?',
+                        help='Path to the CSV file where scores will be dumped. If not given, print to stdout')
     args = parser.parse_args()
 
     logging_setup(args.verbose, args.logfile)
     logging.getLogger("d3m.metadata.pipeline_run").setLevel(logging.ERROR)
 
-    for dataset in args.dataset:
-        process_dataset(dataset, args)
+    report = process_datasets(args)
+
+    if args.report:
+        # dump to file
+        report.to_csv(args.report, index=False)
+    else:
+        # print to stdout
+        print(tabulate.tabulate(
+            report,
+            showindex=False,
+            tablefmt='github',
+            headers=report.columns
+        ))
