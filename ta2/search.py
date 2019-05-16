@@ -295,4 +295,10 @@ class PipelineSearcher:
             pass
 
         self.done = True
-        return {'pipeline': best_pipeline, 'score': best_score, 'template': template_name}
+        return {
+            'pipeline': best_pipeline,
+            'score': best_score,
+            'template': template_name,
+            'data_modality': self._detect_data_modality(dataset),
+            'task_type': self._get_task_type_string(problem)
+        }
