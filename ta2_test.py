@@ -93,6 +93,11 @@ def process_dataset(dataset, args):
     best_id = result['pipeline']
     best_score = result['score']
     template = result['template']
+    data_modality = result['data_modality']
+    task_type = result['task_type']
+
+    if best_id is None or best_score is None:
+        raise ValueError('Unsupported problem')
 
     best_path = os.path.join(args.output, 'pipelines_ranked', best_id + '.json')
     box_print("Best Pipeline: {} - CV Score: {}".format(best_id, best_score))
@@ -108,18 +113,24 @@ def process_dataset(dataset, args):
         'cv_score': best_score,
         'test_score': test_score,
         'elapsed_time': end_time - start_time,  # seconds
-        'tuning_iterations': args.budget
+        'tuning_iterations': args.budget,
+        'data_modality': data_modality,
+        'task_type': task_type
     }
 
 
 def process_datasets(args):
     results = list()
     for d in args.dataset:
-        results.append(process_dataset(d, args))
+        try:
+            results.append(process_dataset(d, args))
+        except ValueError:
+            continue
 
     return pd.DataFrame(
         results,
-        columns=['dataset', 'template', 'cv_score', 'test_score', 'elapsed_time', 'tuning_iterations']
+        columns=['dataset', 'template', 'cv_score', 'test_score',
+                 'elapsed_time', 'tuning_iterations', 'data_modality', 'task_type']
     )
 
 
