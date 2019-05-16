@@ -1,7 +1,0 @@
-ta2.ta3.client module
-=====================
-
-.. automodule:: ta2.ta3.client
-    :members:
-    :undoc-members:
-    :show-inheritance:

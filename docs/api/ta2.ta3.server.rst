@@ -1,7 +1,0 @@
-ta2.ta3.server module
-=====================
-
-.. automodule:: ta2.ta3.server
-    :members:
-    :undoc-members:
-    :show-inheritance:
