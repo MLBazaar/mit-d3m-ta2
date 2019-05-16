@@ -226,6 +226,11 @@ submit: login build ## push to TA2 submission registry
 	docker tag mit-d3m-ta2:latest registry.datadrivendiscovery.org/ta2-submissions/ta2-mit/may2019
 	docker push registry.datadrivendiscovery.org/ta2-submissions/ta2-mit/may2019
 
+.PHONY: submit-ci
+submit-ci: login build ## push to TA2 submission registry
+	docker tag mit-d3m-ta2:latest registry.datadrivendiscovery.org/jkanter/mit-fl-ta2:ci
+	docker push registry.datadrivendiscovery.org/jkanter/mit-fl-ta2:ci
+
 .PHONY: share
 share: login build ## push to TA2 sharing registry
 	docker tag mit-d3m-ta2:latest registry.datadrivendiscovery.org/jkanter/mit-fl-ta2:stable
