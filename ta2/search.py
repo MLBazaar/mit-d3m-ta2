@@ -60,6 +60,7 @@ def to_dicts(hyperparameters):
 class PipelineSearcher:
 
     def _detect_data_modality(self, dataset):
+        # TODO: handle other modalities
         return 'single_table'
 
     def _get_task_type_string(self, problem):
@@ -69,6 +70,7 @@ class PipelineSearcher:
             return 'classification'
         elif task_type == TaskType.REGRESSION:
             return 'regression'
+        # TODO: add CLUSTERING, LINK_PREDICTION, VERTEX_CLASSIFICATION, etc
 
         return None
 
