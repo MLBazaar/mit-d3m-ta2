@@ -70,28 +70,16 @@ The following leaderboard has been built using the `TA2 Standalone Mode` with `1
 the maximum number of tuning iterations to perform (`budget`) and `60` as the maximum time
 allowed for the tuning (`timeout`).
 
-| dataset | CV score | rank |
-|------|-------|------|
-| 299_libras_move | 27.740541 | 1 |
-| 534_cps_85_wages | 23.423093 | 2 |
-| 196_autoMpg | 19.369635 | 3 |
-| 38_sick | 0.940725 | 4 |
-| 30_personae | 0.728893 | 5 |
-| 57_hypothyroid | 0.862681 | 6 |
-| 185_baseball | 0.646959 | 7 |
-| 313_spectrometer | 0.281408 | 8 |
-| 27_wordLevels | 0.258386 | 9 |
-| 1567_poker_hand | 0.179153 | 10 |
-| 4550_MiceProtein | 0.167409 | 11 |
-| 26_radon_seed | 0.030257 | 12 |
-| 1491_one_hundred_plants_margin | 0.009574 | 13 |
-| 1491_one_hundred_plants_margin_clust | N/S | N/S |
-| 22_handgeometry | N/A | N/A |
-| 31_urbansound | N/A | N/A |
-| 32_wikiqa | N/A | N/A |
-| 49_facebook | N/S | N/S |
-| 56_sunspots | N/S | N/S |
-| 56_sunspots_monthly | N/S | N/S |
+| dataset                        | template                                    |   cv_score |   test_score |   elapsed_time |   tuning_iterations | data_modality   | task_type      |
+|--------------------------------|---------------------------------------------|------------|--------------|----------------|---------------------|-----------------|----------------|
+| 38_sick                        | gradient_boosting_classification.all_hp.yml | 0.92719    |     0.952735 |       10.9058  |                   2 | single_table    | classification |
+| 30_personae                    | gradient_boosting_classification.all_hp.yml | 0.728894   |     0.619048 |        5.65708 |                   2 | single_table    | classification |
+| 57_hypothyroid                 | gradient_boosting_classification.all_hp.yml | 0.862681   |     0.981003 |      938.895   |                   2 | single_table    | classification |
+| 185_baseball                   | gradient_boosting_classification.all_hp.yml | 0.646959   |     0.675132 |       10.1833  |                   2 | single_table    | classification |
+| 313_spectrometer               | gradient_boosting_classification.all_hp.yml | 0.281409   |     0.304201 |       49.1528  |                   2 | single_table    | classification |
+| 27_wordLevels                  | gradient_boosting_classification.all_hp.yml | 0.258387   |     0.276151 |       39.2593  |                   2 | single_table    | classification |
+| 4550_MiceProtein               | gradient_boosting_classification.all_hp.yml | 0.16741    |     1        |       27.1239  |                   2 | single_table    | classification |
+| 1491_one_hundred_plants_margin | gradient_boosting_classification.all_hp.yml | 0.00957403 |     0.451364 |      119.609   |                   2 | single_table    | classification |
 
 ## Local Testing
 
