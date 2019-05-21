@@ -73,15 +73,15 @@ clean: clean-build clean-pyc clean-test clean-coverage clean-docs ## remove all 
 
 .PHONY: install
 install: clean-build clean-pyc ## install the package to the active Python's site-packages
-	pip install .
+	pip install . -r requirements.txt
 
 .PHONY: install-test
 install-test: clean-build clean-pyc ## install the package and test dependencies
-	pip install .[test]
+	pip install .[test] -r requirements.txt
 
 .PHONY: install-develop
 install-develop: clean-build clean-pyc ## install the package in editable mode and dependencies for development
-	pip install -e .[dev]
+	pip install -e .[dev] -r requirements.txt
 
 
 # LINT TARGETS
@@ -223,8 +223,13 @@ build: ## build the mit-d3m-ta2 docker image
 
 .PHONY: submit
 submit: login build ## push to TA2 submission registry
-	docker tag mit-d3m-ta2:latest registry.datadrivendiscovery.org/ta2-submissions/ta2-mit/winter-2019
-	docker push registry.datadrivendiscovery.org/ta2-submissions/ta2-mit/winter-2019
+	docker tag mit-d3m-ta2:latest registry.datadrivendiscovery.org/ta2-submissions/ta2-mit/may2019
+	docker push registry.datadrivendiscovery.org/ta2-submissions/ta2-mit/may2019
+
+.PHONY: submit-ci
+submit-ci: login build ## push to TA2 submission registry
+	docker tag mit-d3m-ta2:latest registry.datadrivendiscovery.org/jkanter/mit-fl-ta2:ci
+	docker push registry.datadrivendiscovery.org/jkanter/mit-fl-ta2:ci
 
 .PHONY: share
 share: login build ## push to TA2 sharing registry

@@ -1,4 +1,4 @@
-FROM registry.datadrivendiscovery.org/jpl/docker_images/complete:ubuntu-artful-python36-v2019.1.21
+FROM registry.datadrivendiscovery.org/jpl/docker_images/complete:ubuntu-bionic-python36-v2019.4.4
 
 ARG D3MPORT=45042
 

@@ -92,9 +92,9 @@ class PipelineSearcher:
         LOGGER.info("Loading pipeline for task type %s", task_type)
 
         if task_type == TaskType.CLASSIFICATION:
-            return load_template('gradient_boosting_classification.all_hp.yml')
+            return 'gradient_boosting_classification.all_hp.yml'
         elif task_type == TaskType.REGRESSION:
-            return load_template('gradient_boosting_regression.all_hp.yml')
+            return 'gradient_boosting_regression.all_hp.yml'
 
         raise ValueError('Unsupported type of problem')
 
@@ -119,7 +119,7 @@ class PipelineSearcher:
             'stratified': json.dumps(stratified),
             'shuffle': json.dumps(shuffle),
         }
-        results = evaluate(
+        all_scores, all_results = evaluate(
             pipeline,
             self.data_pipeline,
             self.scoring_pipeline,
@@ -133,7 +133,7 @@ class PipelineSearcher:
             scoring_random_seed=random_seed,
         )
 
-        pipeline.cv_scores = [result[0].value[0] for result in results]
+        pipeline.cv_scores = [score.value[0] for score in all_scores]
         pipeline.score = np.mean(pipeline.cv_scores)
 
         return pipeline.score
@@ -233,7 +233,8 @@ class PipelineSearcher:
         metric = problem['problem']['performance_metrics'][0]['metric']
 
         LOGGER.info("Loading the template and the tuner")
-        template, tunables, defaults = self._get_template(dataset, problem)
+        template_name = self._get_template(dataset, problem)
+        template, tunables, defaults = load_template(template_name)
         tuner = GP(tunables, r_minimum=10)
 
         best_pipeline = None
@@ -281,4 +282,4 @@ class PipelineSearcher:
             pass
 
         self.done = True
-        return best_pipeline, best_score
+        return {'pipeline': best_pipeline, 'score': best_score, 'template': template_name}
