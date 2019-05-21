@@ -37,48 +37,6 @@ def test_apiclient_get_dataset_doc_path():
     assert doc_path == expected_doc_path
 
 
-@patch('ta2.ta3.client.encode_problem_description')
-@patch('ta2.ta3.client.parse_problem_description')
-def test_apiclient_build_problem(parse_problem_description_mock, encode_problem_description_mock):
-    description = {
-        'problem': {
-            'task_type': 'task-type',
-            'task_subtype': 'task-subtype',
-        }
-    }
-    expected_value = 'expected-value'
-
-    parse_problem_description_mock.return_value = description
-    encode_problem_description_mock.return_value = expected_value
-
-    # with default args
-    local_input = 'input'
-    instance = TA3APIClient(port=9999)
-    dataset = 'test_dataset'
-
-    doc_path = '{}/{}/TRAIN/problem_TRAIN/problemDoc.json'.format(local_input, dataset)
-
-    value = instance._build_problem(dataset)
-
-    assert value == expected_value
-
-    parse_problem_description_mock.assert_called_once_with(doc_path)
-    encode_problem_description_mock.assert_called_once_with(description)
-
-    # custom args
-    local_input = 'local-input'
-    instance = TA3APIClient(port=9999, local_input=local_input)
-
-    doc_path = '{}/{}/TRAIN/problem_TRAIN/problemDoc.json'.format(local_input, dataset)
-
-    value = instance._build_problem(dataset)
-
-    assert value == expected_value
-
-    parse_problem_description_mock.assert_called_with(doc_path)
-    encode_problem_description_mock.assert_called_with(description)
-
-
 @patch('ta2.ta3.client.LOGGER.debug')
 @patch('ta2.ta3.client.core_pb2.SearchSolutionsRequest')
 def test_apiclient_search_solutions(search_solutions_request_mock, logger_mock):
@@ -96,8 +54,8 @@ def test_apiclient_search_solutions(search_solutions_request_mock, logger_mock):
 
     search_solutions_request_mock.assert_called_once_with(
         user_agent='ta3_api_test.py',
-        version='2019.2.27',
-        time_bound=1.,
+        version='2019.4.11',
+        time_bound_search=1.,
         priority=0.,
         allowed_value_types=[
             ValueType.Value('RAW'),
