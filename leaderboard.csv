@@ -1,0 +1,7 @@
+dataset,template,cv_score,test_score,elapsed_time,tuning_iterations,data_modality,task_type
+30_personae,gradient_boosting_classification.all_hp.yml,0.7288938031352892,0.6190476190476191,6.903554439544678,2,single_table,classification
+57_hypothyroid,gradient_boosting_classification.all_hp.yml,0.8626810379650584,0.981003241404963,29.331483602523804,2,single_table,classification
+185_baseball,gradient_boosting_classification.all_hp.yml,0.6469594579013076,0.6751322751322751,8.988303422927856,2,single_table,classification
+313_spectrometer,gradient_boosting_classification.all_hp.yml,0.28140877181963003,0.3042007194835791,45.94551205635071,2,single_table,classification
+27_wordLevels,gradient_boosting_classification.all_hp.yml,0.2583867782022619,0.2761509531298118,32.82566547393799,2,single_table,classification
+1491_one_hundred_plants_margin,gradient_boosting_classification.all_hp.yml,0.009574031632855163,0.4513643578643578,115.2474377155304,2,single_table,classification
