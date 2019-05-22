@@ -1,8 +1,9 @@
 from datetime import datetime
 
 from google.protobuf.timestamp_pb2 import Timestamp
+from ta3ta2_api import core_pb2_grpc
 
-from ta2.ta3.core_servicer import camel_case, dt2ts
+from ta2.ta3.core_servicer import CoreServicer, camel_case, dt2ts
 
 
 def test_camel_case():
@@ -17,3 +18,17 @@ def test_dt2ts():
 
     assert dt2ts(None) is None
     assert dt2ts(dt) == Timestamp(seconds=1164126600)
+
+
+def test_core_servicer():
+    input_dir = '/input-dir'
+    output_dir = '/output-dir'
+    timeout = 0.5
+
+    instance = CoreServicer(input_dir, output_dir, timeout)
+    assert isinstance(instance, core_pb2_grpc.CoreServicer)
+
+    assert instance.input_dir == input_dir
+    assert instance.output_dir == output_dir
+    assert instance.timeout == timeout
+    assert not instance.debug
