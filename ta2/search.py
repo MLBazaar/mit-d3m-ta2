@@ -62,16 +62,6 @@ class PipelineSearcher:
     def _detect_data_modality(self, dataset):
         return 'single_table'
 
-    def _get_task_type_string(self, problem):
-        task_type = problem['problem']['task_type']
-
-        if task_type == TaskType.CLASSIFICATION:
-            return 'classification'
-        elif task_type == TaskType.REGRESSION:
-            return 'regression'
-
-        return None
-
     @staticmethod
     def _find_datasets(input_dir):
         search_path = os.path.join(input_dir, '**', 'datasetDoc.json')
@@ -300,5 +290,6 @@ class PipelineSearcher:
             'score': best_score,
             'template': template_name,
             'data_modality': self._detect_data_modality(dataset),
-            'task_type': self._get_task_type_string(problem)
+            'task_type': problem['problem']['task_type'].name.lower(),
+            'task_subtype': problem['problem']['task_subtype'].name.lower()
         }
