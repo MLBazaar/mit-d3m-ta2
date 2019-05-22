@@ -291,5 +291,6 @@ class PipelineSearcher:
             'template': template_name,
             'data_modality': self._detect_data_modality(dataset),
             'task_type': problem['problem']['task_type'].name.lower(),
-            'task_subtype': problem['problem']['task_subtype'].name.lower()
+            'task_subtype': problem['problem']['task_subtype'].name.lower(),
+            'tuning_iterations': i
         }

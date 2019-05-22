@@ -95,6 +95,7 @@ def process_dataset(dataset, args):
     template = result['template']
     data_modality = result['data_modality']
     task_type = result['task_type']
+    tuning_iterations = result['tuning_iterations']
 
     if best_id is None or best_score is None:
         raise ValueError('Unsupported problem')
@@ -113,7 +114,7 @@ def process_dataset(dataset, args):
         'cv_score': best_score,
         'test_score': test_score,
         'elapsed_time': end_time - start_time,  # seconds
-        'tuning_iterations': args.budget,
+        'tuning_iterations': tuning_iterations,
         'data_modality': data_modality,
         'task_type': task_type
     }
