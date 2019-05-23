@@ -168,3 +168,30 @@ def test_core_servicer_searchsolutions(searcher_mock, pipeline_searcher_mock, de
 
     assert instance._start_session.call_count == 1
     assert result == expected_result
+
+
+@patch('ta2.ta3.core_servicer.core_pb2.Progress')
+@patch('ta2.ta3.core_servicer.core_pb2.ProgressState.Value')
+def test_core_servicer_get_progress(progress_state_mock, progress_mock):
+    instance = CoreServicer('/input-dir', '/output-dir', 0.5)
+
+    # ERRORED
+    session = {'error': 'test-value'}
+    instance._get_progress(session)
+
+    progress_state_mock.assert_called_with('ERRORED')
+    assert progress_mock.call_count == 1
+
+    # COMPLETED
+    session = {'done': 'test-value'}
+    instance._get_progress(session)
+
+    progress_state_mock.assert_called_with('COMPLETED')
+    assert progress_mock.call_count == 2
+
+    # RUNNING
+    session = {'other': 'test-value'}
+    instance._get_progress(session)
+
+    progress_state_mock.assert_called_with('RUNNING')
+    assert progress_mock.call_count == 3
