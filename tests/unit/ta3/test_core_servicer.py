@@ -195,3 +195,30 @@ def test_core_servicer_get_progress(progress_state_mock, progress_mock):
 
     progress_state_mock.assert_called_with('RUNNING')
     assert progress_mock.call_count == 3
+
+
+@patch('ta2.ta3.core_servicer.core_pb2.GetSearchSolutionsResultsResponse')
+def test_core_servicer_get_search_soltuion_results(solutions_results_mock):
+    instance = CoreServicer('/input-dir', '/output-dir', 0.5)
+    instance._get_progress = MagicMock()
+    solutions = {
+        1: {'id': 1, 'score': 1},
+        2: {'id': 2, 'score': 2}
+    }
+
+    # case 1: len(solutions) < returned
+    searcher = MagicMock(solutions=solutions)
+    session = {'searcher': searcher}
+
+    result = instance._get_search_soltuion_results(session, 10)
+
+    instance._get_progress.assert_not_called()
+    solutions_results_mock.assert_not_called()
+
+    assert result is None
+
+    # case 2: len(solutions) > returned
+    result = instance._get_search_soltuion_results(session, 1)
+
+    instance._get_progress.assert_called_once()
+    solutions_results_mock.assert_called_once()
