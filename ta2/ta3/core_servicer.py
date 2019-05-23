@@ -680,6 +680,7 @@ class CoreServicer(core_pb2_grpc.CoreServicer):
         self.debug = debug
 
     def _build_problem(self, problem_description):
+        # TODO: it might be removed, it's not being used.
         problem = problem_description.problem
         inputs = problem_description.inputs
 
