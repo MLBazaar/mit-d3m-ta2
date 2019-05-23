@@ -261,8 +261,10 @@ def test_core_servicer_endsearchsolutions(end_search_mock):
     # empty session
     instance.DB['search_sessions'] = {search_id: {}}
 
-    instance.EndSearchSolutions(request, None)
+    result = instance.EndSearchSolutions(request, None)
     end_search_mock.assert_called_once()
+
+    assert result == expected_result
 
     # session with searcher
     searcher = MagicMock(done=True, solutions={})
@@ -270,6 +272,39 @@ def test_core_servicer_endsearchsolutions(end_search_mock):
 
     instance.DB['search_sessions'] = {search_id: {'searcher': searcher}}
 
-    instance.EndSearchSolutions(request, None)
+    result = instance.EndSearchSolutions(request, None)
 
+    searcher.stop.assert_called_once()
+    assert result == expected_result
     assert end_search_mock.call_count == 2
+
+
+@patch('ta2.ta3.core_servicer.core_pb2.StopSearchSolutionsResponse')
+def test_core_servicer_stopsearchsolutions(stop_search_mock):
+    instance = CoreServicer('/input-dir', '/output-dir', 0.5)
+    expected_result = 'result'
+    stop_search_mock.return_value = expected_result
+
+    search_id = 'test-id'
+    request = MagicMock(search_id=search_id)
+
+    # empty session
+    instance.DB['search_sessions'] = {search_id: {}}
+
+    result = instance.StopSearchSolutions(request, None)
+
+    stop_search_mock.assert_called_once()
+
+    assert result == expected_result
+
+    # session with searcher
+    searcher = MagicMock(done=True)
+    searcher.stop = MagicMock()
+
+    instance.DB['search_sessions'] = {search_id: {'searcher': searcher}}
+
+    instance.StopSearchSolutions(request, None)
+
+    searcher.stop.assert_called_once()
+    assert result == expected_result
+    assert stop_search_mock.call_count == 2
