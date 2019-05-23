@@ -222,3 +222,25 @@ def test_core_servicer_get_search_soltuion_results(solutions_results_mock):
 
     instance._get_progress.assert_called_once()
     solutions_results_mock.assert_called_once()
+
+
+def test_core_servicer_getsearchsolutionsresults():
+    instance = CoreServicer('/input-dir', '/output-dir', 0.5)
+    instance._stream = MagicMock()
+
+    # invalid search_id
+    request = MagicMock()
+
+    with pytest.raises(ValueError):
+        instance.GetSearchSolutionsResults(request, None)
+
+    instance._stream.assert_not_called()
+
+    # valid search_id
+    search_id = 'test-id'
+    instance.DB['search_sessions'] = {search_id: 'test-value'}
+    request = MagicMock(search_id=search_id)
+
+    instance.GetSearchSolutionsResults(request, None)
+
+    instance._stream.assert_called_with('test-value', instance._get_search_soltuion_results)
