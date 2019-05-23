@@ -81,3 +81,54 @@ def test_core_servicer_run_session(logger_info_mock, logger_exception_mock):
     assert 'end' in session
     assert 'done' in session
     assert 'error' in session
+
+
+@patch('ta2.ta3.core_servicer.LOGGER.info')
+@patch('ta2.ta3.core_servicer.threading.Thread')
+def test_core_servicer_start_session(thread_mock, logger_mock):
+    session_id = 'test-id'
+    session_type = 'test-type'
+    method = MagicMock()
+
+    # debug mode
+    instance = CoreServicer('/input-dir', '/output-dir', 0.5, debug=True)
+    instance._start_session(session_id, session_type, method, 'first-argument', second='argument')
+
+    args, kwargs = method.call_args
+
+    assert len(instance.DB) == 1
+    assert len(instance.DB[session_type + '_sessions']) == 1
+
+    session = instance.DB[session_type + '_sessions'][session_id]
+
+    assert method.call_count == 1
+    assert logger_mock.call_count == 2
+    assert args == ('first-argument',)
+    assert kwargs == {}         # TODO: should kwargs be used?
+    assert 'id' in session
+    assert 'type' in session
+    assert 'start' in session
+    assert 'end' in session
+    assert 'done' in session
+    assert 'error' not in session
+
+    # without debugging
+    logger_mock.reset_mock()
+
+    instance = CoreServicer('/input-dir', '/output-dir', 0.5)
+    instance._start_session(session_id, session_type, method, 'first-argument', second='argument')
+
+    assert len(instance.DB) == 1
+    assert len(instance.DB[session_type + '_sessions']) == 1
+
+    session = instance.DB[session_type + '_sessions'][session_id]
+    expected_args = [session, method] + list(args)
+
+    thread_mock.assert_called_once_with(target=instance._run_session, args=expected_args)
+    assert logger_mock.call_count == 1
+    assert 'id' in session
+    assert 'type' in session
+    assert 'start' in session
+
+    # as thread is mocked `_run_session` is not called, therefore
+    # `end` and `done` are not in session
