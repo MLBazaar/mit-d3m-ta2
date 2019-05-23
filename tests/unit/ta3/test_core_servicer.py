@@ -1,6 +1,7 @@
 from datetime import datetime
 from unittest.mock import MagicMock, patch
 
+import pytest
 from google.protobuf.timestamp_pb2 import Timestamp
 from ta3ta2_api import core_pb2_grpc
 
@@ -132,3 +133,38 @@ def test_core_servicer_start_session(thread_mock, logger_mock):
 
     # as thread is mocked `_run_session` is not called, therefore
     # `end` and `done` are not in session
+
+
+@patch('ta2.ta3.core_servicer.decode_problem_description')
+@patch('ta2.ta3.core_servicer.PipelineSearcher')
+@patch('ta2.ta3.core_servicer.core_pb2.SearchSolutionsResponse')
+def test_core_servicer_searchsolutions(searcher_mock, pipeline_searcher_mock, decode_mock):
+    instance = CoreServicer('/input-dir', '/output-dir', 0.5)
+    instance._start_session = MagicMock()
+    expected_result = 'result'
+    searcher_mock.return_value = expected_result
+
+    # wrong version
+    request = MagicMock(version='fake-version')
+
+    with pytest.raises(AssertionError):
+        instance.SearchSolutions(request, None)  # context (None) is not used
+
+    # wrong problem inputs
+    request = MagicMock(version='2019.4.11')
+
+    with pytest.raises(AssertionError):
+        instance.SearchSolutions(request, None)  # context (None) is not used
+
+    # correct parameters
+    inputs = [1]
+    problem = MagicMock(inputs=inputs)
+    request = MagicMock(version='2019.4.11', inputs=inputs, problem=problem)
+
+    result = instance.SearchSolutions(request, None)  # context (None) is not used
+
+    decode_mock.assert_called_once_with(problem)
+    pipeline_searcher_mock.assert_called_once_with(instance.input_dir, instance.output_dir)
+
+    assert instance._start_session.call_count == 1
+    assert result == expected_result
