@@ -1,8 +1,10 @@
 from collections import defaultdict
+from unittest.mock import patch
 
 import numpy as np
+from d3m.metadata.pipeline import Pipeline
 
-from ta2.search import to_dicts
+from ta2.search import PipelineSearcher, to_dicts
 
 
 def test_to_dicts():
@@ -34,3 +36,35 @@ def test_to_dicts():
     expected_hyperparams['block-3']['param-2'] = None
 
     assert result == expected_hyperparams
+
+
+@patch('ta2.search.os.makedirs')
+def test_pipelinesearcher(makedirs_mock):
+    # static methods
+    assert hasattr(PipelineSearcher, '_find_datasets')
+    assert hasattr(PipelineSearcher, '_new_pipeline')
+
+    # default parameters
+    instance = PipelineSearcher()
+
+    makedirs_mock.assert_called_with(instance.ranked_dir, exist_ok=True)
+
+    assert instance.input == 'input'
+    assert instance.output == 'output'
+    assert instance.dump
+    assert instance.ranked_dir == '{}/pipelines_ranked'.format(instance.output)
+    assert isinstance(instance.data_pipeline, Pipeline)
+    assert isinstance(instance.scoring_pipeline, Pipeline)
+
+    # other parameters
+    instance = PipelineSearcher(input_dir='new-input', output_dir='new-output', dump=False)
+
+    makedirs_mock.assert_called_with(instance.ranked_dir, exist_ok=True)
+
+    assert instance.input == 'new-input'
+    assert instance.output == 'new-output'
+    assert not instance.dump
+    assert instance.ranked_dir == '{}/pipelines_ranked'.format(instance.output)
+    assert isinstance(instance.data_pipeline, Pipeline)
+    assert isinstance(instance.scoring_pipeline, Pipeline)
+    assert instance.datasets == {}
