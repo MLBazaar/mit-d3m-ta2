@@ -1,11 +1,11 @@
 import json
 from collections import defaultdict
-from unittest.mock import patch
+from unittest.mock import mock_open, patch
 
 import numpy as np
 from d3m.metadata.pipeline import Pipeline
 
-from ta2.search import PipelineSearcher, to_dicts
+from ta2.search import PIPELINES_DIR, PipelineSearcher, to_dicts
 
 
 def test_to_dicts():
@@ -100,3 +100,40 @@ def test_pipelinesearcher_find_datasets(tmp_path):
 
         assert dataset_id in result
         assert result[dataset_id] == 'file://{}/{}/datasetDoc.json'.format(input_dir, dataset_id)
+
+
+@patch('ta2.search.Pipeline.from_yaml')
+@patch('ta2.search.Pipeline.from_json')
+def test_pipelinesearcher_load_pipeline(json_loader_mock, yaml_loader_mock):
+    instance = PipelineSearcher()
+    open_mock = mock_open(read_data='data')
+
+    json_loader_mock.reset_mock()
+    yaml_loader_mock.reset_mock()
+
+    # yaml file
+    with patch('ta2.search.open', open_mock) as _:
+        instance._load_pipeline('test.yml')
+
+    open_mock.assert_called_with('{}/test.yml'.format(PIPELINES_DIR), 'r')
+
+    assert yaml_loader_mock.call_count == 1
+    assert json_loader_mock.call_count == 0
+
+    # json file
+    with patch('ta2.search.open', open_mock) as _:
+        instance._load_pipeline('test.json')
+
+    open_mock.assert_called_with('{}/test.json'.format(PIPELINES_DIR), 'r')
+
+    assert yaml_loader_mock.call_count == 1
+    assert json_loader_mock.call_count == 1
+
+    # without file extension
+    with patch('ta2.search.open', open_mock) as _:
+        instance._load_pipeline('test')
+
+    open_mock.assert_called_with('{}/test.json'.format(PIPELINES_DIR), 'r')
+
+    assert yaml_loader_mock.call_count == 1
+    assert json_loader_mock.call_count == 2
