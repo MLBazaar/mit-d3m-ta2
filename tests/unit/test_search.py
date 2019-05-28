@@ -1,3 +1,4 @@
+import json
 from collections import defaultdict
 from unittest.mock import patch
 
@@ -68,3 +69,34 @@ def test_pipelinesearcher(makedirs_mock):
     assert isinstance(instance.data_pipeline, Pipeline)
     assert isinstance(instance.scoring_pipeline, Pipeline)
     assert instance.datasets == {}
+
+
+def test_pipelinesearcher_find_datasets(tmp_path):
+    input_dir = tmp_path / 'test-input'
+    input_dir.mkdir()
+
+    content = {
+        'about': {
+            'datasetID': None
+        }
+    }
+
+    num_datasets = 3
+    for i in range(num_datasets):
+        dataset_dir = input_dir / 'dataset-{}'.format(i)
+        dataset_dir.mkdir()
+
+        content['about']['datasetID'] = 'dataset-{}'.format(i)
+
+        file = dataset_dir / 'datasetDoc.json'
+        file.write_text(json.dumps(content))
+
+    result = PipelineSearcher._find_datasets(input_dir)
+
+    assert len(result) == num_datasets
+
+    for i in range(num_datasets):
+        dataset_id = 'dataset-{}'.format(i)
+
+        assert dataset_id in result
+        assert result[dataset_id] == 'file://{}/{}/datasetDoc.json'.format(input_dir, dataset_id)
