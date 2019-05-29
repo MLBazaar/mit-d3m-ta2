@@ -38,6 +38,49 @@ make install
 For development, use the `make install-develop` command instead, which will install the project
 in editable mode and also install some additional code linting tools.
 
+## Datasets
+
+For development and evaluation of pipelines, we use two kind of datasets:
+* [D3M seed datasets](https://gitlab.datadrivendiscovery.org/d3m/datasets/): A growing set of seed datasets
+released to D3M performers. These datasets have been converted to D3M format and schematized.
+* [D3M data dai datasets](https://d3m-data-dai.s3.amazonaws.com/index.html): A custom formatted version
+by [DAI Group](https://dai.lids.mit.edu/) of training
+datasets provided in [D3M datasets](https://gitlab.datadrivendiscovery.org/d3m/datasets/) to help D3M performers
+develop approaches to automatically create machine learning solutions to a variety of problems. Compared to the
+original datasets version, these datasets are already split in `SCORE`, `TEST` and `TRAIN` directories using the
+same approach as the seed datasets.
+
+### D3M Seed Datasets
+
+Before start, make sure you have the proper rights on the D3M datasets
+[repo](https://gitlab.datadrivendiscovery.org/d3m/datasets). You will need credentials and read permissions
+to download them.
+
+As specified in the `README` file, you will need [git-lfs](https://git-lfs.github.com/) to download files faster.
+As all datasets are around 54 GB, the recommended approach is to download only parts of the repository as needed, following
+instructions in the [Partial Downloading](https://gitlab.datadrivendiscovery.org/d3m/datasets#partial-downloading)
+section.
+
+Once downloaded the specific datasets, the local testing commands can be used with the `--input` option and the correspoding
+path. Example: `--input /path/to/d3m/datasets/repo/seed_datasets_current`
+
+#### Leaderboard
+
+The following leaderboard has been built using the `TA2 Standalone Mode` with `2` as
+the maximum number of tuning iterations to perform (`budget`) and `30` as the maximum time
+allowed for the tuning (`timeout`).
+
+| dataset                        | template                                    |   cv_score |   test_score |   elapsed_time |   tuning_iterations | data_modality   | task_type      |
+|--------------------------------|---------------------------------------------|------------|--------------|----------------|---------------------|-----------------|----------------|
+| 30_personae                    | gradient_boosting_classification.all_hp.yml | 0.728894   |     0.619048 |        5.93087 |                   2 | single_table    | classification |
+| 57_hypothyroid                 | gradient_boosting_classification.all_hp.yml | 0.862681   |     0.981003 |       38.6418  |                   2 | single_table    | classification |
+| 185_baseball                   | gradient_boosting_classification.all_hp.yml | 0.646959   |     0.675132 |       17.3313  |                   2 | single_table    | classification |
+| 313_spectrometer               | gradient_boosting_classification.all_hp.yml | 0.281409   |     0.304201 |       45.3676  |                   2 | single_table    | classification |
+| 27_wordLevels                  | gradient_boosting_classification.all_hp.yml | 0.268882   |     0.288937 |      169.197   |                   2 | single_table    | classification |
+| 1491_one_hundred_plants_margin | gradient_boosting_classification.all_hp.yml | 0.00957403 |     0.451364 |      114.561   |                   2 | single_table    | classification |
+
+This table can be also downloaded as a [CSV file](leaderboard.csv)
+
 ## Local Testing
 
 Two scripts are included in the repository for local testing:
@@ -81,7 +124,7 @@ For a full description of the script options, execute `python ta3_test.py --help
 
 ### Docker run
 
-In order to run TA2-TA3 server from docker, you first have to build the image and the
+In order to run TA2-TA3 server from docker, you first have to build the image and
 execute the `run_docker.sh` script.
 After that, in a different console, you can run the `ta3_test.py` script passing it the
 `--docker` flag to adapt the input paths accordingly:

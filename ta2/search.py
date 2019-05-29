@@ -59,6 +59,9 @@ def to_dicts(hyperparameters):
 
 class PipelineSearcher:
 
+    def _detect_data_modality(self, dataset):
+        return 'single_table'
+
     @staticmethod
     def _find_datasets(input_dir):
         search_path = os.path.join(input_dir, '**', 'datasetDoc.json')
@@ -282,4 +285,12 @@ class PipelineSearcher:
             pass
 
         self.done = True
-        return {'pipeline': best_pipeline, 'score': best_score, 'template': template_name}
+        return {
+            'pipeline': best_pipeline,
+            'score': best_score,
+            'template': template_name,
+            'data_modality': self._detect_data_modality(dataset),
+            'task_type': problem['problem']['task_type'].name.lower(),
+            'task_subtype': problem['problem']['task_subtype'].name.lower(),
+            'tuning_iterations': i
+        }
