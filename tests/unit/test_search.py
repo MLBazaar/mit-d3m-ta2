@@ -8,7 +8,7 @@ from d3m.metadata.base import Context
 from d3m.metadata.pipeline import Pipeline
 from d3m.metadata.problem import TaskType
 
-from ta2.search import PIPELINES_DIR, PipelineSearcher, to_dicts
+from ta2.search import PIPELINES_DIR, PipelineSearcher, StopSearch, to_dicts
 
 
 def test_to_dicts():
@@ -281,3 +281,29 @@ def test_pipelinesearcher_save_pipeline(random_mock):
     assert open_mock.call_count == 1
 
     open_mock.assert_called_with('{}/{}.json'.format(instance.ranked_dir, id), 'w')
+
+
+@patch('ta2.search.datetime')
+def test_pipelinesearcher_check_stop(datetime_mock):
+    datetime_mock.now = MagicMock(return_value=10)
+
+    # no stop
+    instance = PipelineSearcher()
+    instance._stop = False       # normally, setted in `PipelineSearcher.setup_search`
+    instance.timeout = None      # normally, setted in `PipelineSearcher.setup_search`
+
+    assert instance.check_stop() is None
+
+    # stop by `_stop` attribute
+    instance._stop = True
+
+    with pytest.raises(StopSearch):
+        instance.check_stop()
+
+    # stop by `max_end_time`
+    instance._stop = False
+    instance.timeout = 10
+    instance.max_end_time = 5
+
+    with pytest.raises(StopSearch):
+        instance.check_stop()
