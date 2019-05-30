@@ -1,9 +1,10 @@
 import json
 from collections import defaultdict
-from unittest.mock import mock_open, patch
+from unittest.mock import MagicMock, mock_open, patch
 
 import numpy as np
 import pytest
+from d3m.metadata.base import Context
 from d3m.metadata.pipeline import Pipeline
 from d3m.metadata.problem import TaskType
 
@@ -171,3 +172,75 @@ def test_pipelinesearcher_get_template(logger_mock):
 
     with pytest.raises(ValueError):
         instance._get_template(None, data)  # dataset (None) is not used
+
+
+@patch('ta2.search.evaluate')
+def test_pipelinesearcher_score_pipeline(evaluate_mock):
+    instance = PipelineSearcher()
+    expected_scores = [MagicMock(value=[1])]
+    evaluate_mock.return_value = (expected_scores, expected_scores)
+
+    # parameters
+    dataset = {}
+    problem = {'problem': {'performance_metrics': None}}
+    pipeline_mock = MagicMock()
+    metrics = {'test': 'metric'}
+    random_seed = 0
+    folds = 5
+    stratified = False
+    shuffle = False
+
+    data_params = {
+        'number_of_folds': json.dumps(folds),
+        'stratified': json.dumps(stratified),
+        'shuffle': json.dumps(shuffle),
+    }
+
+    # with custom metrics
+    result = instance.score_pipeline(
+        dataset, problem, pipeline_mock,
+        metrics=metrics, random_seed=random_seed,
+        folds=folds, stratified=stratified, shuffle=shuffle
+    )
+
+    evaluate_mock.assert_called_with(
+        pipeline_mock,
+        instance.data_pipeline,
+        instance.scoring_pipeline,
+        problem,
+        [dataset],
+        data_params,            # folds, stratified, shuffle
+        metrics,                # custom metrics
+        context=Context.TESTING,
+        random_seed=random_seed,
+        data_random_seed=random_seed,
+        scoring_random_seed=random_seed,
+    )
+
+    assert pipeline_mock.cv_scores == [score.value[0] for score in expected_scores]
+    assert result == np.mean(pipeline_mock.cv_scores)
+
+    # with problem metrics
+
+    result = instance.score_pipeline(
+        dataset, problem, pipeline_mock,
+        metrics=None, random_seed=random_seed,
+        folds=folds, stratified=stratified, shuffle=shuffle
+    )
+
+    evaluate_mock.assert_called_with(
+        pipeline_mock,
+        instance.data_pipeline,
+        instance.scoring_pipeline,
+        problem,
+        [dataset],
+        data_params,                               # folds, stratified, shuffle
+        problem['problem']['performance_metrics'],  # problem metrics
+        context=Context.TESTING,
+        random_seed=random_seed,
+        data_random_seed=random_seed,
+        scoring_random_seed=random_seed,
+    )
+
+    assert pipeline_mock.cv_scores == [score.value[0] for score in expected_scores]
+    assert result == np.mean(pipeline_mock.cv_scores)
