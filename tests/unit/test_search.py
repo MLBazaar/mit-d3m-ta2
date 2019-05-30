@@ -307,3 +307,13 @@ def test_pipelinesearcher_check_stop(datetime_mock):
 
     with pytest.raises(StopSearch):
         instance.check_stop()
+
+
+def test_pipelinesearcher_stop():
+    instance = PipelineSearcher()
+
+    assert not hasattr(instance, '_stop')
+
+    # setting _stop
+    instance.stop()
+    assert instance._stop
