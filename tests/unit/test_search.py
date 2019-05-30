@@ -244,3 +244,40 @@ def test_pipelinesearcher_score_pipeline(evaluate_mock):
 
     assert pipeline_mock.cv_scores == [score.value[0] for score in expected_scores]
     assert result == np.mean(pipeline_mock.cv_scores)
+
+
+@patch('ta2.search.random.random')
+def test_pipelinesearcher_save_pipeline(random_mock):
+    id = 'test-id'
+    score = 1.0
+    random_mock.return_value = 2
+    pipeline_mock = MagicMock(id=id, score=score)
+    pipeline_mock.to_json_structure = MagicMock(return_value={})
+    open_mock = mock_open()
+
+    # avoid saving pipeline on file
+    instance = PipelineSearcher(dump=False)
+    instance.solutions = []     # normally, setted in `PipelineSearcher.setup_search`
+
+    result = instance._save_pipeline(pipeline_mock, None)  # normalized_score (None) not used in this case
+
+    assert result is None
+    assert pipeline_mock.to_json_structure.call_count == 1
+    assert instance.solutions == [{'score': score}]
+    assert not random_mock.called
+    assert not open_mock.called
+
+    # saving the pipeline on file (dump = True)
+    instance = PipelineSearcher()
+    instance.solutions = []     # normally, setted in `PipelineSearcher.setup_search`
+
+    with patch('ta2.search.open', open_mock) as _:
+        result = instance._save_pipeline(pipeline_mock, 1)
+
+    assert result is None
+    assert pipeline_mock.to_json_structure.call_count == 2
+    assert instance.solutions == [{'score': score, 'pipeline_rank': 2.e-12}]
+    assert random_mock.call_count == 1
+    assert open_mock.call_count == 1
+
+    open_mock.assert_called_with('{}/{}.json'.format(instance.ranked_dir, id), 'w')
