@@ -1,5 +1,6 @@
 import json
 from collections import defaultdict
+from datetime import timedelta
 from unittest.mock import MagicMock, mock_open, patch
 
 import numpy as np
@@ -317,3 +318,33 @@ def test_pipelinesearcher_stop():
     # setting _stop
     instance.stop()
     assert instance._stop
+
+
+@patch('ta2.search.LOGGER.info')
+def test_pipelinesearcher_setup_search(logger_mock):
+    instance = PipelineSearcher()
+
+    assert not hasattr(instance, 'solutions')
+    assert not hasattr(instance, '_stop')
+    assert not hasattr(instance, 'done')
+    assert not hasattr(instance, 'start_time')
+    assert not hasattr(instance, 'timeout')
+    assert not hasattr(instance, 'max_end_time')
+
+    # without timeout
+    instance.setup_search(None)
+
+    assert instance.solutions == []
+    assert instance._stop is False
+    assert instance.done is False
+    assert hasattr(instance, 'start_time')
+    assert instance.timeout is None
+    assert instance.max_end_time is None
+    assert logger_mock.call_count == 1
+
+    # with timeout
+    instance.setup_search(0.5)
+
+    assert instance.timeout == 0.5
+    assert instance.max_end_time == instance.start_time + timedelta(seconds=0.5)
+    assert logger_mock.call_count == 2
