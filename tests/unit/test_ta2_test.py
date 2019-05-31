@@ -1,6 +1,6 @@
 from unittest.mock import MagicMock, mock_open, patch
 
-from ta2_test import load_dataset, load_pipeline, load_problem, search
+from ta2_test import box_print, load_dataset, load_pipeline, load_problem, search
 
 
 @patch('ta2_test.Dataset.load')
@@ -82,3 +82,12 @@ def test_search(searcher_mock):
     assert result == expected_result
     searcher_mock.assert_called_once_with('input', 'output', dump=True)
     instance_mock.search.assert_called_once_with(problem, timeout='timeout', budget='budget')
+
+
+@patch('ta2_test.print')
+def test_box_print(print_mock):
+    message = 'test-message'
+    result = box_print(message)
+
+    assert result is None
+    assert print_mock.call_count == 3
