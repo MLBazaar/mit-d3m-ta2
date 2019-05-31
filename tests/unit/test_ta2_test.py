@@ -1,6 +1,6 @@
 from unittest.mock import MagicMock, mock_open, patch
 
-from ta2_test import box_print, load_dataset, load_pipeline, load_problem, search
+from ta2_test import box_print, load_dataset, load_pipeline, load_problem, process_datasets, search
 
 
 @patch('ta2_test.Dataset.load')
@@ -91,3 +91,23 @@ def test_box_print(print_mock):
 
     assert result is None
     assert print_mock.call_count == 3
+
+
+@patch('ta2_test.process_dataset')
+def test_process_datasets(process_dataset_mock):
+    process_dataset_mock.return_value = {
+        'dataset': 'dataset',
+        'template': 'template',
+        'cv_score': 'cv_score',
+        'test_score': 'test_score',
+        'elapsed_time': 'elapsed_time',
+        'tuning_iterations': 'tuning_iterations',
+        'data_modality': 'data_modality',
+        'task_type': 'task_type'
+    }
+
+    args = MagicMock(dataset=[1, 2, 3])
+    result = process_datasets(args)
+
+    assert process_dataset_mock.call_count == 3
+    assert result.shape == (3, 6)
