@@ -105,5 +105,5 @@ ENV/
 # vim
 .*.swp
 
-input/
+input
 output/

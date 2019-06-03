@@ -60,7 +60,8 @@ def to_dicts(hyperparameters):
 class PipelineSearcher:
 
     def _detect_data_modality(self, dataset):
-        return 'single_table'
+        return 'image'
+        # return 'single_table'
 
     @staticmethod
     def _find_datasets(input_dir):
@@ -89,17 +90,22 @@ class PipelineSearcher:
         with open(path, 'r') as pipeline_file:
             return loader(string_or_file=pipeline_file)
 
-    def _get_template(self, dataset, problem):
-        task_type = problem['problem']['task_type']
+    def _get_template(self, data_modality, task_type):
+        LOGGER.info("Loading pipeline for data modality %s and task type %s",
+                    data_modality, task_type)
 
-        LOGGER.info("Loading pipeline for task type %s", task_type)
+        if data_modality == 'single_table':
+            if task_type == TaskType.CLASSIFICATION.name:
+                return 'gradient_boosting_classification.all_hp.yml'
+            elif task_type == TaskType.REGRESSION.name:
+                return 'gradient_boosting_regression.all_hp.yml'
+        elif data_modality == 'image':
+            if task_type == TaskType.CLASSIFICATION.name:
+                return 'image_classification.yml'
+            elif task_type == TaskType.REGRESSION.name:
+                return 'image_regression.yml'
 
-        if task_type == TaskType.CLASSIFICATION:
-            return 'gradient_boosting_classification.all_hp.yml'
-        elif task_type == TaskType.REGRESSION:
-            return 'gradient_boosting_regression.all_hp.yml'
-
-        raise ValueError('Unsupported type of problem')
+        raise ValueError('Unsupported problem')
 
     def __init__(self, input_dir='input', output_dir='output', dump=True):
         self.input = input_dir
@@ -235,8 +241,11 @@ class PipelineSearcher:
         dataset = Dataset.load(self.datasets[dataset_id])
         metric = problem['problem']['performance_metrics'][0]['metric']
 
+        data_modality = self._detect_data_modality(dataset)
+        task_type = problem['problem']['task_type'].name
+
         LOGGER.info("Loading the template and the tuner")
-        template_name = self._get_template(dataset, problem)
+        template_name = self._get_template(data_modality, task_type)
         template, tunables, defaults = load_template(template_name)
         tuner = GP(tunables, r_minimum=10)
 
@@ -289,8 +298,8 @@ class PipelineSearcher:
             'pipeline': best_pipeline,
             'score': best_score,
             'template': template_name,
-            'data_modality': self._detect_data_modality(dataset),
-            'task_type': problem['problem']['task_type'].name.lower(),
+            'data_modality': data_modality,
+            'task_type': task_type,
             'task_subtype': problem['problem']['task_subtype'].name.lower(),
             'tuning_iterations': i
         }
