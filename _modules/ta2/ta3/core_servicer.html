@@ -1,0 +1,1951 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>ta2.ta3.core_servicer &mdash; mit-d3m-ta2 0.0.1-dev documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> mit-d3m-ta2
+          
+
+          
+          </a>
+
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../index.html">Welcome</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/install.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../getting_started/install.html#stable-release">Stable release</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../getting_started/install.html#from-sources">From sources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../getting_started/install.html#development-setup">Development Setup</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/ta2.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/ta2.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/ta2.ta3.html">ta2.ta3 package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/ta2.ta3.html#submodules">Submodules</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/ta2.html#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/ta2.search.html">ta2.search module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/ta2.template.html">ta2.template module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../authors.html">Credits</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../authors.html#development-lead">Development Lead</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../authors.html#contributors">Contributors</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../history.html">History</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">mit-d3m-ta2</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+          <li><a href="../../ta2.html">ta2</a> &raquo;</li>
+        
+      <li>ta2.ta3.core_servicer</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for ta2.ta3.core_servicer</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">tempfile</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">uuid</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">defaultdict</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">urllib.parse</span> <span class="k">import</span> <span class="n">urlparse</span>
+
+<span class="kn">from</span> <span class="nn">d3m.container.dataset</span> <span class="k">import</span> <span class="n">Dataset</span>
+<span class="kn">from</span> <span class="nn">d3m.metadata.base</span> <span class="k">import</span> <span class="n">Context</span>
+<span class="kn">from</span> <span class="nn">d3m.metadata.pipeline</span> <span class="k">import</span> <span class="n">Pipeline</span>
+<span class="kn">from</span> <span class="nn">d3m.metadata.problem</span> <span class="k">import</span> <span class="n">Problem</span>
+<span class="kn">from</span> <span class="nn">d3m.runtime</span> <span class="k">import</span> <span class="n">Runtime</span>
+<span class="kn">from</span> <span class="nn">google.protobuf.timestamp_pb2</span> <span class="k">import</span> <span class="n">Timestamp</span>
+<span class="kn">from</span> <span class="nn">ta3ta2_api</span> <span class="k">import</span> <span class="n">core_pb2</span><span class="p">,</span> <span class="n">core_pb2_grpc</span><span class="p">,</span> <span class="n">pipeline_pb2</span><span class="p">,</span> <span class="n">primitive_pb2</span><span class="p">,</span> <span class="n">value_pb2</span>
+<span class="kn">from</span> <span class="nn">ta3ta2_api.problem_pb2</span> <span class="k">import</span> <span class="n">PerformanceMetric</span><span class="p">,</span> <span class="n">TaskSubtype</span><span class="p">,</span> <span class="n">TaskType</span>
+<span class="kn">from</span> <span class="nn">ta3ta2_api.utils</span> <span class="k">import</span> <span class="n">decode_performance_metric</span><span class="p">,</span> <span class="n">decode_problem_description</span><span class="p">,</span> <span class="n">encode_score</span>
+
+<span class="kn">from</span> <span class="nn">ta2.search</span> <span class="k">import</span> <span class="n">PipelineSearcher</span>
+
+
+<div class="viewcode-block" id="recursivedict"><a class="viewcode-back" href="../../../api/ta2.ta3.core_servicer.html#ta2.ta3.core_servicer.recursivedict">[docs]</a><span class="k">def</span> <span class="nf">recursivedict</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">defaultdict</span><span class="p">(</span><span class="n">recursivedict</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="camel_case"><a class="viewcode-back" href="../../../api/ta2.ta3.core_servicer.html#ta2.ta3.core_servicer.camel_case">[docs]</a><span class="k">def</span> <span class="nf">camel_case</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+    <span class="n">parts</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">parts</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+        <span class="n">out</span> <span class="o">+=</span> <span class="n">part</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">+</span> <span class="n">part</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+
+    <span class="k">return</span> <span class="n">out</span></div>
+
+
+<span class="n">LOGGER</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="n">VERSION</span> <span class="o">=</span> <span class="n">core_pb2</span><span class="o">.</span><span class="n">DESCRIPTOR</span><span class="o">.</span><span class="n">GetOptions</span><span class="p">()</span><span class="o">.</span><span class="n">Extensions</span><span class="p">[</span><span class="n">core_pb2</span><span class="o">.</span><span class="n">protocol_version</span><span class="p">]</span>
+
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">CORE SHARED OBJECTS</span>
+<span class="sd">===================</span>
+
+<span class="sd">enum EvaluationMethod {</span>
+<span class="sd">    // Default value. Not to be used.</span>
+<span class="sd">    EVALUATION_METHOD_UNDEFINED = 0;</span>
+
+<span class="sd">    // The following are the only evaluation methods required</span>
+<span class="sd">    // to be supported for the &quot;ScoreSolution&quot; call.</span>
+<span class="sd">    HOLDOUT = 1;</span>
+<span class="sd">    K_FOLD = 2;</span>
+
+<span class="sd">    // The rest are defined to allow expressing internal evaluation</span>
+<span class="sd">    // methods used by TA2 during solution search. If any method being used</span>
+<span class="sd">    // is missing, feel free to request it to be added.</span>
+<span class="sd">    LEAVE_ONE_OUT = 100;</span>
+<span class="sd">    // Instead of really scoring, a TA2 might predict the score only.</span>
+<span class="sd">    PREDICTION = 101;</span>
+<span class="sd">    // Training data is reused to test as well.</span>
+<span class="sd">    TRAINING_DATA = 102;</span>
+<span class="sd">}</span>
+
+<span class="sd">message ScoringConfiguration {</span>
+<span class="sd">    // The evaluation method to use.</span>
+<span class="sd">    EvaluationMethod method = 1;</span>
+<span class="sd">    // Number of folds made, if applicable.</span>
+<span class="sd">    int32 folds = 2;</span>
+<span class="sd">    // Ratio of train set vs. test set, if applicable.</span>
+<span class="sd">    double train_test_ratio = 3;</span>
+<span class="sd">    // Shuffle data? Set to true if employed.</span>
+<span class="sd">    bool shuffle = 4;</span>
+<span class="sd">    // Value for random seed to use for shuffling. Optional.</span>
+<span class="sd">    int32 random_seed = 5;</span>
+<span class="sd">    // Do stratified k-fold? Set to true if employed.</span>
+<span class="sd">    bool stratified = 6;</span>
+<span class="sd">}</span>
+
+<span class="sd">message Score {</span>
+<span class="sd">    ProblemPerformanceMetric metric = 1;</span>
+<span class="sd">    // When doing multiple folds, which fold is this score associated with, 0-based.</span>
+<span class="sd">    // We do not aggregate scores across folds on the TA2 side, but expose everything to the TA3.</span>
+<span class="sd">    // If scoring was not done as part of the cross-validation, then it can be returned</span>
+<span class="sd">    // as the first and only fold, in which case the value of this field should be 0.</span>
+<span class="sd">    int32 fold = 2;</span>
+<span class="sd">    // To which target or targets does this score apply?</span>
+<span class="sd">    repeated ProblemTarget targets = 3;</span>
+<span class="sd">    Value value = 4;</span>
+<span class="sd">}</span>
+
+<span class="sd">enum ProgressState {</span>
+<span class="sd">    // Default value. Not to be used.</span>
+<span class="sd">    PROGRESS_UNKNOWN = 0;</span>
+
+<span class="sd">    // The process has been scheduled but is pending execution.</span>
+<span class="sd">    PENDING = 1;</span>
+<span class="sd">    // The process is currently running. There can be multiple messages with this state</span>
+<span class="sd">    // (while the process is running).</span>
+<span class="sd">    RUNNING = 2;</span>
+<span class="sd">    // The process completed and final results are available.</span>
+<span class="sd">    COMPLETED = 3;</span>
+<span class="sd">    // The process failed.</span>
+<span class="sd">    ERRORED = 4;</span>
+<span class="sd">}</span>
+
+<span class="sd">// After &quot;state&quot; becomes &quot;COMPLETED&quot; or &quot;ERRORED&quot; stream closes.</span>
+<span class="sd">// The granularity of progress updates is not specified by the API at this time. Some systems</span>
+<span class="sd">// might be updating frequently and provide many updates of the progress of a whole process</span>
+<span class="sd">// as well as individual pipeline steps. Some systems might just report these high-level</span>
+<span class="sd">// progress states once, not doing any progress updates in the meantime.  The &quot;status&quot; field</span>
+<span class="sd">// should contain information to supplement the progress state, such as specific failure details</span>
+<span class="sd">// in the case of an &quot;ERRORED&quot; state being returned.</span>
+<span class="sd">message Progress {</span>
+<span class="sd">    ProgressState state = 1;</span>
+<span class="sd">    string status = 2;</span>
+<span class="sd">    // Set only after state becomes &quot;RUNNING&quot;. If it never really properly runs, but errors</span>
+<span class="sd">    // when attempted to run, then it should be the timestamp of the error.</span>
+<span class="sd">    google.protobuf.Timestamp start = 3;</span>
+<span class="sd">    // Set only when state is &quot;COMPLETED&quot; or &quot;ERRORED&quot;.</span>
+<span class="sd">    google.protobuf.Timestamp end = 4;</span>
+<span class="sd">}</span>
+
+<span class="sd">// Description of a TA2 score done during solution search. Because there is a wide range of</span>
+<span class="sd">// potential approaches a TA2 can use to score candidate solutions this might not capture what</span>
+<span class="sd">//  your TA2 is doing. Feel free to request additions to be able to describe your approach.</span>
+<span class="sd">message SolutionSearchScore {</span>
+<span class="sd">    ScoringConfiguration scoring_configuration = 1;</span>
+<span class="sd">    repeated Score scores = 2;</span>
+<span class="sd">}</span>
+
+<span class="sd">message PrimitiveStepDescription {</span>
+<span class="sd">    // Selected value for free pipeline hyper-parameters.</span>
+<span class="sd">    map&lt;string, Value&gt; hyperparams = 1;</span>
+<span class="sd">}</span>
+
+<span class="sd">message SubpipelineStepDescription {</span>
+<span class="sd">    // Each step in a sub-pipeline has a description. These are reported in the order of steps</span>
+<span class="sd">    // in the sub-pipeline.</span>
+<span class="sd">    repeated StepDescription steps = 1;</span>
+<span class="sd">}</span>
+
+<span class="sd">message StepDescription {</span>
+<span class="sd">    oneof step {</span>
+<span class="sd">        PrimitiveStepDescription primitive = 1;</span>
+<span class="sd">        SubpipelineStepDescription pipeline = 2;</span>
+<span class="sd">    }</span>
+<span class="sd">}</span>
+
+<span class="sd">message StepProgress {</span>
+<span class="sd">    Progress progress = 1;</span>
+<span class="sd">    // If step is a sub-pipeline, then this list contains progress for each step in the</span>
+<span class="sd">    // sub-pipeline, in order.</span>
+<span class="sd">    // List can be incomplete while the process is in progress. Systems can provide</span>
+<span class="sd">    // steps only at the end (when &quot;progress&quot; equals COMPLETED) and not during running.</span>
+<span class="sd">    repeated StepProgress steps = 2;</span>
+<span class="sd">}</span>
+
+<span class="sd">// User associated with the run of the solution.</span>
+<span class="sd">message SolutionRunUser {</span>
+<span class="sd">    // A UUID of the user. It does not have to map to any real ID, just that it is possible</span>
+<span class="sd">    // to connect multiple solution actions by the same user together, if necessary.</span>
+<span class="sd">    string id = 1;</span>
+<span class="sd">    // Was this run because solution was choosen by this user.</span>
+<span class="sd">    bool choosen = 2;</span>
+<span class="sd">    // Textual reason provided by the user why the run was choosen by this user.</span>
+<span class="sd">    string reason = 3;</span>
+<span class="sd">}</span>
+
+
+<span class="sd">RPC SPECIFICATION</span>
+<span class="sd">=================</span>
+
+<span class="sd">// See each message&#39;s comments for information about each particular call.</span>
+<span class="sd">service Core {</span>
+<span class="sd">    rpc SearchSolutions (SearchSolutionsRequest) returns (SearchSolutionsResponse) {}</span>
+<span class="sd">    rpc GetSearchSolutionsResults (GetSearchSolutionsResultsRequest) returns (stream GetSearchSolutionsResultsResponse) {}</span>
+<span class="sd">    rpc EndSearchSolutions (EndSearchSolutionsRequest) returns (EndSearchSolutionsResponse) {}</span>
+<span class="sd">    rpc StopSearchSolutions (StopSearchSolutionsRequest) returns (StopSearchSolutionsResponse) {}</span>
+
+<span class="sd">    rpc DescribeSolution (DescribeSolutionRequest) returns (DescribeSolutionResponse) {}</span>
+
+<span class="sd">    rpc ScoreSolution (ScoreSolutionRequest) returns (ScoreSolutionResponse) {}</span>
+<span class="sd">    rpc GetScoreSolutionResults (GetScoreSolutionResultsRequest) returns (stream GetScoreSolutionResultsResponse) {}</span>
+
+<span class="sd">    rpc FitSolution (FitSolutionRequest) returns (FitSolutionResponse) {}</span>
+<span class="sd">    rpc GetFitSolutionResults (GetFitSolutionResultsRequest) returns (stream GetFitSolutionResultsResponse) {}</span>
+
+<span class="sd">    rpc ProduceSolution (ProduceSolutionRequest) returns (ProduceSolutionResponse) {}</span>
+<span class="sd">    rpc GetProduceSolutionResults (GetProduceSolutionResultsRequest) returns (stream GetProduceSolutionResultsResponse) {}</span>
+
+<span class="sd">    rpc SolutionExport (SolutionExportRequest) returns (SolutionExportResponse) {}</span>
+
+<span class="sd">    rpc UpdateProblem (UpdateProblemRequest) returns (UpdateProblemResponse) {}</span>
+
+<span class="sd">    rpc ListPrimitives (ListPrimitivesRequest) returns (ListPrimitivesResponse) {}</span>
+
+<span class="sd">    rpc Hello (HelloRequest) returns (HelloResponse) {}</span>
+<span class="sd">}</span>
+
+
+<span class="sd">VALUE PROTO OBJECTS</span>
+<span class="sd">===================</span>
+
+<span class="sd">// All values are immutable and no files should be changed after a URI</span>
+<span class="sd">// is provided to the other system. When using shared file system, all</span>
+<span class="sd">// URIs should be absolute to the file system, for example</span>
+<span class="sd">// &quot;file:///datasets/dataset_1/datasetDoc.json&quot;. It is assumed that both</span>
+<span class="sd">// TA2 and TA3 systems both have a limited number of shared directories</span>
+<span class="sd">// mounted at same locations (in previous example, &quot;/datasets&quot; directory).</span>
+<span class="sd">// When one system creates a dataset and sends over the URI, the other can</span>
+<span class="sd">// directly access it without doing any extra work (like downloading or copying).</span>
+<span class="sd">//</span>
+<span class="sd">// Configuration of shared directories and shared instance of Plasma are not</span>
+<span class="sd">// specified by this API.</span>
+<span class="sd">//</span>
+<span class="sd">// Not all types of non-raw values is necessary to be supported/allowed.</span>
+<span class="sd">// Both systems maintain a list of allowed value types the other system accepts.</span>
+<span class="sd">// Some calls also provide a way to provide such a list. When a value is to be</span>
+<span class="sd">// provided to the other system, the list is traversed in order and the first</span>
+<span class="sd">// value type which can be used without an error is used. If the list is</span>
+<span class="sd">// exhausted, then an error is provided instead.</span>
+
+<span class="sd">enum ValueType {</span>
+<span class="sd">    // Default value. Not to be used.</span>
+<span class="sd">    VALUE_TYPE_UNDEFINED = 0;</span>
+
+<span class="sd">    // The following value types are those everyone should support.</span>
+
+<span class="sd">    // Raw value. Not all values can be represented as a raw value.</span>
+<span class="sd">    RAW = 1;</span>
+<span class="sd">    // Represent the value as a D3M dataset. Only &quot;file://&quot; schema is supported using a</span>
+<span class="sd">    // shared file system. Dataset URI should point to the &quot;datasetDoc.json&quot; file of the dataset.</span>
+<span class="sd">    // Only Dataset container values can be represented this way.</span>
+<span class="sd">    DATASET_URI = 2;</span>
+<span class="sd">    // Represent the value as a CSV file. Only &quot;file://&quot; schema is supported using a</span>
+<span class="sd">    // shared file system. CSV URI should point to the file with &quot;.csv&quot; file extension.</span>
+<span class="sd">    // Only tabular container values with numberic and string cell values can be represented</span>
+<span class="sd">    // this way.</span>
+<span class="sd">    CSV_URI = 3;</span>
+
+<span class="sd">    // The following are additional value types which can be supported by systems,</span>
+<span class="sd">    // but it is not required. If the value cannot be represented with value types your system</span>
+<span class="sd">    // supports and your system is still asked to do so, it should return &quot;ValueError&quot; error instead.</span>
+
+<span class="sd">    // Represent values by Python-pickling them. Only &quot;file://&quot; schema is supported using a</span>
+<span class="sd">    // shared file system. Pickle URI should point to the file with &quot;.pickle&quot; file extension.</span>
+<span class="sd">    PICKLE_URI = 4;</span>
+<span class="sd">    // Represent values by Python-pickling them but sending them through the API.</span>
+<span class="sd">    PICKLE_BLOB = 5;</span>
+<span class="sd">    // Represent values with arrow and storing them into shared instance of Plasma.</span>
+<span class="sd">    PLASMA_ID = 6;</span>
+<span class="sd">}</span>
+
+<span class="sd">message ValueError {</span>
+<span class="sd">    // A error message useful for debugging or logging. Not meant to be very end-user friendly.</span>
+<span class="sd">    // If a list of supported/allowed value types could not support a given value, then message</span>
+<span class="sd">    // should say so. On the other hand, if there was really an error using a value type which</span>
+<span class="sd">    // would otherwise support a given value, then the error message should communicate this error.</span>
+<span class="sd">    // If there was such an error but some later value type allowed for recovery, then there</span>
+<span class="sd">    // should be no error.</span>
+<span class="sd">    string message = 1;</span>
+<span class="sd">}</span>
+
+<span class="sd">message DoubleList {</span>
+<span class="sd">    repeated double list = 1;</span>
+<span class="sd">}</span>
+
+<span class="sd">message Int64List {</span>
+<span class="sd">    repeated int64 list = 1;</span>
+<span class="sd">}</span>
+
+<span class="sd">message BoolList {</span>
+<span class="sd">    repeated bool list = 1;</span>
+<span class="sd">}</span>
+
+<span class="sd">message StringList {</span>
+<span class="sd">    repeated string list = 1;</span>
+<span class="sd">}</span>
+
+<span class="sd">message BytesList {</span>
+<span class="sd">    repeated bytes list = 1;</span>
+<span class="sd">}</span>
+
+<span class="sd">message Value {</span>
+<span class="sd">    oneof value {</span>
+<span class="sd">        // If there was an error trying to provided the value using the requested</span>
+<span class="sd">        // value type and no other value type was available to be used.</span>
+<span class="sd">        ValueError error = 1;</span>
+<span class="sd">        // Raw values directly provided in the message.</span>
+<span class="sd">        double double = 2;</span>
+<span class="sd">        int64 int64 = 3;</span>
+<span class="sd">        bool bool = 4;</span>
+<span class="sd">        string string = 5;</span>
+<span class="sd">        bytes bytes = 6;</span>
+<span class="sd">        DoubleList double_list = 7;</span>
+<span class="sd">        Int64List int64_list = 8;</span>
+<span class="sd">        BoolList bool_list = 9;</span>
+<span class="sd">        StringList string_list = 10;</span>
+<span class="sd">        BytesList bytes_list = 11;</span>
+<span class="sd">        // An URI pointing to a dataset. Resulting value is Dataset container value from loading this URI.</span>
+<span class="sd">        string dataset_uri = 12;</span>
+<span class="sd">        // An URI pointing to a CSV file.</span>
+<span class="sd">        string csv_uri = 13;</span>
+<span class="sd">        // An URI to a Python-pickled value.</span>
+<span class="sd">        string pickle_uri = 14;</span>
+<span class="sd">        // A Python-pickled value itself.</span>
+<span class="sd">        bytes pickle_blob = 15;</span>
+<span class="sd">        // 20 bytes of Plasma ObjectID of the value.</span>
+<span class="sd">        bytes plasma_id = 16;</span>
+<span class="sd">    }</span>
+<span class="sd">}</span>
+
+
+<span class="sd">PROBLEM PROTO OBJECTS</span>
+<span class="sd">=====================</span>
+
+<span class="sd">// Top level classification of the problem.</span>
+<span class="sd">enum TaskType {</span>
+<span class="sd">    // Default value. Not to be used.</span>
+<span class="sd">    TASK_TYPE_UNDEFINED = 0;</span>
+
+<span class="sd">    CLASSIFICATION = 1;</span>
+<span class="sd">    REGRESSION = 2;</span>
+<span class="sd">    CLUSTERING = 3;</span>
+<span class="sd">    LINK_PREDICTION = 4;</span>
+<span class="sd">    VERTEX_NOMINATION = 5;</span>
+<span class="sd">    COMMUNITY_DETECTION = 6;</span>
+<span class="sd">    GRAPH_CLUSTERING = 7;</span>
+<span class="sd">    GRAPH_MATCHING = 8;</span>
+<span class="sd">    TIME_SERIES_FORECASTING = 9;</span>
+<span class="sd">    COLLABORATIVE_FILTERING = 10;</span>
+<span class="sd">    OBJECT_DETECTION = 11;</span>
+<span class="sd">}</span>
+
+<span class="sd">// Secondary classification of the problem.</span>
+<span class="sd">enum TaskSubtype {</span>
+<span class="sd">    // Default value. Not to be used.</span>
+<span class="sd">    TASK_SUBTYPE_UNDEFINED = 0;</span>
+
+<span class="sd">    // No secondary task is applicable for this problem.</span>
+<span class="sd">    NONE = 1;</span>
+<span class="sd">    BINARY = 2;</span>
+<span class="sd">    MULTICLASS = 3;</span>
+<span class="sd">    MULTILABEL = 4;</span>
+<span class="sd">    UNIVARIATE = 5;</span>
+<span class="sd">    MULTIVARIATE = 6;</span>
+<span class="sd">    OVERLAPPING = 7;</span>
+<span class="sd">    NONOVERLAPPING = 8;</span>
+<span class="sd">}</span>
+
+<span class="sd">// The evaluation metric for any potential solution.</span>
+<span class="sd">enum PerformanceMetric {</span>
+<span class="sd">    // Default value. Not to be used.</span>
+<span class="sd">    METRIC_UNDEFINED = 0;</span>
+
+<span class="sd">    // The following are the only evaluation methods required</span>
+<span class="sd">    // to be supported for the ScoreSolution call.</span>
+<span class="sd">    ACCURACY = 1;</span>
+<span class="sd">    PRECISION = 2;</span>
+<span class="sd">    RECALL = 3;</span>
+<span class="sd">    F1 = 4;</span>
+<span class="sd">    F1_MICRO = 5;</span>
+<span class="sd">    F1_MACRO = 6;</span>
+<span class="sd">    ROC_AUC = 7;</span>
+<span class="sd">    ROC_AUC_MICRO = 8;</span>
+<span class="sd">    ROC_AUC_MACRO = 9;</span>
+<span class="sd">    MEAN_SQUARED_ERROR = 10;</span>
+<span class="sd">    ROOT_MEAN_SQUARED_ERROR = 11;</span>
+<span class="sd">    ROOT_MEAN_SQUARED_ERROR_AVG = 12;</span>
+<span class="sd">    MEAN_ABSOLUTE_ERROR = 13;</span>
+<span class="sd">    R_SQUARED = 14;</span>
+<span class="sd">    NORMALIZED_MUTUAL_INFORMATION = 15;</span>
+<span class="sd">    JACCARD_SIMILARITY_SCORE = 16;</span>
+<span class="sd">    PRECISION_AT_TOP_K = 17;</span>
+<span class="sd">    OBJECT_DETECTION_AVERAGE_PRECISION = 18;</span>
+
+<span class="sd">    // The rest are defined to allow expressing internal evaluation</span>
+<span class="sd">    // scores used by TA2 during pipeline search. If any you are using</span>
+<span class="sd">    // is missing, feel free to request it to be added.</span>
+<span class="sd">    // Average loss of an unspecified loss function.</span>
+<span class="sd">    LOSS = 100;</span>
+<span class="sd">}</span>
+
+<span class="sd">message ProblemPerformanceMetric {</span>
+<span class="sd">    PerformanceMetric metric = 1;</span>
+<span class="sd">    // Additional params used by some metrics.</span>
+<span class="sd">    int32 k = 2;</span>
+<span class="sd">    string pos_label = 3;</span>
+<span class="sd">}</span>
+
+<span class="sd">message Problem {</span>
+<span class="sd">    // ID of this problem.</span>
+<span class="sd">    string id = 1;</span>
+<span class="sd">    // Version of this problem.</span>
+<span class="sd">    string version = 2;</span>
+<span class="sd">    string name = 3;</span>
+<span class="sd">    string description = 4;</span>
+<span class="sd">    TaskType task_type = 5;</span>
+<span class="sd">    TaskSubtype task_subtype = 6;</span>
+<span class="sd">    repeated ProblemPerformanceMetric performance_metrics = 7;</span>
+<span class="sd">}</span>
+
+<span class="sd">message ProblemTarget {</span>
+<span class="sd">    int32 target_index = 1;</span>
+<span class="sd">    string resource_id = 2;</span>
+<span class="sd">    int32 column_index = 3;</span>
+<span class="sd">    string column_name = 4;</span>
+<span class="sd">    int32 clusters_number = 5;</span>
+<span class="sd">}</span>
+
+<span class="sd">message ProblemInput {</span>
+<span class="sd">    // Should match one of input datasets given to the pipeline search.</span>
+<span class="sd">    // Every &quot;Dataset&quot; object has an &quot;id&quot; associated with it and is available</span>
+<span class="sd">    // in its metadata. That ID is then used here to reference those inputs.</span>
+<span class="sd">    string dataset_id = 1;</span>
+<span class="sd">    // Targets should resolve to columns in a given dataset.</span>
+<span class="sd">    repeated ProblemTarget targets = 2;</span>
+<span class="sd">}</span>
+
+<span class="sd">// Problem description matches the parsed problem description by</span>
+<span class="sd">// the d3m_metadata.problem.Problem.load Python method.</span>
+<span class="sd">// Problem outputs are not necessary for the purpose of this API</span>
+<span class="sd">// and are needed only when executing an exported pipeline, but then</span>
+<span class="sd">// TA2 gets full problem description anyway directly.</span>
+<span class="sd">message ProblemDescription {</span>
+<span class="sd">    Problem problem = 1;</span>
+<span class="sd">    repeated ProblemInput inputs = 2;</span>
+<span class="sd">}</span>
+
+<span class="sd">PIPELINE PROTO OBJECTS</span>
+<span class="sd">======================</span>
+
+<span class="sd">// Pipeline description contains many &quot;data references&quot;. Data reference is just a string</span>
+<span class="sd">// which identifies an output of a step or a pipeline input and forms a data-flow connection</span>
+<span class="sd">// between data available and an input to a step. It is recommended to be a string of the</span>
+<span class="sd">// following forms:</span>
+<span class="sd">//</span>
+<span class="sd">//  * `steps.&lt;number&gt;.&lt;id&gt;` — `number` identifies the step in the list of steps (0-based)</span>
+<span class="sd">//    and `id` identifies the name of a produce method of the primitive,</span>
+<span class="sd">//    or the output of a pipeline step</span>
+<span class="sd">//</span>
+<span class="sd">//  * `inputs.&lt;number&gt;` — `number` identifies the pipeline input (0-based)</span>
+<span class="sd">//</span>
+<span class="sd">//  * `outputs.&lt;number&gt;` — `number` identifies the pipeline output (0-based)</span>
+
+<span class="sd">message ContainerArgument {</span>
+<span class="sd">    // Data reference.</span>
+<span class="sd">    string data = 1;</span>
+<span class="sd">}</span>
+
+<span class="sd">message DataArgument {</span>
+<span class="sd">    // Data reference.</span>
+<span class="sd">    string data = 1;</span>
+<span class="sd">}</span>
+
+<span class="sd">message DataArguments {</span>
+<span class="sd">    repeated string data = 1;</span>
+<span class="sd">}</span>
+
+<span class="sd">message PrimitiveArgument {</span>
+<span class="sd">    // 0-based index identifying a step of which primitive is used as a value.</span>
+<span class="sd">    int32 data = 1;</span>
+<span class="sd">}</span>
+
+<span class="sd">message PrimitiveArguments {</span>
+<span class="sd">    // 0-based index identifying a step of which primitive is used as a value.</span>
+<span class="sd">    repeated int32 data = 1;</span>
+<span class="sd">}</span>
+
+<span class="sd">message ValueArgument {</span>
+<span class="sd">    Value data = 1;</span>
+<span class="sd">}</span>
+
+<span class="sd">message PrimitiveStepArgument {</span>
+<span class="sd">    oneof argument {</span>
+<span class="sd">        // A container data type as an argument.</span>
+<span class="sd">        ContainerArgument container = 1;</span>
+<span class="sd">        // A singleton output from another step as an argument.</span>
+<span class="sd">        DataArgument data = 2;</span>
+<span class="sd">    }</span>
+<span class="sd">}</span>
+
+<span class="sd">message PrimitiveStepHyperparameter {</span>
+<span class="sd">    oneof argument {</span>
+<span class="sd">        // A container data type as a hyper-parameter.</span>
+<span class="sd">        ContainerArgument container = 1;</span>
+<span class="sd">        // A singleton output from another step as a hyper-parameter.</span>
+<span class="sd">        DataArgument data = 2;</span>
+<span class="sd">        // A primitive instance to be passed as a hyper-parameter.</span>
+<span class="sd">        PrimitiveArgument primitive = 3;</span>
+<span class="sd">        // A constant value of a hyper-parameter.</span>
+<span class="sd">        ValueArgument value = 4;</span>
+<span class="sd">        // &quot;A set of singleton outputs from other steps in a pipeline.</span>
+<span class="sd">        DataArguments data_set = 5;</span>
+<span class="sd">        // A set of primitive instances to be passed as a hyper-parameter.</span>
+<span class="sd">        PrimitiveArguments primitives_set = 6;</span>
+<span class="sd">    }</span>
+<span class="sd">}</span>
+
+<span class="sd">message StepInput {</span>
+<span class="sd">    // Data reference.</span>
+<span class="sd">    string data = 1;</span>
+<span class="sd">}</span>
+
+<span class="sd">message StepOutput {</span>
+<span class="sd">    // Name which becomes part of the data reference.</span>
+<span class="sd">    string id = 1;</span>
+<span class="sd">}</span>
+
+<span class="sd">message PipelineSource {</span>
+<span class="sd">    // String representing name of the author, team.</span>
+<span class="sd">    string name = 1;</span>
+<span class="sd">    // An URI to contact the source.</span>
+<span class="sd">    string contact = 2;</span>
+<span class="sd">    // A list of pipeline IDs used to derive the pipeline.</span>
+<span class="sd">    repeated string pipelines = 3;</span>
+<span class="sd">}</span>
+
+<span class="sd">enum PipelineContext {</span>
+<span class="sd">    // Default value. Not to be used.</span>
+<span class="sd">    PIPELINE_CONTEXT_UNKNOWN = 0;</span>
+
+<span class="sd">    // Pipeline was created during building/training of the system itself, e.g., during metalearning.</span>
+<span class="sd">    PRETRAINING = 1;</span>
+<span class="sd">    // Pipeline was created during development or testing of the system itself, e.g., during debugging.</span>
+<span class="sd">    TESTING = 2;</span>
+<span class="sd">    // Pipeline was created during evaluation of the system itself, e.g., NIST blind evaluation.</span>
+<span class="sd">    EVALUATION = 3;</span>
+<span class="sd">    // Pipeline was created during regular (production) operation of the system.</span>
+<span class="sd">    PRODUCTION = 4;</span>
+<span class="sd">}</span>
+
+<span class="sd">// User associated with the creation of the template/pipeline, or selection of a primitive.</span>
+<span class="sd">message PipelineDescriptionUser {</span>
+<span class="sd">    // Globally unique ID for this user. It can be opaque, but it should identify the same user</span>
+<span class="sd">    // across sessions. Consider using UUID variant 5 with namespace set to the name of your system</span>
+<span class="sd">    // and name to an ID in your system&#39;s database. It does not have to map to any real ID, just</span>
+<span class="sd">    // that it is possible to connect mutliple pipelines/templates by the same user together,</span>
+<span class="sd">    // if necessary.</span>
+<span class="sd">    string id = 1;</span>
+<span class="sd">    // A natural language description of what the user did to be on the list, e.g., &quot;Picked</span>
+<span class="sd">    // a pipeline from a list of pipelines.&quot;.</span>
+<span class="sd">    string reason = 2;</span>
+<span class="sd">    // A natural language description by the user of what the user did,</span>
+<span class="sd">    // e.g., &quot;I picked a pipeline because it looks short in comparison with others.&quot;.</span>
+<span class="sd">    string rationale = 3;</span>
+<span class="sd">}</span>
+
+<span class="sd">// Possible input to the pipeline or template.</span>
+<span class="sd">message PipelineDescriptionInput {</span>
+<span class="sd">    // Human friendly name of the input.</span>
+<span class="sd">    string name = 1;</span>
+<span class="sd">}</span>
+
+<span class="sd">// Available output of the pipeline or template.</span>
+<span class="sd">message PipelineDescriptionOutput {</span>
+<span class="sd">    // Human friendly name of the output.</span>
+<span class="sd">    string name = 1;</span>
+<span class="sd">    // Data reference, probably of an output of a step.</span>
+<span class="sd">    string data = 2;</span>
+<span class="sd">}</span>
+
+<span class="sd">message PrimitivePipelineDescriptionStep {</span>
+<span class="sd">    Primitive primitive = 1;</span>
+<span class="sd">    // Arguments to the primitive. Constructor arguments should not be listed here, because they</span>
+<span class="sd">    // can be automatically created from other information. All these arguments are listed as kind</span>
+<span class="sd">    // &quot;PIPELINE&quot; in primitive&#39;s metadata.</span>
+<span class="sd">    map&lt;string, PrimitiveStepArgument&gt; arguments = 2;</span>
+<span class="sd">    // List of produce metods providing data. One can reference using data reference these outputs</span>
+<span class="sd">    // then in arguments (inputs) in other steps or pipeline outputs.</span>
+<span class="sd">    repeated StepOutput outputs = 3;</span>
+<span class="sd">    // Some hyper-parameters are not really tunable and should be fixed as part of template/pipeline.</span>
+<span class="sd">    // This can be done here. Hyper-parameters listed here cannot be tuned or overridden. Author of a</span>
+<span class="sd">    // template/pipeline decides which hyper-parameter are which, probably based on their semantic type.</span>
+<span class="sd">    // TA3 can specify a list of hyper-parameters to fix, and TA2 can add to the list additional</span>
+<span class="sd">    // hyper-paramaters in found pipelines.</span>
+<span class="sd">    map&lt;string, PrimitiveStepHyperparameter&gt; hyperparams = 4;</span>
+<span class="sd">    // List of users associated with selection of this primitive/arguments/hyper-parameters. Optional.</span>
+<span class="sd">    repeated PipelineDescriptionUser users = 5;</span>
+<span class="sd">}</span>
+
+<span class="sd">message SubpipelinePipelineDescriptionStep {</span>
+<span class="sd">    // Only &quot;id&quot; field is required in this case to reference another pipeline in the template.</span>
+<span class="sd">    PipelineDescription pipeline = 1;</span>
+<span class="sd">    // List of data references, probably of an output of a step or pipeline input,</span>
+<span class="sd">    // mapped to sub-pipeline&#39;s inputs in order.</span>
+<span class="sd">    repeated StepInput inputs = 2;</span>
+<span class="sd">    // List of IDs to be used in data references, mapping sub-pipeline&#39;s outputs in order.</span>
+<span class="sd">    repeated StepOutput outputs = 3;</span>
+<span class="sd">}</span>
+
+<span class="sd">// Used to represent a pipeline template which can be used to generate full pipelines.</span>
+<span class="sd">// A placeholder is replaced with a pipeline step to form a pipeline. See README.md</span>
+<span class="sd">// for restrictions on the number of them, their position, allowed inputs and outputs,</span>
+<span class="sd">// etc.</span>
+<span class="sd">message PlaceholderPipelineDescriptionStep {</span>
+<span class="sd">    // List of inputs which can be used as inputs to resulting sub-pipeline. Resulting</span>
+<span class="sd">    // sub-pipeline does not have to use all the inputs, but it cannot use any other inputs.</span>
+<span class="sd">    repeated StepInput inputs = 1;</span>
+<span class="sd">    // A list of outputs of the resulting sub-pipeline.</span>
+<span class="sd">    repeated StepOutput outputs = 2;</span>
+<span class="sd">}</span>
+
+<span class="sd">message PipelineDescriptionStep {</span>
+<span class="sd">    oneof step {</span>
+<span class="sd">        PrimitivePipelineDescriptionStep primitive = 1;</span>
+<span class="sd">        SubpipelinePipelineDescriptionStep pipeline = 2;</span>
+<span class="sd">        PlaceholderPipelineDescriptionStep placeholder = 3;</span>
+<span class="sd">    }</span>
+<span class="sd">}</span>
+
+<span class="sd">// Pipeline description matches the D3M pipeline description.</span>
+<span class="sd">// It serves two purposes: describing found pipelines by TA2 to TA3, and communicating pipeline</span>
+<span class="sd">// templates by TA3 to TA2. Because of this some fields are reasonable only in one of those uses.</span>
+<span class="sd">// They are marked with &quot;TA2&quot; or &quot;TA3&quot; in the comment, for fields which are primarily to be set</span>
+<span class="sd">// only by TA2 or only by TA3, respectivelly.</span>
+<span class="sd">message PipelineDescription {</span>
+<span class="sd">    // TA2: UUID of the pipeline. Templates do not have IDs. But TA3 might provide it for a fully</span>
+<span class="sd">    // specified pipeline. It does not necessary have to match &quot;solution_id&quot; from</span>
+<span class="sd">    // &quot;ListSolutionsResponse&quot; and other related messages. Those IDs are about whole solutions</span>
+<span class="sd">    // (pipeline, potentially fitted, with set hyper-parameters). This here ID is about this</span>
+<span class="sd">    // particular ID description.</span>
+<span class="sd">    string id = 1;</span>
+<span class="sd">    // &quot;schema&quot; field is not needed because it is fixed by the TA2-TA3 protocol version.</span>
+<span class="sd">    // System which generated a pipeline or a template. Optional.</span>
+<span class="sd">    PipelineSource source = 2;</span>
+<span class="sd">    // TA2: Timestamp when created. Templates do not have this timestamp. TA3 might provide it for</span>
+<span class="sd">    // a fully specified pipeline.</span>
+<span class="sd">    google.protobuf.Timestamp created = 3;</span>
+<span class="sd">    // In which context a template or pipeline was made. This is helpful to distinguish evaluation</span>
+<span class="sd">    // context from other contexts. The value should not really influence different behavior from</span>
+<span class="sd">    // either system, but it is useful when recording metalearning information to understand this.</span>
+<span class="sd">    PipelineContext context = 4;</span>
+<span class="sd">    // Human friendly name of the pipeline. For templates it can be a hint to</span>
+<span class="sd">    // TA2 how to name found pipelines. Optional.</span>
+<span class="sd">    string name = 5;</span>
+<span class="sd">    // Human friendly description of the pipeline. Optional.</span>
+<span class="sd">    string description = 6;</span>
+<span class="sd">    // List of users associated with the creation of the template and consequently of the pipeline.</span>
+<span class="sd">    // TA2 can store this information into metalearning database. TA2 is not really expected to use</span>
+<span class="sd">    // this information during pipeline search. TA2 should not have to understand TA3 users, mapping</span>
+<span class="sd">    // between users and pipeline search IDs is something TA3 should handle. Optional.</span>
+<span class="sd">    repeated PipelineDescriptionUser users = 7;</span>
+<span class="sd">    // In most cases inputs are datasets. But if TA3 wants to jut run a primitive, it can send a</span>
+<span class="sd">    // template with only that primitive in the template, and then pass anything to its inputs during</span>
+<span class="sd">    // execution. Here, we are describing possible inputs to the pipeline or template. Order matters.</span>
+<span class="sd">    repeated PipelineDescriptionInput inputs = 8;</span>
+<span class="sd">    // Available outputs of the pipeline or template.</span>
+<span class="sd">    repeated PipelineDescriptionOutput outputs = 9;</span>
+<span class="sd">    // Steps defining the pipeline.</span>
+<span class="sd">    repeated PipelineDescriptionStep steps = 10;</span>
+<span class="sd">}</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="dt2ts"><a class="viewcode-back" href="../../../api/ta2.ta3.core_servicer.html#ta2.ta3.core_servicer.dt2ts">[docs]</a><span class="k">def</span> <span class="nf">dt2ts</span><span class="p">(</span><span class="n">dt</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">dt</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">ts</span> <span class="o">=</span> <span class="n">Timestamp</span><span class="p">()</span>
+        <span class="n">ts</span><span class="o">.</span><span class="n">FromDatetime</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ts</span>
+
+    <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="CoreServicer"><a class="viewcode-back" href="../../../api/ta2.ta3.core_servicer.html#ta2.ta3.core_servicer.CoreServicer">[docs]</a><span class="k">class</span> <span class="nc">CoreServicer</span><span class="p">(</span><span class="n">core_pb2_grpc</span><span class="o">.</span><span class="n">CoreServicer</span><span class="p">):</span>
+
+    <span class="n">DB</span> <span class="o">=</span> <span class="n">recursivedict</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_dir</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">,</span> <span class="n">timeout</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">CoreServicer</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">input_dir</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">output_dir</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span> <span class="o">=</span> <span class="n">timeout</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">debug</span> <span class="o">=</span> <span class="n">debug</span>
+
+    <span class="k">def</span> <span class="nf">_build_problem</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">problem_description</span><span class="p">):</span>
+        <span class="c1"># TODO: it might be removed, it&#39;s not being used.</span>
+        <span class="n">problem</span> <span class="o">=</span> <span class="n">problem_description</span><span class="o">.</span><span class="n">problem</span>
+        <span class="n">inputs</span> <span class="o">=</span> <span class="n">problem_description</span><span class="o">.</span><span class="n">inputs</span>
+
+        <span class="n">problem_dict</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;about&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;problemID&quot;</span><span class="p">:</span> <span class="n">problem</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+                <span class="s2">&quot;problemName&quot;</span><span class="p">:</span> <span class="n">problem</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="s2">&quot;taskType&quot;</span><span class="p">:</span> <span class="n">TaskType</span><span class="o">.</span><span class="n">Name</span><span class="p">(</span><span class="n">problem</span><span class="o">.</span><span class="n">task_type</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span>
+                <span class="s2">&quot;taskSubType&quot;</span><span class="p">:</span> <span class="n">TaskSubtype</span><span class="o">.</span><span class="n">Name</span><span class="p">(</span><span class="n">problem</span><span class="o">.</span><span class="n">task_subtype</span><span class="p">),</span>
+                <span class="s2">&quot;problemVersion&quot;</span><span class="p">:</span> <span class="n">problem</span><span class="o">.</span><span class="n">version</span><span class="p">,</span>
+                <span class="s2">&quot;problemSchemaVersion&quot;</span><span class="p">:</span> <span class="s2">&quot;3.0&quot;</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;inputs&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="p">{</span>
+                        <span class="s2">&quot;datasetID&quot;</span><span class="p">:</span> <span class="n">problem_input</span><span class="o">.</span><span class="n">dataset_id</span><span class="p">,</span>
+                        <span class="s2">&quot;targets&quot;</span><span class="p">:</span> <span class="p">[</span>
+                            <span class="p">{</span>
+                                <span class="s2">&quot;targetIndex&quot;</span><span class="p">:</span> <span class="n">target</span><span class="o">.</span><span class="n">target_index</span><span class="p">,</span>
+                                <span class="s2">&quot;resID&quot;</span><span class="p">:</span> <span class="n">target</span><span class="o">.</span><span class="n">resource_id</span><span class="p">,</span>
+                                <span class="s2">&quot;colIndex&quot;</span><span class="p">:</span> <span class="n">target</span><span class="o">.</span><span class="n">column_index</span><span class="p">,</span>
+                                <span class="s2">&quot;colName&quot;</span><span class="p">:</span> <span class="n">target</span><span class="o">.</span><span class="n">column_name</span>
+                            <span class="p">}</span>
+                            <span class="k">for</span> <span class="n">target</span> <span class="ow">in</span> <span class="n">problem_input</span><span class="o">.</span><span class="n">targets</span>
+                        <span class="p">]</span>
+                    <span class="p">}</span>
+                    <span class="k">for</span> <span class="n">problem_input</span> <span class="ow">in</span> <span class="n">inputs</span>
+                <span class="p">],</span>
+                <span class="s2">&quot;performanceMetrics&quot;</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="p">{</span>
+                        <span class="s2">&quot;metric&quot;</span><span class="p">:</span> <span class="n">camel_case</span><span class="p">(</span><span class="n">PerformanceMetric</span><span class="o">.</span><span class="n">Name</span><span class="p">(</span><span class="n">metric</span><span class="o">.</span><span class="n">metric</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+                    <span class="p">}</span>
+                    <span class="k">for</span> <span class="n">metric</span> <span class="ow">in</span> <span class="n">problem</span><span class="o">.</span><span class="n">performance_metrics</span>
+                <span class="p">]</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;expectedOutputs&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;predictionsFile&quot;</span><span class="p">:</span> <span class="s2">&quot;predictions.csv&quot;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">NamedTemporaryFile</span><span class="p">(</span><span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">delete</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="k">as</span> <span class="n">tmp_file</span><span class="p">:</span>
+            <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">problem_dict</span><span class="p">,</span> <span class="n">tmp_file</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">Problem</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">problem_uri</span><span class="o">=</span><span class="s1">&#39;file://&#39;</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">tmp_file</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_run_session</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">exception</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">method</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Exception in </span><span class="si">%s</span><span class="s2"> session </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">session</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">],</span> <span class="n">session</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">])</span>
+            <span class="n">exception</span> <span class="o">=</span> <span class="n">e</span>
+
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Ending </span><span class="si">%s</span><span class="s1"> session </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">session</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">],</span> <span class="n">session</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">])</span>
+            <span class="n">session</span><span class="p">[</span><span class="s1">&#39;end&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span>
+            <span class="n">session</span><span class="p">[</span><span class="s1">&#39;done&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">if</span> <span class="n">exception</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">session</span><span class="p">[</span><span class="s1">&#39;error&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">exception</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">exception</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_start_session</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session_id</span><span class="p">,</span> <span class="n">session_type</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">session</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="n">session_id</span><span class="p">,</span>
+            <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="n">session_type</span><span class="p">,</span>
+            <span class="s1">&#39;start&#39;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span>
+        <span class="p">}</span>
+        <span class="n">session</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">DB</span><span class="p">[</span><span class="n">session_type</span> <span class="o">+</span> <span class="s1">&#39;_sessions&#39;</span><span class="p">][</span><span class="n">session_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">session</span>
+
+        <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="n">session</span><span class="p">,</span> <span class="n">method</span><span class="p">]</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+
+        <span class="n">sync_</span> <span class="o">=</span> <span class="s1">&#39;sync&#39;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span> <span class="k">else</span> <span class="s1">&#39;async&#39;</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Starting </span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1"> session </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">sync_</span><span class="p">,</span> <span class="n">session</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">],</span> <span class="n">session</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_run_session</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_run_session</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="n">args</span><span class="p">)</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+<div class="viewcode-block" id="CoreServicer.SearchSolutions"><a class="viewcode-back" href="../../../api/ta2.ta3.core_servicer.html#ta2.ta3.core_servicer.CoreServicer.SearchSolutions">[docs]</a>    <span class="k">def</span> <span class="nf">SearchSolutions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        rpc SearchSolutions (SearchSolutionsRequest) returns (SearchSolutionsResponse) {}</span>
+
+<span class="sd">        // Starts a new solution search. Found solutions have not necessary been fitted on the provided</span>
+<span class="sd">        // inputs. Problem description and inputs are used only to help guide the search process.</span>
+<span class="sd">        // Consider any found solutions to be just a static description of solutions at this stage.</span>
+<span class="sd">        // Multiple parallel solution searches can happen at the same time.</span>
+<span class="sd">        message SearchSolutionsRequest {</span>
+<span class="sd">            // Some string identifying the name and version of the TA3 system.</span>
+<span class="sd">            string user_agent = 1;</span>
+<span class="sd">            // Shall be set to &quot;protocol_version&quot; above.</span>
+<span class="sd">            string version = 2;</span>
+<span class="sd">            // Desired upper limit of time for solution search, expressed in minutes.</span>
+<span class="sd">            // Is suggestion, and TA2&#39;s should attempt to obey, but TA3&#39;s should realize may be</span>
+<span class="sd">            // violated. Default value of 0 (and any negative number) signifies no time bound.</span>
+<span class="sd">            double time_bound = 3;</span>
+<span class="sd">            // Value stating the priority of the search. If multiple searches are queued then highest</span>
+<span class="sd">            // priority (largest number) should be started next by TA2. Primarily used to sort any</span>
+<span class="sd">            // queue, but no further guarantee that TA2 can give more resources to high priority</span>
+<span class="sd">            // searches. If unspecified, by default search will have priority 0. Negative numbers have</span>
+<span class="sd">            // still lower priority.</span>
+<span class="sd">            double priority = 4;</span>
+<span class="sd">            // Which value types can a TA2 system use to communicate values to a TA3 system?</span>
+<span class="sd">            // The order is important as a TA2 system will try value types in order until one works out,</span>
+<span class="sd">            // or an error will be returned instead of the value.</span>
+<span class="sd">            repeated ValueType allowed_value_types = 5;</span>
+<span class="sd">            // Problem description to use for the solution search.</span>
+<span class="sd">            ProblemDescription problem = 6;</span>
+<span class="sd">            // A pipeline template to use for search or to execute. If template is omitted, then a</span>
+<span class="sd">            // regular solution search is done. If template consists only of one placeholder step,</span>
+<span class="sd">            // then a regular solution search is done to replace that step. If there is no placeholder</span>
+<span class="sd">            // step, but template describes a full pipeline with free hyper-parameters, then this</span>
+<span class="sd">            // call becomes a hyper-paramater tuning call over free hyper-paramaters and found solutions</span>
+<span class="sd">            // share the same pipeline, but different hyper-parameter configurations. If there is no</span>
+<span class="sd">            // placeholder step and all hyper-parameters are fixed as part of the pipeline, then this</span>
+<span class="sd">            // call only checks the given template and returns the solution with same pipeline back, to</span>
+<span class="sd">            // be executed. This allows fixed computations to be done on data, for example, pipeline can</span>
+<span class="sd">            // consist of only one primitive with fixed hyper-parameters to execute that one primitive.</span>
+<span class="sd">            // Moreover, such fully specified pipelines with fixed hyper-parametres can have any</span>
+<span class="sd">            // inputs and any outputs. Otherwise pipelines have to be from a Dataset container value</span>
+<span class="sd">            // to predictions Pandas dataframe. While there are all these options possible, only a</span>
+<span class="sd">            // subset has to be supported by all systems. See README for more details.</span>
+<span class="sd">            PipelineDescription template = 7;</span>
+<span class="sd">            // Pipeline inputs used during solution search. They have to point to Dataset container</span>
+<span class="sd">            // values. Order matters as each input is mapped to a template&#39;s input in order. Optional</span>
+<span class="sd">            // for templates without a placeholder and with all hyper-parameters fixed.</span>
+<span class="sd">            repeated Value inputs = 8;</span>
+<span class="sd">        }</span>
+
+<span class="sd">        // Call returns immediately with the ID. Use &quot;GetFoundSolutions&quot; call to get results.</span>
+<span class="sd">        message SearchSolutionsResponse {</span>
+<span class="sd">            // An ID identifying this solution search. This string should be at least 22 characters</span>
+<span class="sd">            // long to ensure enough entropy to not be guessable.</span>
+<span class="sd">            string search_id = 1;</span>
+<span class="sd">        }</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">version</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">version</span>
+        <span class="n">time_bound_search</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">time_bound_search</span>
+        <span class="n">problem_description</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">problem</span>
+        <span class="n">inputs</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">inputs</span>
+        <span class="n">allowed_value_types</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">allowed_value_types</span>
+
+        <span class="c1"># Ignored:</span>
+        <span class="c1"># user_agent = request.user_agent</span>
+        <span class="c1"># priority = request.priority</span>
+        <span class="c1"># template = request.template</span>
+
+        <span class="c1"># Validate input</span>
+        <span class="k">assert</span> <span class="n">version</span> <span class="o">==</span> <span class="n">VERSION</span><span class="p">,</span> <span class="s1">&#39;Only version </span><span class="si">{}</span><span class="s1"> is supported&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">VERSION</span><span class="p">)</span>
+        <span class="n">problem_inputs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">problem_description</span><span class="o">.</span><span class="n">inputs</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">problem_inputs</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;Only one input is supported&#39;</span>
+
+        <span class="n">search_id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span>
+
+        <span class="k">if</span> <span class="n">time_bound_search</span><span class="p">:</span>
+            <span class="n">timeout</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">time_bound_search</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">timeout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span>
+
+        <span class="n">problem</span> <span class="o">=</span> <span class="n">decode_problem_description</span><span class="p">(</span><span class="n">problem_description</span><span class="p">)</span>
+
+        <span class="n">searcher</span> <span class="o">=</span> <span class="n">PipelineSearcher</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input_dir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_start_session</span><span class="p">(</span>
+            <span class="n">search_id</span><span class="p">,</span>
+            <span class="s1">&#39;search&#39;</span><span class="p">,</span>
+            <span class="n">searcher</span><span class="o">.</span><span class="n">search</span><span class="p">,</span>
+            <span class="n">problem</span><span class="p">,</span>
+            <span class="n">timeout</span><span class="p">,</span>
+            <span class="n">searcher</span><span class="o">=</span><span class="n">searcher</span><span class="p">,</span>
+            <span class="n">problem</span><span class="o">=</span><span class="n">problem</span><span class="p">,</span>
+            <span class="n">allowed_value_types</span><span class="o">=</span><span class="n">allowed_value_types</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">core_pb2</span><span class="o">.</span><span class="n">SearchSolutionsResponse</span><span class="p">(</span>
+            <span class="n">search_id</span><span class="o">=</span><span class="n">search_id</span>
+        <span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_get_progress</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">):</span>
+        <span class="n">error</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;error&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">error</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">state</span> <span class="o">=</span> <span class="s1">&#39;ERRORED&#39;</span>
+        <span class="k">elif</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;done&#39;</span><span class="p">):</span>
+            <span class="n">state</span> <span class="o">=</span> <span class="s1">&#39;COMPLETED&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">state</span> <span class="o">=</span> <span class="s1">&#39;RUNNING&#39;</span>
+
+        <span class="k">return</span> <span class="n">core_pb2</span><span class="o">.</span><span class="n">Progress</span><span class="p">(</span>
+            <span class="n">state</span><span class="o">=</span><span class="n">core_pb2</span><span class="o">.</span><span class="n">ProgressState</span><span class="o">.</span><span class="n">Value</span><span class="p">(</span><span class="n">state</span><span class="p">),</span>
+            <span class="n">status</span><span class="o">=</span><span class="n">error</span><span class="p">,</span>
+            <span class="n">start</span><span class="o">=</span><span class="n">dt2ts</span><span class="p">(</span><span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;start&#39;</span><span class="p">)),</span>
+            <span class="n">end</span><span class="o">=</span><span class="n">dt2ts</span><span class="p">(</span><span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;end&#39;</span><span class="p">))</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_stream</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="n">get_next</span><span class="p">,</span> <span class="n">close_on_done</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="n">returned</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">stop</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">while</span> <span class="ow">not</span> <span class="n">stop</span><span class="p">:</span>
+            <span class="n">done</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;done&#39;</span><span class="p">)</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">get_next</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">returned</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">done</span> <span class="ow">and</span> <span class="p">(</span><span class="n">close_on_done</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">response</span><span class="p">):</span>
+                <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Closing stream&quot;</span><span class="p">)</span>
+                <span class="n">stop</span> <span class="o">=</span> <span class="kc">True</span>
+
+            <span class="k">if</span> <span class="n">response</span><span class="p">:</span>
+                <span class="n">returned</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">yield</span> <span class="n">response</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_search_soltuion_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="n">returned</span><span class="p">):</span>
+        <span class="n">solutions</span> <span class="o">=</span> <span class="n">session</span><span class="p">[</span><span class="s1">&#39;searcher&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">solutions</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">solutions</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">returned</span><span class="p">:</span>
+            <span class="n">solution</span> <span class="o">=</span> <span class="n">solutions</span><span class="p">[</span><span class="n">returned</span><span class="p">]</span>
+            <span class="n">solution</span><span class="p">[</span><span class="s1">&#39;session&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">session</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">DB</span><span class="p">[</span><span class="s1">&#39;solutions&#39;</span><span class="p">][</span><span class="n">solution</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">solution</span>
+
+            <span class="k">return</span> <span class="n">core_pb2</span><span class="o">.</span><span class="n">GetSearchSolutionsResultsResponse</span><span class="p">(</span>
+                <span class="n">progress</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_progress</span><span class="p">(</span><span class="n">session</span><span class="p">),</span>
+                <span class="n">done_ticks</span><span class="o">=</span><span class="n">returned</span><span class="p">,</span>
+                <span class="n">all_ticks</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span>
+                <span class="n">solution_id</span><span class="o">=</span><span class="n">solution</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">],</span>
+                <span class="n">internal_score</span><span class="o">=</span><span class="n">solution</span><span class="p">[</span><span class="s1">&#39;score&#39;</span><span class="p">]</span>
+                <span class="c1"># scores=[</span>
+                <span class="c1">#     core_pb2.SolutionSearchScore(</span>
+                <span class="c1">#         scoring_configuration=core_pb2.ScoringConfiguration(</span>
+                <span class="c1">#             method=core_pb2.EvaluationMethod.Value(&#39;K_FOLD&#39;),</span>
+                <span class="c1">#             folds=5,</span>
+                <span class="c1">#             train_test_ratio=0.,</span>
+                <span class="c1">#             shuffle=True,</span>
+                <span class="c1">#             random_seed=0,</span>
+                <span class="c1">#             stratified=False</span>
+                <span class="c1">#         ),</span>
+                <span class="c1">#         scores=[</span>
+                <span class="c1">#             core_pb2.Score(</span>
+                <span class="c1">#                 fold=0,</span>
+                <span class="c1">#                 targets=[</span>
+                <span class="c1">#                     ProblemTarget(</span>
+                <span class="c1">#                         target_index=0,</span>
+                <span class="c1">#                         resource_id=&quot;0&quot;,</span>
+                <span class="c1">#                         # column_index=0,</span>
+                <span class="c1">#                         # column_name=&quot;dummy&quot;,</span>
+                <span class="c1">#                         # clusters_number=0</span>
+                <span class="c1">#                     )</span>
+                <span class="c1">#                 ],</span>
+                <span class="c1">#                 value=value_pb2.Value(int64=1)</span>
+                <span class="c1">#             )</span>
+                <span class="c1">#         ]</span>
+                <span class="c1">#     )</span>
+                <span class="c1"># ]</span>
+            <span class="p">)</span>
+
+<div class="viewcode-block" id="CoreServicer.GetSearchSolutionsResults"><a class="viewcode-back" href="../../../api/ta2.ta3.core_servicer.html#ta2.ta3.core_servicer.CoreServicer.GetSearchSolutionsResults">[docs]</a>    <span class="k">def</span> <span class="nf">GetSearchSolutionsResults</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        rpc GetSearchSolutionsResults (GetSearchSolutionsResultsRequest) returns (stream GetSearchSolutionsResultsResponse) {}</span>
+
+<span class="sd">        // Get all solutions presently identified by the search and start receiving any</span>
+<span class="sd">        // further solutions also found as well.</span>
+<span class="sd">        message GetSearchSolutionsResultsRequest {</span>
+<span class="sd">            string search_id = 1;</span>
+<span class="sd">        }</span>
+
+<span class="sd">        message GetSearchSolutionsResultsResponse {</span>
+<span class="sd">            // Overall process progress, not progress per solution. While solutions are being found and</span>
+<span class="sd">            // returned, or scores computed and updated, progress state should be kept at &quot;RUNNING&quot;.</span>
+<span class="sd">            Progress progress = 1;</span>
+<span class="sd">            // A measure of progress during search. It can be any number of internal steps or</span>
+<span class="sd">            // actions a TA2 is doing during search. It can be even number of how many candidate</span>
+<span class="sd">            // solutions were already examined. It does not even have to be an integer.</span>
+<span class="sd">            // How regularly a change to this number is reported to TA3 is left to TA2&#39;s discretion,</span>
+<span class="sd">            // but a rule of thumb is at least once a minute if the number changes.</span>
+<span class="sd">            double done_ticks = 2;</span>
+<span class="sd">            // If TA2 knows how many internal steps or actions are there, it can set this field.</span>
+<span class="sd">            // This can also be updated through time if more (or even less) internal steps or</span>
+<span class="sd">            // actions are determined to be necessary. If this value is non-zero, then it should</span>
+<span class="sd">            // always hold that &quot;done_ticks&quot; &lt;= &quot;all_ticks&quot;.</span>
+<span class="sd">            double all_ticks = 3;</span>
+<span class="sd">            string solution_id = 4;</span>
+<span class="sd">            // Internal score for this solution between 0.0 and 1.0 where 1.0 is the highest score.</span>
+<span class="sd">            // There is no other meaning to this score and it does not necessary depend on scores</span>
+<span class="sd">            // listed in the problem description. Optional.</span>
+<span class="sd">            // Because this field is optional, if omitted the default value will be 0. But 0 is a</span>
+<span class="sd">            // valid value for this field. Because of that you should never omit the field.</span>
+<span class="sd">            // If you do not have internal score to provide, use NaN for the value of this field</span>
+<span class="sd">            // to signal that.</span>
+<span class="sd">            double internal_score = 5;</span>
+<span class="sd">            // TA2 might be able to provide more meaningful scores as well, depending on its</span>
+<span class="sd">            // approach to solution search. Moreover, even the same TA2 might not use the same scoring</span>
+<span class="sd">            // approach for all of its solutions. Optional.</span>
+<span class="sd">            repeated SolutionSearchScore scores = 6;</span>
+<span class="sd">        }</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">search_id</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">search_id</span>
+
+        <span class="k">if</span> <span class="n">search_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">DB</span><span class="p">[</span><span class="s1">&#39;search_sessions&#39;</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid search_id&#39;</span><span class="p">)</span>
+
+        <span class="n">session</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">DB</span><span class="p">[</span><span class="s1">&#39;search_sessions&#39;</span><span class="p">][</span><span class="n">search_id</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stream</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_search_soltuion_results</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CoreServicer.EndSearchSolutions"><a class="viewcode-back" href="../../../api/ta2.ta3.core_servicer.html#ta2.ta3.core_servicer.CoreServicer.EndSearchSolutions">[docs]</a>    <span class="k">def</span> <span class="nf">EndSearchSolutions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        rpc EndSearchSolutions (EndSearchSolutionsRequest) returns (EndSearchSolutionsResponse) {}</span>
+
+<span class="sd">        // Ends the search and releases all resources associated with the solution search.</span>
+<span class="sd">        // If the call is made in parallel with a running search and results are being streamed,</span>
+<span class="sd">        // the search is stopped and the &quot;GetSearchSolutionsResults&quot; stream is closed by TA2</span>
+<span class="sd">        // (as happens when the search is concluded on its own, or when a search is stopped</span>
+<span class="sd">        // by &quot;StopSearchSolutions&quot;). Found solution IDs during the search are no longer valid</span>
+<span class="sd">        // after this call.</span>
+<span class="sd">        message EndSearchSolutionsRequest {</span>
+<span class="sd">            string search_id = 1;</span>
+<span class="sd">        }</span>
+
+<span class="sd">        message EndSearchSolutionsResponse {}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">search_id</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">search_id</span>
+
+        <span class="n">session</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">DB</span><span class="p">[</span><span class="s1">&#39;search_sessions&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">search_id</span><span class="p">,</span> <span class="nb">dict</span><span class="p">())</span>
+
+        <span class="k">if</span> <span class="n">session</span><span class="p">:</span>
+            <span class="n">searcher</span> <span class="o">=</span> <span class="n">session</span><span class="p">[</span><span class="s1">&#39;searcher&#39;</span><span class="p">]</span>
+            <span class="n">searcher</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+
+            <span class="c1"># cleanup pipelines</span>
+            <span class="k">for</span> <span class="n">solution</span> <span class="ow">in</span> <span class="n">searcher</span><span class="o">.</span><span class="n">solutions</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">DB</span><span class="p">[</span><span class="s1">&#39;solutions&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">solution</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">],</span> <span class="kc">None</span><span class="p">)</span>
+
+            <span class="k">while</span> <span class="ow">not</span> <span class="n">searcher</span><span class="o">.</span><span class="n">done</span><span class="p">:</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">core_pb2</span><span class="o">.</span><span class="n">EndSearchSolutionsResponse</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="CoreServicer.StopSearchSolutions"><a class="viewcode-back" href="../../../api/ta2.ta3.core_servicer.html#ta2.ta3.core_servicer.CoreServicer.StopSearchSolutions">[docs]</a>    <span class="k">def</span> <span class="nf">StopSearchSolutions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        rpc StopSearchSolutions (StopSearchSolutionsRequest) returns (StopSearchSolutionsResponse) {}</span>
+
+<span class="sd">        // Stops the search but leaves all currently found solutions available.</span>
+<span class="sd">        // If the call is made in parallel with a running search and results are being streamed,</span>
+<span class="sd">        // the &quot;GetSearchSolutionsResults&quot; stream is closed by the TA2 (as happens when the search</span>
+<span class="sd">        // is concluded on its own). Search cannot be re-started after it has been stopped.</span>
+<span class="sd">        message StopSearchSolutionsRequest {</span>
+<span class="sd">            string search_id = 1;</span>
+<span class="sd">        }</span>
+
+<span class="sd">        message StopSearchSolutionsResponse {}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">search_id</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">search_id</span>
+
+        <span class="n">session</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">DB</span><span class="p">[</span><span class="s1">&#39;search_sessions&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">search_id</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">session</span><span class="p">:</span>
+            <span class="n">searcher</span> <span class="o">=</span> <span class="n">session</span><span class="p">[</span><span class="s1">&#39;searcher&#39;</span><span class="p">]</span>
+            <span class="n">searcher</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+
+            <span class="k">while</span> <span class="ow">not</span> <span class="n">searcher</span><span class="o">.</span><span class="n">done</span><span class="p">:</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">core_pb2</span><span class="o">.</span><span class="n">StopSearchSolutionsResponse</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="CoreServicer.DescribeSolution"><a class="viewcode-back" href="../../../api/ta2.ta3.core_servicer.html#ta2.ta3.core_servicer.CoreServicer.DescribeSolution">[docs]</a>    <span class="k">def</span> <span class="nf">DescribeSolution</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        rpc DescribeSolution (DescribeSolutionRequest) returns (DescribeSolutionResponse) {}</span>
+
+<span class="sd">        // Request a detailed description of the found solution.</span>
+<span class="sd">        message DescribeSolutionRequest {</span>
+<span class="sd">            string solution_id = 1;</span>
+<span class="sd">        }</span>
+
+<span class="sd">        message DescribeSolutionResponse {</span>
+<span class="sd">            // A pipeline description. Nested pipelines should be fully described as well.</span>
+<span class="sd">            PipelineDescription pipeline = 1;</span>
+<span class="sd">            // Each step in a pipeline has description. These are reported in the order of steps in</span>
+<span class="sd">            // the pipeline.</span>
+<span class="sd">            repeated StepDescription steps = 2;</span>
+<span class="sd">        }</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">solution_id</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">solution_id</span>
+
+        <span class="n">pipeline</span><span class="p">,</span> <span class="n">session</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_pipeline</span><span class="p">(</span><span class="n">solution_id</span><span class="p">)</span>
+
+        <span class="n">description</span> <span class="o">=</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">to_json_structure</span><span class="p">()</span>
+        <span class="c1"># This is not working for some reason, so we make it &quot;by hand&quot;</span>
+        <span class="c1"># response = encode_pipeline_description(pipeline, session[&#39;allowed_value_types&#39;], &#39;/tmp&#39;)</span>
+        <span class="c1"># return response</span>
+
+        <span class="n">created_at</span> <span class="o">=</span> <span class="n">Timestamp</span><span class="p">()</span>
+        <span class="n">created_at</span><span class="o">.</span><span class="n">FromJsonString</span><span class="p">(</span><span class="n">description</span><span class="p">[</span><span class="s1">&#39;created&#39;</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">core_pb2</span><span class="o">.</span><span class="n">DescribeSolutionResponse</span><span class="p">(</span>
+            <span class="n">pipeline</span><span class="o">=</span><span class="n">pipeline_pb2</span><span class="o">.</span><span class="n">PipelineDescription</span><span class="p">(</span>
+                <span class="nb">id</span><span class="o">=</span><span class="n">description</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">],</span>
+                <span class="n">created</span><span class="o">=</span><span class="n">created_at</span><span class="p">,</span>
+                <span class="n">context</span><span class="o">=</span><span class="n">pipeline_pb2</span><span class="o">.</span><span class="n">PipelineContext</span><span class="o">.</span><span class="n">Value</span><span class="p">(</span><span class="s1">&#39;PRODUCTION&#39;</span><span class="p">),</span>
+                <span class="n">inputs</span><span class="o">=</span><span class="p">[</span>
+                    <span class="n">pipeline_pb2</span><span class="o">.</span><span class="n">PipelineDescriptionInput</span><span class="p">(</span>
+                        <span class="n">name</span><span class="o">=</span><span class="n">pipeline_input</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+                    <span class="p">)</span>
+                    <span class="k">for</span> <span class="n">pipeline_input</span> <span class="ow">in</span> <span class="n">description</span><span class="p">[</span><span class="s1">&#39;inputs&#39;</span><span class="p">]</span>
+                <span class="p">],</span>
+                <span class="n">outputs</span><span class="o">=</span><span class="p">[</span>
+                    <span class="n">pipeline_pb2</span><span class="o">.</span><span class="n">PipelineDescriptionOutput</span><span class="p">(</span>
+                        <span class="n">name</span><span class="o">=</span><span class="n">output</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">],</span>
+                        <span class="n">data</span><span class="o">=</span><span class="n">output</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span>
+                    <span class="p">)</span>
+                    <span class="k">for</span> <span class="n">output</span> <span class="ow">in</span> <span class="n">description</span><span class="p">[</span><span class="s1">&#39;outputs&#39;</span><span class="p">]</span>
+                <span class="p">],</span>
+                <span class="n">steps</span><span class="o">=</span><span class="p">[</span>
+                    <span class="n">pipeline_pb2</span><span class="o">.</span><span class="n">PipelineDescriptionStep</span><span class="p">(</span>
+                        <span class="n">primitive</span><span class="o">=</span><span class="n">pipeline_pb2</span><span class="o">.</span><span class="n">PrimitivePipelineDescriptionStep</span><span class="p">(</span>
+                            <span class="n">primitive</span><span class="o">=</span><span class="n">primitive_pb2</span><span class="o">.</span><span class="n">Primitive</span><span class="p">(</span>
+                                <span class="nb">id</span><span class="o">=</span><span class="n">step</span><span class="p">[</span><span class="s1">&#39;primitive&#39;</span><span class="p">][</span><span class="s1">&#39;id&#39;</span><span class="p">],</span>
+                                <span class="n">version</span><span class="o">=</span><span class="n">step</span><span class="p">[</span><span class="s1">&#39;primitive&#39;</span><span class="p">][</span><span class="s1">&#39;version&#39;</span><span class="p">],</span>
+                                <span class="n">python_path</span><span class="o">=</span><span class="n">step</span><span class="p">[</span><span class="s1">&#39;primitive&#39;</span><span class="p">][</span><span class="s1">&#39;python_path&#39;</span><span class="p">],</span>
+                                <span class="n">name</span><span class="o">=</span><span class="n">step</span><span class="p">[</span><span class="s1">&#39;primitive&#39;</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">],</span>
+                                <span class="n">digest</span><span class="o">=</span><span class="n">step</span><span class="p">[</span><span class="s1">&#39;primitive&#39;</span><span class="p">][</span><span class="s1">&#39;digest&#39;</span><span class="p">]</span>
+                            <span class="p">),</span>
+                            <span class="n">arguments</span><span class="o">=</span><span class="p">{</span>
+                                <span class="n">key</span><span class="p">:</span> <span class="n">pipeline_pb2</span><span class="o">.</span><span class="n">PrimitiveStepArgument</span><span class="p">(</span>
+                                    <span class="n">container</span><span class="o">=</span><span class="n">pipeline_pb2</span><span class="o">.</span><span class="n">ContainerArgument</span><span class="p">(</span>
+                                        <span class="n">data</span><span class="o">=</span><span class="n">value</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span>
+                                    <span class="p">)</span>
+                                <span class="p">)</span>
+                                <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">step</span><span class="p">[</span><span class="s1">&#39;arguments&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                            <span class="p">},</span>
+                            <span class="n">outputs</span><span class="o">=</span><span class="p">[</span>
+                                <span class="n">pipeline_pb2</span><span class="o">.</span><span class="n">StepOutput</span><span class="p">(</span>
+                                    <span class="nb">id</span><span class="o">=</span><span class="n">output</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
+                                <span class="p">)</span>
+                                <span class="k">for</span> <span class="n">output</span> <span class="ow">in</span> <span class="n">step</span><span class="p">[</span><span class="s1">&#39;outputs&#39;</span><span class="p">]</span>
+                            <span class="p">],</span>
+                            <span class="n">hyperparams</span><span class="o">=</span><span class="p">{</span>
+                                <span class="n">key</span><span class="p">:</span> <span class="n">pipeline_pb2</span><span class="o">.</span><span class="n">PrimitiveStepHyperparameter</span><span class="p">(</span>
+                                    <span class="n">data</span><span class="o">=</span><span class="n">pipeline_pb2</span><span class="o">.</span><span class="n">DataArgument</span><span class="p">(</span>
+                                        <span class="n">data</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">])</span>
+                                    <span class="p">)</span>
+                                <span class="p">)</span>
+                                <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">step</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;hyperparams&#39;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">())</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                            <span class="p">},</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span>
+                    <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="n">description</span><span class="p">[</span><span class="s1">&#39;steps&#39;</span><span class="p">]</span>
+                <span class="p">]</span>
+            <span class="p">)</span>
+        <span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_get_cv_args</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">configuration</span><span class="p">):</span>
+        <span class="n">method</span> <span class="o">=</span> <span class="n">core_pb2</span><span class="o">.</span><span class="n">EvaluationMethod</span><span class="o">.</span><span class="n">Name</span><span class="p">(</span><span class="n">configuration</span><span class="o">.</span><span class="n">method</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;K_FOLD&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span>
+                <span class="s1">&#39;folds&#39;</span><span class="p">:</span> <span class="n">configuration</span><span class="o">.</span><span class="n">folds</span><span class="p">,</span>
+                <span class="s1">&#39;stratified&#39;</span><span class="p">:</span> <span class="n">configuration</span><span class="o">.</span><span class="n">stratified</span><span class="p">,</span>
+                <span class="s1">&#39;shuffle&#39;</span><span class="p">:</span> <span class="n">configuration</span><span class="o">.</span><span class="n">shuffle</span><span class="p">,</span>
+                <span class="s1">&#39;random_seed&#39;</span><span class="p">:</span> <span class="n">configuration</span><span class="o">.</span><span class="n">random_seed</span><span class="p">,</span>
+            <span class="p">}</span>
+
+        <span class="c1"># Unsupported for now</span>
+        <span class="c1"># elif method == &#39;HOLDOUT&#39;:</span>
+        <span class="c1">#     train_test_ratio = configuration.train_test_ratio or 3</span>
+        <span class="c1">#     test_size = 1 / (1 + train_test_ratio)</span>
+        <span class="c1">#     cv = ShuffleSplit(</span>
+        <span class="c1">#         n_splits=1,</span>
+        <span class="c1">#         test_size=test_size,</span>
+        <span class="c1">#         random_state=configuration.random_seed</span>
+        <span class="c1">#     )</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">method</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_score_solution</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">searcher</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">problem</span><span class="p">,</span> <span class="n">metric_pipelines</span><span class="p">,</span> <span class="n">configuration</span><span class="p">):</span>
+        <span class="n">cv_args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_cv_args</span><span class="p">(</span><span class="n">configuration</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">metric</span><span class="p">,</span> <span class="n">pipeline</span> <span class="ow">in</span> <span class="n">metric_pipelines</span><span class="p">:</span>
+            <span class="n">metric</span> <span class="o">=</span> <span class="n">decode_performance_metric</span><span class="p">(</span><span class="n">metric</span><span class="p">)</span>
+
+            <span class="n">score</span> <span class="o">=</span> <span class="n">searcher</span><span class="o">.</span><span class="n">score_pipeline</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">problem</span><span class="p">,</span> <span class="n">pipeline</span><span class="p">,</span> <span class="p">[</span><span class="n">metric</span><span class="p">],</span> <span class="o">**</span><span class="n">cv_args</span><span class="p">)</span>
+            <span class="n">pipeline</span><span class="o">.</span><span class="n">score</span> <span class="o">=</span> <span class="n">score</span>
+
+<div class="viewcode-block" id="CoreServicer.ScoreSolution"><a class="viewcode-back" href="../../../api/ta2.ta3.core_servicer.html#ta2.ta3.core_servicer.CoreServicer.ScoreSolution">[docs]</a>    <span class="k">def</span> <span class="nf">ScoreSolution</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        rpc ScoreSolution (ScoreSolutionRequest) returns (ScoreSolutionResponse) {}</span>
+
+<span class="sd">        // Request solution to be scored given inputs. Inputs have to be Dataset container values</span>
+<span class="sd">        // and pipeline outputs have to be predictions. It can internally run multiple fit + produce</span>
+<span class="sd">        // runs of the pipeline on permutations of inputs data (e.g., for cross-validation). This is</span>
+<span class="sd">        // also why we cannot expose outputs here.</span>
+<span class="sd">        message ScoreSolutionRequest {</span>
+<span class="sd">            string solution_id = 1;</span>
+<span class="sd">            repeated Value inputs = 2;</span>
+<span class="sd">            repeated ProblemPerformanceMetric performance_metrics = 3;</span>
+<span class="sd">            // Any users associated with this call itself. Optional.</span>
+<span class="sd">            repeated SolutionRunUser users = 4;</span>
+<span class="sd">            ScoringConfiguration configuration = 5;</span>
+<span class="sd">        }</span>
+
+<span class="sd">        message ScoreSolutionResponse {</span>
+<span class="sd">            string request_id = 1;</span>
+<span class="sd">        }</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">solution_id</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">solution_id</span>
+        <span class="n">inputs</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">inputs</span>
+        <span class="n">performance_metrics</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">performance_metrics</span>
+        <span class="n">configuration</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">configuration</span>
+
+        <span class="c1"># Still Ignored</span>
+        <span class="c1"># users = request.users</span>
+
+        <span class="n">metric_pipelines</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">metric</span> <span class="ow">in</span> <span class="n">performance_metrics</span><span class="p">:</span>
+            <span class="n">pipeline</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_pipeline</span><span class="p">(</span><span class="n">solution_id</span><span class="p">)</span>
+            <span class="n">metric_pipelines</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">metric</span><span class="p">,</span> <span class="n">pipeline</span><span class="p">))</span>
+
+        <span class="n">pipeline</span><span class="p">,</span> <span class="n">session</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_pipeline</span><span class="p">(</span><span class="n">solution_id</span><span class="p">)</span>
+
+        <span class="n">dataset</span> <span class="o">=</span> <span class="n">Dataset</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">dataset_uri</span><span class="p">)</span>
+        <span class="n">problem</span> <span class="o">=</span> <span class="n">session</span><span class="p">[</span><span class="s1">&#39;problem&#39;</span><span class="p">]</span>
+        <span class="n">searcher</span> <span class="o">=</span> <span class="n">session</span><span class="p">[</span><span class="s1">&#39;searcher&#39;</span><span class="p">]</span>
+        <span class="n">allowed_value_types</span> <span class="o">=</span> <span class="n">session</span><span class="p">[</span><span class="s1">&#39;allowed_value_types&#39;</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_start_session</span><span class="p">(</span>
+            <span class="n">pipeline</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+            <span class="s1">&#39;score&#39;</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_score_solution</span><span class="p">,</span>
+            <span class="n">searcher</span><span class="p">,</span>
+            <span class="n">dataset</span><span class="p">,</span>
+            <span class="n">problem</span><span class="p">,</span>
+            <span class="n">metric_pipelines</span><span class="p">,</span>
+            <span class="n">configuration</span><span class="p">,</span>
+            <span class="n">metric_pipelines</span><span class="o">=</span><span class="n">metric_pipelines</span><span class="p">,</span>
+            <span class="n">problem</span><span class="o">=</span><span class="n">problem</span><span class="p">,</span>
+            <span class="n">allowed_value_types</span><span class="o">=</span><span class="n">allowed_value_types</span><span class="p">,</span>
+            <span class="n">configuration</span><span class="o">=</span><span class="n">configuration</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">core_pb2</span><span class="o">.</span><span class="n">ScoreSolutionResponse</span><span class="p">(</span>
+            <span class="n">request_id</span><span class="o">=</span><span class="n">pipeline</span><span class="o">.</span><span class="n">id</span>
+        <span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_get_score_solution_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="n">returned</span><span class="p">):</span>
+        <span class="n">problem</span> <span class="o">=</span> <span class="n">session</span><span class="p">[</span><span class="s1">&#39;problem&#39;</span><span class="p">]</span>
+        <span class="n">allowed_value_types</span> <span class="o">=</span> <span class="n">session</span><span class="p">[</span><span class="s1">&#39;allowed_value_types&#39;</span><span class="p">]</span>
+        <span class="n">configuration</span> <span class="o">=</span> <span class="n">session</span><span class="p">[</span><span class="s1">&#39;configuration&#39;</span><span class="p">]</span>
+        <span class="n">targets</span> <span class="o">=</span> <span class="n">problem</span><span class="p">[</span><span class="s1">&#39;inputs&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;targets&#39;</span><span class="p">]</span>
+        <span class="n">dataset_id</span> <span class="o">=</span> <span class="n">problem</span><span class="p">[</span><span class="s1">&#39;inputs&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;dataset_id&#39;</span><span class="p">]</span>
+
+        <span class="n">metric_pipelines</span> <span class="o">=</span> <span class="n">session</span><span class="p">[</span><span class="s1">&#39;metric_pipelines&#39;</span><span class="p">]</span>
+        <span class="n">metric_fold_scores</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">metric</span><span class="p">,</span> <span class="n">pipeline</span> <span class="ow">in</span> <span class="n">metric_pipelines</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">fold</span><span class="p">,</span> <span class="n">score</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">pipeline</span><span class="o">.</span><span class="n">cv_scores</span><span class="p">):</span>
+                <span class="n">metric_fold_scores</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                    <span class="s1">&#39;metric&#39;</span><span class="p">:</span> <span class="n">problem</span><span class="p">[</span><span class="s1">&#39;problem&#39;</span><span class="p">][</span><span class="s1">&#39;performance_metrics&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
+                    <span class="s1">&#39;fold&#39;</span><span class="p">:</span> <span class="n">fold</span><span class="p">,</span>
+                    <span class="s1">&#39;value&#39;</span><span class="p">:</span> <span class="n">score</span><span class="p">,</span>
+                    <span class="s1">&#39;targets&#39;</span><span class="p">:</span> <span class="n">targets</span><span class="p">,</span>
+                    <span class="s1">&#39;dataset_id&#39;</span><span class="p">:</span> <span class="n">dataset_id</span><span class="p">,</span>
+                    <span class="s1">&#39;random_seed&#39;</span><span class="p">:</span> <span class="n">configuration</span><span class="o">.</span><span class="n">random_seed</span>
+                <span class="p">})</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">metric_fold_scores</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">returned</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">core_pb2</span><span class="o">.</span><span class="n">GetScoreSolutionResultsResponse</span><span class="p">(</span>
+                <span class="n">progress</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_progress</span><span class="p">(</span><span class="n">session</span><span class="p">),</span>
+                <span class="n">scores</span><span class="o">=</span><span class="p">[</span>
+                    <span class="n">encode_score</span><span class="p">(</span><span class="n">score</span><span class="p">,</span> <span class="n">allowed_value_types</span><span class="p">,</span> <span class="s1">&#39;/tmp&#39;</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">score</span> <span class="ow">in</span> <span class="n">metric_fold_scores</span>
+                <span class="p">],</span>
+            <span class="p">)</span>
+
+<div class="viewcode-block" id="CoreServicer.GetScoreSolutionResults"><a class="viewcode-back" href="../../../api/ta2.ta3.core_servicer.html#ta2.ta3.core_servicer.CoreServicer.GetScoreSolutionResults">[docs]</a>    <span class="k">def</span> <span class="nf">GetScoreSolutionResults</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        rpc GetScoreSolutionResults (GetScoreSolutionResultsRequest) returns (stream GetScoreSolutionResultsResponse) {}</span>
+
+<span class="sd">        // Get all score results computed until now and start receiving any</span>
+<span class="sd">        // new score results computed as well.</span>
+<span class="sd">        message GetScoreSolutionResultsRequest {</span>
+<span class="sd">            string request_id = 1;</span>
+<span class="sd">        }</span>
+
+<span class="sd">        message GetScoreSolutionResultsResponse {</span>
+<span class="sd">            // Overall process progress.</span>
+<span class="sd">            Progress progress = 1;</span>
+<span class="sd">            // List of score results. List can be incomplete while the process is in progress.</span>
+<span class="sd">            repeated Score scores = 2;</span>
+<span class="sd">        }</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">request_id</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">request_id</span>
+
+        <span class="n">session</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">DB</span><span class="p">[</span><span class="s1">&#39;score_sessions&#39;</span><span class="p">][</span><span class="n">request_id</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">session</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid request_id&#39;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stream</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_score_solution_results</span><span class="p">,</span> <span class="n">close_on_done</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_get_pipeline</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solution_id</span><span class="p">,</span> <span class="n">fitted</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="n">prefix</span> <span class="o">=</span> <span class="s1">&#39;fitted_&#39;</span> <span class="k">if</span> <span class="n">fitted</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span>
+        <span class="n">solution</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">DB</span><span class="p">[</span><span class="n">prefix</span> <span class="o">+</span> <span class="s1">&#39;solutions&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">solution_id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">solution</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid </span><span class="si">{}</span><span class="s1">solution_id&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">fitted</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">solution</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">session</span> <span class="o">=</span> <span class="n">solution</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;session&#39;</span><span class="p">)</span>
+            <span class="n">pipeline</span> <span class="o">=</span> <span class="n">Pipeline</span><span class="o">.</span><span class="n">from_json_structure</span><span class="p">(</span><span class="n">solution</span><span class="p">)</span>
+            <span class="n">pipeline</span><span class="o">.</span><span class="n">cv_scores</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+            <span class="n">pipeline</span><span class="o">.</span><span class="n">score</span> <span class="o">=</span> <span class="n">solution</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;score&#39;</span><span class="p">)</span>
+            <span class="n">solution</span><span class="p">[</span><span class="s1">&#39;session&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">session</span>
+
+            <span class="k">return</span> <span class="n">pipeline</span><span class="p">,</span> <span class="n">session</span>
+
+    <span class="k">def</span> <span class="nf">_fit_solution</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pipeline</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">problem</span><span class="p">,</span> <span class="n">exposed_outputs</span><span class="p">):</span>
+
+        <span class="n">runtime</span> <span class="o">=</span> <span class="n">Runtime</span><span class="p">(</span>
+            <span class="n">pipeline</span><span class="o">=</span><span class="n">pipeline</span><span class="p">,</span>
+            <span class="n">problem_description</span><span class="o">=</span><span class="n">problem</span><span class="p">,</span>
+            <span class="n">context</span><span class="o">=</span><span class="n">Context</span><span class="o">.</span><span class="n">TESTING</span>
+        <span class="p">)</span>
+
+        <span class="n">fit_results</span> <span class="o">=</span> <span class="n">runtime</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">dataset</span><span class="p">])</span>
+        <span class="n">fit_results</span><span class="o">.</span><span class="n">check_success</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">exposed_name</span><span class="p">,</span> <span class="n">exposed_details</span> <span class="ow">in</span> <span class="n">exposed_outputs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">csv_path</span> <span class="o">=</span> <span class="n">urlparse</span><span class="p">(</span><span class="n">exposed_details</span><span class="o">.</span><span class="n">csv_uri</span><span class="p">)</span><span class="o">.</span><span class="n">path</span>
+            <span class="n">fit_results</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">exposed_name</span><span class="p">]</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">csv_path</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">DB</span><span class="p">[</span><span class="s1">&#39;fitted_solutions&#39;</span><span class="p">][</span><span class="n">pipeline</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">runtime</span>
+
+<div class="viewcode-block" id="CoreServicer.FitSolution"><a class="viewcode-back" href="../../../api/ta2.ta3.core_servicer.html#ta2.ta3.core_servicer.CoreServicer.FitSolution">[docs]</a>    <span class="k">def</span> <span class="nf">FitSolution</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        rpc FitSolution (FitSolutionRequest) returns (FitSolutionResponse) {}</span>
+
+<span class="sd">        // Fit the solution on given inputs. If a solution is already fitted on inputs this is a NOOP</span>
+<span class="sd">        // (if no additional outputs should be exposed). This can happen when a TA2 simultaneously</span>
+<span class="sd">        // fits the solution as part of the solution search phase.</span>
+<span class="sd">        message FitSolutionRequest {</span>
+<span class="sd">            string solution_id = 1;</span>
+<span class="sd">            repeated Value inputs = 2;</span>
+<span class="sd">            // List of data references of step outputs which should be exposed to the TA3 system.</span>
+<span class="sd">            // If you want to expose outputs of the whole pipeline (e.g., predictions themselves),</span>
+<span class="sd">            // list them here as well. These can be recursive data references like</span>
+<span class="sd">            // &quot;steps.1.steps.4.produce&quot; to point to an output inside a sub-pipeline.</span>
+<span class="sd">            // Systems only have to support exposing final outputs and can return &quot;ValueError&quot; for</span>
+<span class="sd">            // intermediate values.</span>
+<span class="sd">            repeated string expose_outputs = 3;</span>
+<span class="sd">            // Which value types should be used for exposing outputs. If not provided, the allowed</span>
+<span class="sd">            // value types list from hello call is used instead.</span>
+<span class="sd">            // The order is important as TA2 system will try value types in order until one works out,</span>
+<span class="sd">            // or an error will be returned instead of the value. An error exposing a value does not</span>
+<span class="sd">            // stop the overall process.</span>
+<span class="sd">            repeated ValueType expose_value_types = 4;</span>
+<span class="sd">            // Any users associated with this call itself. Optional.</span>
+<span class="sd">            repeated SolutionRunUser users = 5;</span>
+<span class="sd">        }</span>
+
+<span class="sd">        message FitSolutionResponse {</span>
+<span class="sd">            string request_id = 1;</span>
+<span class="sd">        }</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">solution_id</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">solution_id</span>
+        <span class="n">inputs</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">inputs</span>
+
+        <span class="c1"># Still Ignored</span>
+        <span class="c1"># users = request.users</span>
+
+        <span class="n">pipeline</span><span class="p">,</span> <span class="n">session</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_pipeline</span><span class="p">(</span><span class="n">solution_id</span><span class="p">)</span>
+
+        <span class="n">dataset</span> <span class="o">=</span> <span class="n">Dataset</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">dataset_uri</span><span class="p">)</span>
+        <span class="n">exposed_outputs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_exposed_outputs</span><span class="p">(</span><span class="n">pipeline</span><span class="p">,</span> <span class="n">request</span><span class="p">)</span>
+
+        <span class="n">problem</span> <span class="o">=</span> <span class="n">session</span><span class="p">[</span><span class="s1">&#39;problem&#39;</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_start_session</span><span class="p">(</span>
+            <span class="n">pipeline</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+            <span class="s1">&#39;fit&#39;</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_fit_solution</span><span class="p">,</span>
+            <span class="n">pipeline</span><span class="p">,</span>
+            <span class="n">dataset</span><span class="p">,</span>
+            <span class="n">problem</span><span class="p">,</span>
+            <span class="n">exposed_outputs</span><span class="p">,</span>
+            <span class="n">pipeline</span><span class="o">=</span><span class="n">pipeline</span><span class="p">,</span>
+            <span class="n">exposed_outputs</span><span class="o">=</span><span class="n">exposed_outputs</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">core_pb2</span><span class="o">.</span><span class="n">FitSolutionResponse</span><span class="p">(</span>
+            <span class="n">request_id</span><span class="o">=</span><span class="n">pipeline</span><span class="o">.</span><span class="n">id</span>
+        <span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_get_fit_solution_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="n">returned</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get fitted solution only if completed or it&#39;s the first try.</span>
+
+<span class="sd">        Later on we might want to giva response for each done step.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">done</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;done&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">done</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">returned</span><span class="p">:</span>
+            <span class="n">exposed_outputs</span> <span class="o">=</span> <span class="n">session</span><span class="p">[</span><span class="s1">&#39;exposed_outputs&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">done</span> <span class="k">else</span> <span class="kc">None</span>
+            <span class="n">fitted_solution_id</span> <span class="o">=</span> <span class="n">session</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">done</span> <span class="k">else</span> <span class="kc">None</span>
+
+            <span class="k">return</span> <span class="n">core_pb2</span><span class="o">.</span><span class="n">GetFitSolutionResultsResponse</span><span class="p">(</span>
+                <span class="n">progress</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_progress</span><span class="p">(</span><span class="n">session</span><span class="p">),</span>
+                <span class="n">steps</span><span class="o">=</span><span class="p">[</span>
+                    <span class="c1"># In the future there will be one of these for each primitive</span>
+                    <span class="c1"># core_pb2.StepProgress(</span>
+                    <span class="c1">#     progress=core_pb2.Progress(</span>
+                    <span class="c1">#         state=core_pb2.ProgressState.Value(&#39;COMPLETED&#39;),</span>
+                    <span class="c1">#         status=error,</span>
+                    <span class="c1">#         start=None,</span>
+                    <span class="c1">#         end=None</span>
+                    <span class="c1">#     )</span>
+                    <span class="c1"># )</span>
+                <span class="p">],</span>
+                <span class="n">exposed_outputs</span><span class="o">=</span><span class="n">exposed_outputs</span><span class="p">,</span>
+                <span class="n">fitted_solution_id</span><span class="o">=</span><span class="n">fitted_solution_id</span>
+            <span class="p">)</span>
+
+<div class="viewcode-block" id="CoreServicer.GetFitSolutionResults"><a class="viewcode-back" href="../../../api/ta2.ta3.core_servicer.html#ta2.ta3.core_servicer.CoreServicer.GetFitSolutionResults">[docs]</a>    <span class="k">def</span> <span class="nf">GetFitSolutionResults</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        rpc GetFitSolutionResults (GetFitSolutionResultsRequest) returns (stream GetFitSolutionResultsResponse) {}</span>
+
+<span class="sd">        // Get all fitted results currently available and start receiving any further</span>
+<span class="sd">        // new fitted results as well.</span>
+<span class="sd">        message GetFitSolutionResultsRequest {</span>
+<span class="sd">            string request_id = 1;</span>
+<span class="sd">        }</span>
+
+<span class="sd">        message GetFitSolutionResultsResponse {</span>
+<span class="sd">            // Overall process progress.</span>
+<span class="sd">            Progress progress = 1;</span>
+<span class="sd">            // The list contains progress for each step in the pipeline, in order.</span>
+<span class="sd">            // List can be incomplete while the process is in progress. Systems can provide</span>
+<span class="sd">            // steps only at the end (when &quot;progress&quot; equals COMPLETED) and not during running.</span>
+<span class="sd">            repeated StepProgress steps = 2;</span>
+<span class="sd">            // A mapping between data references of step outputs and values.</span>
+<span class="sd">            map&lt;string, Value&gt; exposed_outputs = 3;</span>
+<span class="sd">            // The fitted solution ID, once progress = COMPLETED.</span>
+<span class="sd">            string fitted_solution_id = 4;</span>
+<span class="sd">        }</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">request_id</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">request_id</span>
+
+        <span class="n">session</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">DB</span><span class="p">[</span><span class="s1">&#39;fit_sessions&#39;</span><span class="p">][</span><span class="n">request_id</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">session</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid request_id&#39;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stream</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_fit_solution_results</span><span class="p">,</span> <span class="n">close_on_done</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_get_exposed_outputs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pipeline</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">produce_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="n">expose_outputs</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">expose_outputs</span>
+        <span class="n">expose_value_types</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">expose_value_types</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">expose_outputs</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">default</span><span class="p">:</span>
+            <span class="c1"># Skip the rest of steps</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="n">steps</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">pipeline</span><span class="o">.</span><span class="n">steps</span><span class="p">)</span>
+        <span class="n">last_step_produce</span> <span class="o">=</span> <span class="s1">&#39;steps.</span><span class="si">{}</span><span class="s1">.produce&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">steps</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">output_0</span> <span class="o">=</span> <span class="s1">&#39;outputs.0&#39;</span>
+
+        <span class="k">if</span> <span class="n">expose_outputs</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">expose_outputs</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[[</span><span class="n">output_0</span><span class="p">],</span> <span class="p">[</span><span class="n">last_step_produce</span><span class="p">]]:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Exposing partial outputs not supported.&#39;&quot;</span><span class="p">)</span>
+
+            <span class="n">exposed_output</span> <span class="o">=</span> <span class="n">expose_outputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">exposed_output</span> <span class="o">=</span> <span class="n">output_0</span>
+
+        <span class="k">if</span> <span class="n">expose_value_types</span><span class="p">:</span>
+            <span class="n">csv_uri</span> <span class="o">=</span> <span class="n">value_pb2</span><span class="o">.</span><span class="n">ValueType</span><span class="o">.</span><span class="n">Value</span><span class="p">(</span><span class="s1">&#39;CSV_URI&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">csv_uri</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">expose_value_types</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;Unsupported ValueTypes: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">expose_value_types</span><span class="p">)</span>
+                <span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">expose_value_types</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">LOGGER</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Unsupported ValueTypes: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+                            <span class="p">[</span><span class="n">evt</span> <span class="k">for</span> <span class="n">evt</span> <span class="ow">in</span> <span class="n">expose_value_types</span> <span class="k">if</span> <span class="n">evt</span> <span class="o">!=</span> <span class="n">csv_uri</span><span class="p">])</span>
+
+        <span class="n">produce_id</span> <span class="o">=</span> <span class="n">produce_id</span> <span class="ow">or</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">id</span>
+
+        <span class="n">predictions_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span> <span class="s1">&#39;predictions&#39;</span><span class="p">,</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">predictions_path</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">csv_name</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">.</span><span class="si">{}</span><span class="s1">.csv&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">produce_id</span><span class="p">,</span> <span class="n">exposed_output</span><span class="p">)</span>
+        <span class="n">csv_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">predictions_path</span><span class="p">,</span> <span class="n">csv_name</span><span class="p">)</span>
+        <span class="n">csv_uri</span> <span class="o">=</span> <span class="s1">&#39;file://&#39;</span> <span class="o">+</span> <span class="n">csv_path</span>
+
+        <span class="n">exposed_outputs</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">exposed_output</span><span class="p">:</span> <span class="n">value_pb2</span><span class="o">.</span><span class="n">Value</span><span class="p">(</span><span class="n">csv_uri</span><span class="o">=</span><span class="n">csv_uri</span><span class="p">)</span>
+        <span class="p">}</span>
+
+        <span class="k">return</span> <span class="n">exposed_outputs</span>
+
+    <span class="k">def</span> <span class="nf">_get_fitted_solution</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solution_id</span><span class="p">):</span>
+        <span class="n">runtime</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">DB</span><span class="p">[</span><span class="s1">&#39;fitted_solutions&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">solution_id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">runtime</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid fitted_solution_id&#39;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">runtime</span>
+
+    <span class="k">def</span> <span class="nf">_produce_solution</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">runtime</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">exposed_outputs</span><span class="p">):</span>
+        <span class="n">produce_results</span> <span class="o">=</span> <span class="n">runtime</span><span class="o">.</span><span class="n">produce</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">dataset</span><span class="p">])</span>
+        <span class="n">produce_results</span><span class="o">.</span><span class="n">check_success</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">exposed_name</span><span class="p">,</span> <span class="n">exposed_details</span> <span class="ow">in</span> <span class="n">exposed_outputs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">csv_path</span> <span class="o">=</span> <span class="n">urlparse</span><span class="p">(</span><span class="n">exposed_details</span><span class="o">.</span><span class="n">csv_uri</span><span class="p">)</span><span class="o">.</span><span class="n">path</span>
+            <span class="n">produce_results</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">exposed_name</span><span class="p">]</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">csv_path</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+<div class="viewcode-block" id="CoreServicer.ProduceSolution"><a class="viewcode-back" href="../../../api/ta2.ta3.core_servicer.html#ta2.ta3.core_servicer.CoreServicer.ProduceSolution">[docs]</a>    <span class="k">def</span> <span class="nf">ProduceSolution</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        rpc ProduceSolution (ProduceSolutionRequest) returns (ProduceSolutionResponse) {}</span>
+
+<span class="sd">        // Produce (execute) the solution on given inputs. A solution has to have been fitted for this</span>
+<span class="sd">        // to be possible (even if in cases where this is just created by transformations).</span>
+<span class="sd">        message ProduceSolutionRequest {</span>
+<span class="sd">            string fitted_solution_id = 1;</span>
+<span class="sd">            repeated Value inputs = 2;</span>
+<span class="sd">            // List of data references of step outputs which should be exposed to the TA3 system.</span>
+<span class="sd">            // If you want to expose outputs of the whole pipeline (e.g., predictions themselves),</span>
+<span class="sd">            // list them here as well. These can be recursive data references like</span>
+<span class="sd">            // &quot;steps.1.steps.4.produce&quot; to point to an output inside a sub-pipeline.</span>
+<span class="sd">            // Systems only have to support exposing final outputs and can return &quot;ValueError&quot; for</span>
+<span class="sd">            // intermediate values.</span>
+<span class="sd">            repeated string expose_outputs = 3;</span>
+<span class="sd">            // Which value types should be used for exposing outputs. If not provided, the allowed</span>
+<span class="sd">            // value types list from a hello call is used instead.</span>
+<span class="sd">            // The order is important as the TA2 system will try value types in order until one works</span>
+<span class="sd">            // out, or an error will be returned instead of the value. An error exposing a value does</span>
+<span class="sd">            // not stop the overall process.</span>
+<span class="sd">            repeated ValueType expose_value_types = 4;</span>
+<span class="sd">            // Any users associated with this call itself. Optional.</span>
+<span class="sd">            repeated SolutionRunUser users = 5;</span>
+<span class="sd">        }</span>
+
+<span class="sd">        message ProduceSolutionResponse {</span>
+<span class="sd">            string request_id = 1;</span>
+<span class="sd">        }</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">fitted_solution_id</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">fitted_solution_id</span>
+        <span class="n">inputs</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">inputs</span>
+
+        <span class="c1"># Still Ignored</span>
+        <span class="c1"># users = request.users</span>
+
+        <span class="n">runtime</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_fitted_solution</span><span class="p">(</span><span class="n">fitted_solution_id</span><span class="p">)</span>
+        <span class="n">dataset</span> <span class="o">=</span> <span class="n">Dataset</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">dataset_uri</span><span class="p">)</span>
+
+        <span class="n">produce_id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span>
+        <span class="n">exposed_outputs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_exposed_outputs</span><span class="p">(</span><span class="n">runtime</span><span class="o">.</span><span class="n">pipeline</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">produce_id</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_start_session</span><span class="p">(</span>
+            <span class="n">produce_id</span><span class="p">,</span>
+            <span class="s1">&#39;produce&#39;</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_produce_solution</span><span class="p">,</span>
+            <span class="n">runtime</span><span class="p">,</span>
+            <span class="n">dataset</span><span class="p">,</span>
+            <span class="n">exposed_outputs</span><span class="p">,</span>
+            <span class="n">runtime</span><span class="o">=</span><span class="n">runtime</span><span class="p">,</span>
+            <span class="n">exposed_outputs</span><span class="o">=</span><span class="n">exposed_outputs</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">core_pb2</span><span class="o">.</span><span class="n">ProduceSolutionResponse</span><span class="p">(</span>
+            <span class="n">request_id</span><span class="o">=</span><span class="n">produce_id</span>
+        <span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_get_produce_solution_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="n">returned</span><span class="p">):</span>
+        <span class="n">done</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;done&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">done</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">returned</span><span class="p">:</span>
+            <span class="n">exposed_outputs</span> <span class="o">=</span> <span class="n">session</span><span class="p">[</span><span class="s1">&#39;exposed_outputs&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">done</span> <span class="k">else</span> <span class="kc">None</span>
+
+            <span class="k">return</span> <span class="n">core_pb2</span><span class="o">.</span><span class="n">GetProduceSolutionResultsResponse</span><span class="p">(</span>
+                <span class="n">progress</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_progress</span><span class="p">(</span><span class="n">session</span><span class="p">),</span>
+                <span class="n">steps</span><span class="o">=</span><span class="p">[</span>
+                    <span class="c1"># In the future there will be one of these for each primitive</span>
+                    <span class="c1"># core_pb2.StepProgress(</span>
+                    <span class="c1">#     progress=core_pb2.Progress(</span>
+                    <span class="c1">#         state=core_pb2.ProgressState.Value(&#39;COMPLETED&#39;),</span>
+                    <span class="c1">#         status=error,</span>
+                    <span class="c1">#         start=None,</span>
+                    <span class="c1">#         end=None</span>
+                    <span class="c1">#     )</span>
+                    <span class="c1"># )</span>
+                <span class="p">],</span>
+                <span class="n">exposed_outputs</span><span class="o">=</span><span class="n">exposed_outputs</span>
+            <span class="p">)</span>
+
+<div class="viewcode-block" id="CoreServicer.GetProduceSolutionResults"><a class="viewcode-back" href="../../../api/ta2.ta3.core_servicer.html#ta2.ta3.core_servicer.CoreServicer.GetProduceSolutionResults">[docs]</a>    <span class="k">def</span> <span class="nf">GetProduceSolutionResults</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        rpc GetProduceSolutionResults (GetProduceSolutionResultsRequest) returns (stream GetProduceSolutionResultsResponse) {}</span>
+
+<span class="sd">        // Get all producing results computed until now and start receiving any</span>
+<span class="sd">        // new producing results computed as well.</span>
+<span class="sd">        message GetProduceSolutionResultsRequest {</span>
+<span class="sd">            string request_id = 1;</span>
+<span class="sd">        }</span>
+
+<span class="sd">        message GetProduceSolutionResultsResponse {</span>
+<span class="sd">            // Overall process progress.</span>
+<span class="sd">            Progress progress = 1;</span>
+<span class="sd">            // The list contains progress for each step in the pipeline, in order.</span>
+<span class="sd">            // List can be incomplete while the process is in progress. Systems can provide</span>
+<span class="sd">            // steps only at the end (when &quot;progress&quot; equals COMPLETED) and not during running.</span>
+<span class="sd">            repeated StepProgress steps = 2;</span>
+<span class="sd">            // A mapping between data references of step outputs and values.</span>
+<span class="sd">            map&lt;string, Value&gt; exposed_outputs = 3;</span>
+<span class="sd">        }</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">request_id</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">request_id</span>
+
+        <span class="n">session</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">DB</span><span class="p">[</span><span class="s1">&#39;produce_sessions&#39;</span><span class="p">][</span><span class="n">request_id</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">session</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid request_id&#39;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stream</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_produce_solution_results</span><span class="p">,</span> <span class="n">close_on_done</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CoreServicer.dump_pipeline"><a class="viewcode-back" href="../../../api/ta2.ta3.core_servicer.html#ta2.ta3.core_servicer.CoreServicer.dump_pipeline">[docs]</a>    <span class="k">def</span> <span class="nf">dump_pipeline</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pipeline</span><span class="p">,</span> <span class="n">rank</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">rank</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">rank</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">score</span><span class="p">)</span> <span class="o">+</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">*</span> <span class="mf">1.e-12</span>   <span class="c1"># to avoid collisions</span>
+
+        <span class="n">pipeline_json</span> <span class="o">=</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">to_json_structure</span><span class="p">()</span>
+        <span class="n">pipeline_json</span><span class="p">[</span><span class="s1">&#39;pipeline_rank&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rank</span>
+
+        <span class="n">pipeline_filename</span> <span class="o">=</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">id</span> <span class="o">+</span> <span class="s1">&#39;.json&#39;</span>
+        <span class="n">pipeline_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span> <span class="s1">&#39;pipelines_ranked&#39;</span><span class="p">,</span> <span class="n">pipeline_filename</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">pipeline_path</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">pipeline_file</span><span class="p">:</span>
+            <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">pipeline_json</span><span class="p">,</span> <span class="n">pipeline_file</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CoreServicer.SolutionExport"><a class="viewcode-back" href="../../../api/ta2.ta3.core_servicer.html#ta2.ta3.core_servicer.CoreServicer.SolutionExport">[docs]</a>    <span class="k">def</span> <span class="nf">SolutionExport</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        rpc SolutionExport (SolutionExportRequest) returns (SolutionExportResponse) {}</span>
+
+<span class="sd">        // Exports a solution for evaluation purposes based on NIST specifications.</span>
+<span class="sd">        message SolutionExportRequest {</span>
+<span class="sd">            // Found solution to export.</span>
+<span class="sd">            DEPRECTAED: string fitted_solution_id = 1;</span>
+<span class="sd">            string solution_id = 1;    # From 2019.2.27</span>
+<span class="sd">            // Solution rank to be used for the exported solution. Lower numbers represent</span>
+<span class="sd">            // better solutions. Presently NIST requirements are that ranks should be non-negative</span>
+<span class="sd">            // and that each exported pipeline have a different rank. TA3 should make sure not to repeat ranks.</span>
+<span class="sd">            // Filenames of exported files are left to be chosen by the TA2 system.</span>
+<span class="sd">            double rank = 2;</span>
+<span class="sd">        }</span>
+
+<span class="sd">        message SolutionExportResponse {}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">fitted_solution_id</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">solution_id</span>
+        <span class="n">rank</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">rank</span>
+
+        <span class="n">runtime</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_fitted_solution</span><span class="p">(</span><span class="n">fitted_solution_id</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">dump_pipeline</span><span class="p">(</span><span class="n">runtime</span><span class="o">.</span><span class="n">pipeline</span><span class="p">,</span> <span class="n">rank</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">core_pb2</span><span class="o">.</span><span class="n">SolutionExportResponse</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="CoreServicer.UpdateProblem"><a class="viewcode-back" href="../../../api/ta2.ta3.core_servicer.html#ta2.ta3.core_servicer.CoreServicer.UpdateProblem">[docs]</a>    <span class="k">def</span> <span class="nf">UpdateProblem</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        rpc UpdateProblem (UpdateProblemRequest) returns (UpdateProblemResponse) {}</span>
+
+<span class="sd">        // Updates problem with new description. This also updates the problem description for all</span>
+<span class="sd">        // ongoing solution searches associated with this problem. Internal behavior of TA2</span>
+<span class="sd">        // is unspecified: it can simply start a new search using new problem description, or</span>
+<span class="sd">        // it can start modifying solutions it has already found to new problem description, or</span>
+<span class="sd">        // it can use it to further help narrow down ongoing solution searches. In any case, after</span>
+<span class="sd">        // this call returns, all reported solutions for searches associated with this problem</span>
+<span class="sd">        // should be for the updated problem description.</span>
+<span class="sd">        message UpdateProblemRequest {</span>
+<span class="sd">            string search_id = 1;</span>
+<span class="sd">            // New problem description. It has to be provided in full and it replaces existing</span>
+<span class="sd">            // problem description.</span>
+<span class="sd">            ProblemDescription problem = 2;</span>
+<span class="sd">        }</span>
+
+<span class="sd">        message UpdateProblemResponse {}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Ignored</span>
+        <span class="c1"># search_id = request.search_id</span>
+        <span class="c1"># problem = request.problem</span>
+
+        <span class="k">return</span> <span class="n">core_pb2</span><span class="o">.</span><span class="n">UpdateProblemResponse</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="CoreServicer.ListPrimitives"><a class="viewcode-back" href="../../../api/ta2.ta3.core_servicer.html#ta2.ta3.core_servicer.CoreServicer.ListPrimitives">[docs]</a>    <span class="k">def</span> <span class="nf">ListPrimitives</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        rpc ListPrimitives (ListPrimitivesRequest) returns (ListPrimitivesResponse) {}</span>
+
+<span class="sd">        // List all primitives known to TA2, their IDs, versions, names, and digests. Using this</span>
+<span class="sd">        // information a TA3 should know which primitives may be put into a pipeline template.</span>
+<span class="sd">        // To narrow down potential primitives to use a TA3 can also ask a TA2 to do a solution</span>
+<span class="sd">        // search and then observe which primitives the TA2 is using. If more metadata about primitives</span>
+<span class="sd">        // is needed, then a TA3 can use the results of this call to map primitives to metadata</span>
+<span class="sd">        // (from Python code or primitive annotations) on its own.</span>
+<span class="sd">        message ListPrimitivesRequest {}</span>
+
+<span class="sd">        message ListPrimitivesResponse {</span>
+<span class="sd">            repeated Primitive primitives = 1;</span>
+<span class="sd">        }</span>
+
+<span class="sd">        // Description of the primitive.</span>
+<span class="sd">        message Primitive {</span>
+<span class="sd">            string id = 1;</span>
+<span class="sd">            string version = 2;</span>
+<span class="sd">            string python_path = 3;</span>
+<span class="sd">            string name = 4;</span>
+<span class="sd">            // Digest is optional, because some locally registered primitives might not have it.</span>
+<span class="sd">            // But for all primitives published it is available and it should be provided here as well.</span>
+<span class="sd">            string digest = 5;</span>
+<span class="sd">        }</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">primitive</span> <span class="o">=</span> <span class="n">primitive_pb2</span><span class="o">.</span><span class="n">Primitive</span><span class="p">(</span>
+            <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;dummy&quot;</span><span class="p">,</span>
+            <span class="n">version</span><span class="o">=</span><span class="s2">&quot;dummy&quot;</span><span class="p">,</span>
+            <span class="n">python_path</span><span class="o">=</span><span class="s2">&quot;dummy&quot;</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;dummy&quot;</span><span class="p">,</span>
+            <span class="n">digest</span><span class="o">=</span><span class="s2">&quot;dummy&quot;</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">core_pb2</span><span class="o">.</span><span class="n">ListPrimitivesResponse</span><span class="p">(</span>
+            <span class="n">primitives</span><span class="o">=</span><span class="p">[</span><span class="n">primitive</span><span class="p">]</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="CoreServicer.Hello"><a class="viewcode-back" href="../../../api/ta2.ta3.core_servicer.html#ta2.ta3.core_servicer.CoreServicer.Hello">[docs]</a>    <span class="k">def</span> <span class="nf">Hello</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        rpc Hello (HelloRequest) returns (HelloResponse) {}</span>
+
+<span class="sd">        message HelloResponse {</span>
+<span class="sd">        // Some string identifying the name and version of the TA2 system.</span>
+<span class="sd">        string user_agent = 1;</span>
+<span class="sd">        // Shall be set to &quot;protocol_version&quot; above.</span>
+<span class="sd">        string version = 2;</span>
+<span class="sd">        // List of value types that a TA3 system can use to communicate values to a TA2 system.</span>
+<span class="sd">        // The order is important as a TA3 system should try value types in order until one works</span>
+<span class="sd">        // out, or an error will be returned instead of the value.</span>
+<span class="sd">        repeated ValueType allowed_value_types = 3;</span>
+<span class="sd">        // List of API extensions that a TA2 supports.</span>
+<span class="sd">        repeated string supported_extensions = 4;</span>
+<span class="sd">        }</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="n">core_pb2</span><span class="o">.</span><span class="n">HelloResponse</span><span class="p">(</span>
+            <span class="n">user_agent</span><span class="o">=</span><span class="s1">&#39;MIT-FL-TA2&#39;</span><span class="p">,</span>
+            <span class="n">version</span><span class="o">=</span><span class="n">VERSION</span><span class="p">,</span>
+            <span class="n">allowed_value_types</span><span class="o">=</span><span class="p">[</span>
+                <span class="n">value_pb2</span><span class="o">.</span><span class="n">ValueType</span><span class="o">.</span><span class="n">Value</span><span class="p">(</span><span class="s1">&#39;DATASET_URI&#39;</span><span class="p">),</span>
+                <span class="n">value_pb2</span><span class="o">.</span><span class="n">ValueType</span><span class="o">.</span><span class="n">Value</span><span class="p">(</span><span class="s1">&#39;CSV_URI&#39;</span><span class="p">)</span>
+            <span class="p">]</span>
+        <span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, MIT Data To AI Lab
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

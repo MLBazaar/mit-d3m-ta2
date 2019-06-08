@@ -1,0 +1,616 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>ta2.ta3.client &mdash; mit-d3m-ta2 0.0.1-dev documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> mit-d3m-ta2
+          
+
+          
+          </a>
+
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../index.html">Welcome</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/install.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../getting_started/install.html#stable-release">Stable release</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../getting_started/install.html#from-sources">From sources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../getting_started/install.html#development-setup">Development Setup</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/ta2.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/ta2.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/ta2.ta3.html">ta2.ta3 package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../api/ta2.ta3.html#submodules">Submodules</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/ta2.html#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/ta2.search.html">ta2.search module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/ta2.template.html">ta2.template module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../authors.html">Credits</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../authors.html#development-lead">Development Lead</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../authors.html#contributors">Contributors</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../history.html">History</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">mit-d3m-ta2</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+          <li><a href="../../ta2.html">ta2</a> &raquo;</li>
+        
+      <li>ta2.ta3.client</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for ta2.ta3.client</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span>
+
+<span class="kn">import</span> <span class="nn">grpc</span>
+<span class="kn">from</span> <span class="nn">d3m.metadata.problem</span> <span class="k">import</span> <span class="n">Problem</span>
+<span class="kn">from</span> <span class="nn">google.protobuf.timestamp_pb2</span> <span class="k">import</span> <span class="n">Timestamp</span>
+<span class="kn">from</span> <span class="nn">ta3ta2_api</span> <span class="k">import</span> <span class="n">core_pb2</span><span class="p">,</span> <span class="n">core_pb2_grpc</span>
+<span class="kn">from</span> <span class="nn">ta3ta2_api.utils</span> <span class="k">import</span> <span class="n">encode_problem_description</span>
+<span class="kn">from</span> <span class="nn">ta3ta2_api.value_pb2</span> <span class="k">import</span> <span class="n">Value</span><span class="p">,</span> <span class="n">ValueType</span>
+
+<span class="n">LOGGER</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="n">RE_PYTHONIZE</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;[A-Z]&#39;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="pythonize"><a class="viewcode-back" href="../../../api/ta2.ta3.client.html#ta2.ta3.client.pythonize">[docs]</a><span class="k">def</span> <span class="nf">pythonize</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;[A-Z]&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;_\g&lt;0&gt;&#39;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="TA3APIClient"><a class="viewcode-back" href="../../../api/ta2.ta3.client.html#ta2.ta3.client.TA3APIClient">[docs]</a><span class="k">class</span> <span class="nc">TA3APIClient</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">local_input</span><span class="o">=</span><span class="s1">&#39;input&#39;</span><span class="p">,</span> <span class="n">remote_input</span><span class="o">=</span><span class="s1">&#39;input&#39;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="n">channel</span> <span class="o">=</span> <span class="n">grpc</span><span class="o">.</span><span class="n">insecure_channel</span><span class="p">(</span><span class="s1">&#39;localhost:&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">port</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stub</span> <span class="o">=</span> <span class="n">core_pb2_grpc</span><span class="o">.</span><span class="n">CoreStub</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">local_input</span> <span class="o">=</span> <span class="n">local_input</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">remote_input</span> <span class="o">=</span> <span class="n">remote_input</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">verbose</span>
+
+    <span class="k">def</span> <span class="nf">_get_dataset_doc_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="s1">&#39;file://&#39;</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">remote_input</span><span class="p">),</span>
+            <span class="n">dataset</span><span class="p">,</span>
+            <span class="s1">&#39;TRAIN/dataset_TRAIN/datasetDoc.json&#39;</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_problem_doc_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="s1">&#39;file://&#39;</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">local_input</span><span class="p">),</span>
+            <span class="n">dataset</span><span class="p">,</span>
+            <span class="s1">&#39;TRAIN/problem_TRAIN/problemDoc.json&#39;</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_build_problem</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">):</span>
+        <span class="n">problem</span> <span class="o">=</span> <span class="n">Problem</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">problem_uri</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_problem_doc_path</span><span class="p">(</span><span class="n">dataset</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">encode_problem_description</span><span class="p">(</span><span class="n">problem</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TA3APIClient.search_solutions"><a class="viewcode-back" href="../../../api/ta2.ta3.client.html#ta2.ta3.client.TA3APIClient.search_solutions">[docs]</a>    <span class="k">def</span> <span class="nf">search_solutions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">time_bound_search</span><span class="o">=</span><span class="mf">1.</span><span class="p">):</span>
+
+        <span class="n">created_at</span> <span class="o">=</span> <span class="n">Timestamp</span><span class="p">()</span>
+        <span class="n">created_at</span><span class="o">.</span><span class="n">FromDatetime</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">())</span>
+
+        <span class="n">request</span> <span class="o">=</span> <span class="n">core_pb2</span><span class="o">.</span><span class="n">SearchSolutionsRequest</span><span class="p">(</span>
+            <span class="n">user_agent</span><span class="o">=</span><span class="s1">&#39;ta3_api_test.py&#39;</span><span class="p">,</span>
+            <span class="n">version</span><span class="o">=</span><span class="s1">&#39;2019.4.11&#39;</span><span class="p">,</span>
+            <span class="n">time_bound_search</span><span class="o">=</span><span class="n">time_bound_search</span><span class="p">,</span>
+            <span class="n">priority</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span>
+            <span class="n">allowed_value_types</span><span class="o">=</span><span class="p">[</span>
+                <span class="n">ValueType</span><span class="o">.</span><span class="n">Value</span><span class="p">(</span><span class="s1">&#39;RAW&#39;</span><span class="p">),</span>
+                <span class="n">ValueType</span><span class="o">.</span><span class="n">Value</span><span class="p">(</span><span class="s1">&#39;DATASET_URI&#39;</span><span class="p">),</span>
+                <span class="n">ValueType</span><span class="o">.</span><span class="n">Value</span><span class="p">(</span><span class="s1">&#39;CSV_URI&#39;</span><span class="p">),</span>
+            <span class="p">],</span>
+            <span class="n">inputs</span><span class="o">=</span><span class="p">[</span>
+                <span class="n">Value</span><span class="p">(</span><span class="n">dataset_uri</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_dataset_doc_path</span><span class="p">(</span><span class="n">dataset</span><span class="p">))</span>
+            <span class="p">],</span>
+            <span class="n">problem</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_build_problem</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
+            <span class="c1"># template=pipeline_pb2.PipelineDescription(</span>
+            <span class="c1">#     id=&#39;dummy&#39;,</span>
+            <span class="c1">#     source=pipeline_pb2.PipelineSource(</span>
+            <span class="c1">#         name=&#39;dummy&#39;,</span>
+            <span class="c1">#         contact=&#39;dummy&#39;,</span>
+            <span class="c1">#         pipelines=[&#39;dummy&#39;],</span>
+            <span class="c1">#     ),</span>
+            <span class="c1">#     created=created_at,</span>
+            <span class="c1">#     context=pipeline_pb2.PipelineContext.Value(&#39;PIPELINE_CONTEXT_UNKNOWN&#39;),</span>
+            <span class="c1">#     name=&#39;dummy&#39;,</span>
+            <span class="c1">#     description=&#39;dummy&#39;,</span>
+            <span class="c1">#     users=[</span>
+            <span class="c1">#         pipeline_pb2.PipelineDescriptionUser(</span>
+            <span class="c1">#             id=&#39;dummy&#39;,</span>
+            <span class="c1">#             reason=&#39;dummy&#39;,</span>
+            <span class="c1">#             rationale=&#39;dummy&#39;</span>
+            <span class="c1">#         )</span>
+            <span class="c1">#     ],</span>
+            <span class="c1">#     inputs=[</span>
+            <span class="c1">#         pipeline_pb2.PipelineDescriptionInput(</span>
+            <span class="c1">#             name=&#39;dummy&#39;</span>
+            <span class="c1">#         )</span>
+            <span class="c1">#     ],</span>
+            <span class="c1">#     outputs=[</span>
+            <span class="c1">#         pipeline_pb2.PipelineDescriptionOutput(</span>
+            <span class="c1">#             name=&#39;dummy&#39;,</span>
+            <span class="c1">#             data=&#39;dummy&#39;</span>
+            <span class="c1">#         )</span>
+            <span class="c1">#     ],</span>
+            <span class="c1">#     steps=[</span>
+            <span class="c1">#         pipeline_pb2.PipelineDescriptionStep(</span>
+            <span class="c1">#             primitive=pipeline_pb2.PrimitivePipelineDescriptionStep(</span>
+            <span class="c1">#                 primitive=Primitive(</span>
+            <span class="c1">#                     id=&#39;dummy&#39;,</span>
+            <span class="c1">#                     version=&#39;dummy&#39;,</span>
+            <span class="c1">#                     python_path=&#39;dummy&#39;,</span>
+            <span class="c1">#                     name=&#39;dummy&#39;,</span>
+            <span class="c1">#                     digest=&#39;dummy&#39;</span>
+            <span class="c1">#                 ),</span>
+            <span class="c1">#                 arguments={</span>
+            <span class="c1">#                     &#39;dummy&#39;: pipeline_pb2.PrimitiveStepArgument(</span>
+            <span class="c1">#                         data=pipeline_pb2.DataArgument(</span>
+            <span class="c1">#                             data=&#39;dummy&#39;</span>
+            <span class="c1">#                         )</span>
+            <span class="c1">#                     )</span>
+            <span class="c1">#                 },</span>
+            <span class="c1">#                 outputs=[</span>
+            <span class="c1">#                     pipeline_pb2.StepOutput(</span>
+            <span class="c1">#                         id=&#39;dummy&#39;</span>
+            <span class="c1">#                     )</span>
+            <span class="c1">#                 ],</span>
+            <span class="c1">#                 hyperparams={</span>
+            <span class="c1">#                     &#39;dummy&#39;: pipeline_pb2.PrimitiveStepHyperparameter(</span>
+            <span class="c1">#                         data=pipeline_pb2.DataArgument(</span>
+            <span class="c1">#                             data=&#39;dummy&#39;</span>
+            <span class="c1">#                         )</span>
+            <span class="c1">#                     )</span>
+            <span class="c1">#                 },</span>
+            <span class="c1">#                 users=[</span>
+            <span class="c1">#                     pipeline_pb2.PipelineDescriptionUser(</span>
+            <span class="c1">#                         id=&#39;dummy&#39;,</span>
+            <span class="c1">#                         reason=&#39;dummy&#39;,</span>
+            <span class="c1">#                         rationale=&#39;dummy&#39;</span>
+            <span class="c1">#                     )</span>
+            <span class="c1">#                 ],</span>
+            <span class="c1">#             )</span>
+            <span class="c1">#         )</span>
+            <span class="c1">#     ]</span>
+            <span class="c1"># ),</span>
+        <span class="p">)</span>
+
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">request</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">request</span><span class="p">)</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stub</span><span class="o">.</span><span class="n">SearchSolutions</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">response</span></div>
+
+<div class="viewcode-block" id="TA3APIClient.get_search_solutions_results"><a class="viewcode-back" href="../../../api/ta2.ta3.client.html#ta2.ta3.client.TA3APIClient.get_search_solutions_results">[docs]</a>    <span class="k">def</span> <span class="nf">get_search_solutions_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">search_id</span><span class="p">,</span> <span class="n">max_results</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+        <span class="n">request</span> <span class="o">=</span> <span class="n">core_pb2</span><span class="o">.</span><span class="n">GetSearchSolutionsResultsRequest</span><span class="p">(</span>
+            <span class="n">search_id</span><span class="o">=</span><span class="n">search_id</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">request</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">request</span><span class="p">)</span>
+
+        <span class="n">solutions</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">solution</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">stub</span><span class="o">.</span><span class="n">GetSearchSolutionsResults</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">solution</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">solution</span><span class="p">)</span>
+
+            <span class="n">solutions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">solution</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">max_results</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">solutions</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">max_results</span><span class="p">:</span>
+                <span class="k">break</span>
+
+        <span class="k">return</span> <span class="n">solutions</span></div>
+
+<div class="viewcode-block" id="TA3APIClient.end_search_solutions"><a class="viewcode-back" href="../../../api/ta2.ta3.client.html#ta2.ta3.client.TA3APIClient.end_search_solutions">[docs]</a>    <span class="k">def</span> <span class="nf">end_search_solutions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">search_id</span><span class="p">):</span>
+        <span class="n">request</span> <span class="o">=</span> <span class="n">core_pb2</span><span class="o">.</span><span class="n">EndSearchSolutionsRequest</span><span class="p">(</span>
+            <span class="n">search_id</span><span class="o">=</span><span class="n">search_id</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">request</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">request</span><span class="p">)</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stub</span><span class="o">.</span><span class="n">EndSearchSolutions</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">response</span></div>
+
+<div class="viewcode-block" id="TA3APIClient.stop_search_solutions"><a class="viewcode-back" href="../../../api/ta2.ta3.client.html#ta2.ta3.client.TA3APIClient.stop_search_solutions">[docs]</a>    <span class="k">def</span> <span class="nf">stop_search_solutions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">search_id</span><span class="p">):</span>
+
+        <span class="n">request</span> <span class="o">=</span> <span class="n">core_pb2</span><span class="o">.</span><span class="n">StopSearchSolutionsRequest</span><span class="p">(</span>
+            <span class="n">search_id</span><span class="o">=</span><span class="n">search_id</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">request</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">request</span><span class="p">)</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stub</span><span class="o">.</span><span class="n">StopSearchSolutions</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">response</span></div>
+
+<div class="viewcode-block" id="TA3APIClient.describe_solution"><a class="viewcode-back" href="../../../api/ta2.ta3.client.html#ta2.ta3.client.TA3APIClient.describe_solution">[docs]</a>    <span class="k">def</span> <span class="nf">describe_solution</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solution_id</span><span class="p">):</span>
+
+        <span class="n">request</span> <span class="o">=</span> <span class="n">core_pb2</span><span class="o">.</span><span class="n">DescribeSolutionRequest</span><span class="p">(</span>
+            <span class="n">solution_id</span><span class="o">=</span><span class="n">solution_id</span>
+        <span class="p">)</span>
+
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">request</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">request</span><span class="p">)</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stub</span><span class="o">.</span><span class="n">DescribeSolution</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">response</span></div>
+
+<div class="viewcode-block" id="TA3APIClient.score_solution"><a class="viewcode-back" href="../../../api/ta2.ta3.client.html#ta2.ta3.client.TA3APIClient.score_solution">[docs]</a>    <span class="k">def</span> <span class="nf">score_solution</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solution_id</span><span class="p">,</span> <span class="n">dataset</span><span class="p">):</span>
+
+        <span class="n">problem</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_problem</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
+
+        <span class="n">request</span> <span class="o">=</span> <span class="n">core_pb2</span><span class="o">.</span><span class="n">ScoreSolutionRequest</span><span class="p">(</span>
+            <span class="n">solution_id</span><span class="o">=</span><span class="n">solution_id</span><span class="p">,</span>
+            <span class="n">inputs</span><span class="o">=</span><span class="p">[</span>
+                <span class="n">Value</span><span class="p">(</span><span class="n">dataset_uri</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_dataset_doc_path</span><span class="p">(</span><span class="n">dataset</span><span class="p">))</span>
+            <span class="p">],</span>
+            <span class="n">performance_metrics</span><span class="o">=</span><span class="n">problem</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">performance_metrics</span><span class="p">,</span>
+            <span class="c1"># users=[</span>
+            <span class="c1">#     core_pb2.SolutionRunUser(</span>
+            <span class="c1">#         id=&#39;dummy&#39;,</span>
+            <span class="c1">#         choosen=True,</span>
+            <span class="c1">#         reason=&#39;dummy&#39;</span>
+            <span class="c1">#     )</span>
+            <span class="c1"># ],</span>
+            <span class="n">configuration</span><span class="o">=</span><span class="n">core_pb2</span><span class="o">.</span><span class="n">ScoringConfiguration</span><span class="p">(</span>
+                <span class="n">method</span><span class="o">=</span><span class="n">core_pb2</span><span class="o">.</span><span class="n">EvaluationMethod</span><span class="o">.</span><span class="n">Value</span><span class="p">(</span><span class="s1">&#39;K_FOLD&#39;</span><span class="p">),</span>
+                <span class="n">folds</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+                <span class="n">train_test_ratio</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+                <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">random_seed</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                <span class="n">stratified</span><span class="o">=</span><span class="kc">False</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">request</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">request</span><span class="p">)</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stub</span><span class="o">.</span><span class="n">ScoreSolution</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">response</span></div>
+
+<div class="viewcode-block" id="TA3APIClient.get_score_solution_results"><a class="viewcode-back" href="../../../api/ta2.ta3.client.html#ta2.ta3.client.TA3APIClient.get_score_solution_results">[docs]</a>    <span class="k">def</span> <span class="nf">get_score_solution_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request_id</span><span class="p">):</span>
+
+        <span class="n">request</span> <span class="o">=</span> <span class="n">core_pb2</span><span class="o">.</span><span class="n">GetScoreSolutionResultsRequest</span><span class="p">(</span>
+            <span class="n">request_id</span><span class="o">=</span><span class="n">request_id</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">request</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">request</span><span class="p">)</span>
+
+        <span class="n">score</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">score</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">stub</span><span class="o">.</span><span class="n">GetScoreSolutionResults</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">score</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">score</span><span class="p">)</span>
+
+        <span class="c1"># return only the last one</span>
+        <span class="k">return</span> <span class="n">score</span></div>
+
+<div class="viewcode-block" id="TA3APIClient.fit_solution"><a class="viewcode-back" href="../../../api/ta2.ta3.client.html#ta2.ta3.client.TA3APIClient.fit_solution">[docs]</a>    <span class="k">def</span> <span class="nf">fit_solution</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solution_id</span><span class="p">,</span> <span class="n">dataset</span><span class="p">):</span>
+
+        <span class="n">request</span> <span class="o">=</span> <span class="n">core_pb2</span><span class="o">.</span><span class="n">FitSolutionRequest</span><span class="p">(</span>
+            <span class="n">solution_id</span><span class="o">=</span><span class="n">solution_id</span><span class="p">,</span>
+            <span class="n">inputs</span><span class="o">=</span><span class="p">[</span>
+                <span class="n">Value</span><span class="p">(</span><span class="n">dataset_uri</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_dataset_doc_path</span><span class="p">(</span><span class="n">dataset</span><span class="p">))</span>
+            <span class="p">],</span>
+            <span class="n">expose_outputs</span><span class="o">=</span><span class="p">[</span>
+                <span class="s1">&#39;outputs.0&#39;</span>
+                <span class="c1"># &#39;steps.0.produce&#39;</span>
+            <span class="p">],</span>
+            <span class="n">expose_value_types</span><span class="o">=</span><span class="p">[</span>
+                <span class="n">ValueType</span><span class="o">.</span><span class="n">Value</span><span class="p">(</span><span class="s1">&#39;CSV_URI&#39;</span><span class="p">)</span>
+            <span class="p">],</span>
+            <span class="c1"># users=[</span>
+            <span class="c1">#     core_pb2.SolutionRunUser(</span>
+            <span class="c1">#         id=&#39;dummy&#39;,</span>
+            <span class="c1">#         choosen=True,</span>
+            <span class="c1">#         reason=&#39;dummy&#39;</span>
+            <span class="c1">#     )</span>
+            <span class="c1"># ]</span>
+        <span class="p">)</span>
+
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">request</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">request</span><span class="p">)</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stub</span><span class="o">.</span><span class="n">FitSolution</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">response</span></div>
+
+<div class="viewcode-block" id="TA3APIClient.get_fit_solution_results"><a class="viewcode-back" href="../../../api/ta2.ta3.client.html#ta2.ta3.client.TA3APIClient.get_fit_solution_results">[docs]</a>    <span class="k">def</span> <span class="nf">get_fit_solution_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request_id</span><span class="p">,</span> <span class="n">max_results</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+        <span class="n">request</span> <span class="o">=</span> <span class="n">core_pb2</span><span class="o">.</span><span class="n">GetFitSolutionResultsRequest</span><span class="p">(</span>
+            <span class="n">request_id</span><span class="o">=</span><span class="n">request_id</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">request</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">request</span><span class="p">)</span>
+
+        <span class="n">fitted_solutions</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">solution</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">stub</span><span class="o">.</span><span class="n">GetFitSolutionResults</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">solution</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">solution</span><span class="p">)</span>
+
+            <span class="n">fitted_solutions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">solution</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">max_results</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">fitted_solutions</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">max_results</span><span class="p">:</span>
+                <span class="k">break</span>
+
+        <span class="k">return</span> <span class="n">fitted_solutions</span></div>
+
+<div class="viewcode-block" id="TA3APIClient.produce_solution"><a class="viewcode-back" href="../../../api/ta2.ta3.client.html#ta2.ta3.client.TA3APIClient.produce_solution">[docs]</a>    <span class="k">def</span> <span class="nf">produce_solution</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fitted_solution_id</span><span class="p">,</span> <span class="n">dataset</span><span class="p">):</span>
+
+        <span class="n">request</span> <span class="o">=</span> <span class="n">core_pb2</span><span class="o">.</span><span class="n">ProduceSolutionRequest</span><span class="p">(</span>
+            <span class="n">fitted_solution_id</span><span class="o">=</span><span class="n">fitted_solution_id</span><span class="p">,</span>
+            <span class="n">inputs</span><span class="o">=</span><span class="p">[</span>
+                <span class="n">Value</span><span class="p">(</span><span class="n">dataset_uri</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_dataset_doc_path</span><span class="p">(</span><span class="n">dataset</span><span class="p">))</span>
+            <span class="p">],</span>
+            <span class="n">expose_outputs</span><span class="o">=</span><span class="p">[</span>
+                <span class="s1">&#39;outputs.0&#39;</span>
+            <span class="p">],</span>
+            <span class="n">expose_value_types</span><span class="o">=</span><span class="p">[</span>
+                <span class="n">ValueType</span><span class="o">.</span><span class="n">Value</span><span class="p">(</span><span class="s1">&#39;CSV_URI&#39;</span><span class="p">)</span>
+            <span class="p">],</span>
+            <span class="c1"># users=[</span>
+            <span class="c1">#     core_pb2.SolutionRunUser(</span>
+            <span class="c1">#         id=&#39;dummy&#39;,</span>
+            <span class="c1">#         choosen=True,</span>
+            <span class="c1">#         reason=&#39;dummy&#39;</span>
+            <span class="c1">#     )</span>
+            <span class="c1"># ]</span>
+        <span class="p">)</span>
+
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">request</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">request</span><span class="p">)</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stub</span><span class="o">.</span><span class="n">ProduceSolution</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">response</span></div>
+
+<div class="viewcode-block" id="TA3APIClient.get_produce_solution_results"><a class="viewcode-back" href="../../../api/ta2.ta3.client.html#ta2.ta3.client.TA3APIClient.get_produce_solution_results">[docs]</a>    <span class="k">def</span> <span class="nf">get_produce_solution_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request_id</span><span class="p">):</span>
+        <span class="n">request</span> <span class="o">=</span> <span class="n">core_pb2</span><span class="o">.</span><span class="n">GetProduceSolutionResultsRequest</span><span class="p">(</span>
+            <span class="n">request_id</span><span class="o">=</span><span class="n">request_id</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">request</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">request</span><span class="p">)</span>
+
+        <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">stub</span><span class="o">.</span><span class="n">GetProduceSolutionResults</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">results</span></div>
+
+<div class="viewcode-block" id="TA3APIClient.solution_export"><a class="viewcode-back" href="../../../api/ta2.ta3.client.html#ta2.ta3.client.TA3APIClient.solution_export">[docs]</a>    <span class="k">def</span> <span class="nf">solution_export</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fitted_solution_id</span><span class="p">,</span> <span class="n">rank</span><span class="p">):</span>
+        <span class="n">request</span> <span class="o">=</span> <span class="n">core_pb2</span><span class="o">.</span><span class="n">SolutionExportRequest</span><span class="p">(</span>
+            <span class="n">solution_id</span><span class="o">=</span><span class="n">fitted_solution_id</span><span class="p">,</span>
+            <span class="n">rank</span><span class="o">=</span><span class="n">rank</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">request</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">request</span><span class="p">)</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stub</span><span class="o">.</span><span class="n">SolutionExport</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">response</span></div>
+
+<div class="viewcode-block" id="TA3APIClient.update_problem"><a class="viewcode-back" href="../../../api/ta2.ta3.client.html#ta2.ta3.client.TA3APIClient.update_problem">[docs]</a>    <span class="k">def</span> <span class="nf">update_problem</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">search_id</span><span class="p">):</span>
+        <span class="n">request</span> <span class="o">=</span> <span class="n">core_pb2</span><span class="o">.</span><span class="n">UpdateProblemRequest</span><span class="p">(</span>
+            <span class="n">search_id</span><span class="o">=</span><span class="n">search_id</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">request</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">request</span><span class="p">)</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stub</span><span class="o">.</span><span class="n">UpdateProblem</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">response</span></div>
+
+<div class="viewcode-block" id="TA3APIClient.list_primitives"><a class="viewcode-back" href="../../../api/ta2.ta3.client.html#ta2.ta3.client.TA3APIClient.list_primitives">[docs]</a>    <span class="k">def</span> <span class="nf">list_primitives</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">request</span> <span class="o">=</span> <span class="n">core_pb2</span><span class="o">.</span><span class="n">ListPrimitivesRequest</span><span class="p">()</span>
+
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">request</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">request</span><span class="p">)</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stub</span><span class="o">.</span><span class="n">ListPrimitives</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">response</span></div>
+
+<div class="viewcode-block" id="TA3APIClient.hello"><a class="viewcode-back" href="../../../api/ta2.ta3.client.html#ta2.ta3.client.TA3APIClient.hello">[docs]</a>    <span class="k">def</span> <span class="nf">hello</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">request</span> <span class="o">=</span> <span class="n">core_pb2</span><span class="o">.</span><span class="n">HelloRequest</span><span class="p">()</span>
+
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">request</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">request</span><span class="p">)</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stub</span><span class="o">.</span><span class="n">Hello</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">response</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, MIT Data To AI Lab
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

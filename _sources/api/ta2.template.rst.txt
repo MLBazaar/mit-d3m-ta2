@@ -1,0 +1,7 @@
+ta2.template module
+===================
+
+.. automodule:: ta2.template
+   :members:
+   :undoc-members:
+   :show-inheritance:

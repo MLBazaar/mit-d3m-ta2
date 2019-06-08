@@ -1,0 +1,334 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>ta2.ta3.client module &mdash; mit-d3m-ta2 0.0.1-dev documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="ta2.ta3.core_servicer module" href="ta2.ta3.core_servicer.html" />
+    <link rel="prev" title="ta2.ta3 package" href="ta2.ta3.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> mit-d3m-ta2
+          
+
+          
+          </a>
+
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Welcome</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/install.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../getting_started/install.html#stable-release">Stable release</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../getting_started/install.html#from-sources">From sources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../getting_started/install.html#development-setup">Development Setup</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Resources</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="ta2.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="ta2.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="ta2.ta3.html">ta2.ta3 package</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="ta2.ta3.html#submodules">Submodules</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="ta2.html#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="ta2.search.html">ta2.search module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ta2.template.html">ta2.template module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../authors.html">Credits</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../authors.html#development-lead">Development Lead</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../authors.html#contributors">Contributors</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../history.html">History</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">mit-d3m-ta2</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="ta2.html">ta2 package</a> &raquo;</li>
+        
+          <li><a href="ta2.ta3.html">ta2.ta3 package</a> &raquo;</li>
+        
+      <li>ta2.ta3.client module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/HDI-Project/mit-d3m-ta2/blob/master/docs/api/ta2.ta3.client.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-ta2.ta3.client">
+<span id="ta2-ta3-client-module"></span><h1>ta2.ta3.client module<a class="headerlink" href="#module-ta2.ta3.client" title="Permalink to this headline">¶</a></h1>
+<dl class="data">
+<dt id="ta2.ta3.client.LOGGER">
+<code class="sig-prename descclassname">ta2.ta3.client.</code><code class="sig-name descname">LOGGER</code><em class="property"> = &lt;Logger ta2.ta3.client (WARNING)&gt;</em><a class="headerlink" href="#ta2.ta3.client.LOGGER" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="data">
+<dt id="ta2.ta3.client.RE_PYTHONIZE">
+<code class="sig-prename descclassname">ta2.ta3.client.</code><code class="sig-name descname">RE_PYTHONIZE</code><em class="property"> = re.compile('[A-Z]')</em><a class="headerlink" href="#ta2.ta3.client.RE_PYTHONIZE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="ta2.ta3.client.TA3APIClient">
+<em class="property">class </em><code class="sig-prename descclassname">ta2.ta3.client.</code><code class="sig-name descname">TA3APIClient</code><span class="sig-paren">(</span><em class="sig-param">port</em>, <em class="sig-param">local_input='input'</em>, <em class="sig-param">remote_input='input'</em>, <em class="sig-param">verbose=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ta2/ta3/client.html#TA3APIClient"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ta2.ta3.client.TA3APIClient" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="ta2.ta3.client.TA3APIClient.describe_solution">
+<code class="sig-name descname">describe_solution</code><span class="sig-paren">(</span><em class="sig-param">solution_id</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ta2/ta3/client.html#TA3APIClient.describe_solution"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ta2.ta3.client.TA3APIClient.describe_solution" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ta2.ta3.client.TA3APIClient.end_search_solutions">
+<code class="sig-name descname">end_search_solutions</code><span class="sig-paren">(</span><em class="sig-param">search_id</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ta2/ta3/client.html#TA3APIClient.end_search_solutions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ta2.ta3.client.TA3APIClient.end_search_solutions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ta2.ta3.client.TA3APIClient.fit_solution">
+<code class="sig-name descname">fit_solution</code><span class="sig-paren">(</span><em class="sig-param">solution_id</em>, <em class="sig-param">dataset</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ta2/ta3/client.html#TA3APIClient.fit_solution"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ta2.ta3.client.TA3APIClient.fit_solution" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ta2.ta3.client.TA3APIClient.get_fit_solution_results">
+<code class="sig-name descname">get_fit_solution_results</code><span class="sig-paren">(</span><em class="sig-param">request_id</em>, <em class="sig-param">max_results=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ta2/ta3/client.html#TA3APIClient.get_fit_solution_results"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ta2.ta3.client.TA3APIClient.get_fit_solution_results" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ta2.ta3.client.TA3APIClient.get_produce_solution_results">
+<code class="sig-name descname">get_produce_solution_results</code><span class="sig-paren">(</span><em class="sig-param">request_id</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ta2/ta3/client.html#TA3APIClient.get_produce_solution_results"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ta2.ta3.client.TA3APIClient.get_produce_solution_results" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ta2.ta3.client.TA3APIClient.get_score_solution_results">
+<code class="sig-name descname">get_score_solution_results</code><span class="sig-paren">(</span><em class="sig-param">request_id</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ta2/ta3/client.html#TA3APIClient.get_score_solution_results"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ta2.ta3.client.TA3APIClient.get_score_solution_results" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ta2.ta3.client.TA3APIClient.get_search_solutions_results">
+<code class="sig-name descname">get_search_solutions_results</code><span class="sig-paren">(</span><em class="sig-param">search_id</em>, <em class="sig-param">max_results=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ta2/ta3/client.html#TA3APIClient.get_search_solutions_results"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ta2.ta3.client.TA3APIClient.get_search_solutions_results" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ta2.ta3.client.TA3APIClient.hello">
+<code class="sig-name descname">hello</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ta2/ta3/client.html#TA3APIClient.hello"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ta2.ta3.client.TA3APIClient.hello" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ta2.ta3.client.TA3APIClient.list_primitives">
+<code class="sig-name descname">list_primitives</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ta2/ta3/client.html#TA3APIClient.list_primitives"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ta2.ta3.client.TA3APIClient.list_primitives" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ta2.ta3.client.TA3APIClient.produce_solution">
+<code class="sig-name descname">produce_solution</code><span class="sig-paren">(</span><em class="sig-param">fitted_solution_id</em>, <em class="sig-param">dataset</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ta2/ta3/client.html#TA3APIClient.produce_solution"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ta2.ta3.client.TA3APIClient.produce_solution" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ta2.ta3.client.TA3APIClient.score_solution">
+<code class="sig-name descname">score_solution</code><span class="sig-paren">(</span><em class="sig-param">solution_id</em>, <em class="sig-param">dataset</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ta2/ta3/client.html#TA3APIClient.score_solution"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ta2.ta3.client.TA3APIClient.score_solution" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ta2.ta3.client.TA3APIClient.search_solutions">
+<code class="sig-name descname">search_solutions</code><span class="sig-paren">(</span><em class="sig-param">dataset</em>, <em class="sig-param">time_bound_search=1.0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ta2/ta3/client.html#TA3APIClient.search_solutions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ta2.ta3.client.TA3APIClient.search_solutions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ta2.ta3.client.TA3APIClient.solution_export">
+<code class="sig-name descname">solution_export</code><span class="sig-paren">(</span><em class="sig-param">fitted_solution_id</em>, <em class="sig-param">rank</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ta2/ta3/client.html#TA3APIClient.solution_export"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ta2.ta3.client.TA3APIClient.solution_export" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ta2.ta3.client.TA3APIClient.stop_search_solutions">
+<code class="sig-name descname">stop_search_solutions</code><span class="sig-paren">(</span><em class="sig-param">search_id</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ta2/ta3/client.html#TA3APIClient.stop_search_solutions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ta2.ta3.client.TA3APIClient.stop_search_solutions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ta2.ta3.client.TA3APIClient.update_problem">
+<code class="sig-name descname">update_problem</code><span class="sig-paren">(</span><em class="sig-param">search_id</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ta2/ta3/client.html#TA3APIClient.update_problem"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ta2.ta3.client.TA3APIClient.update_problem" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="ta2.ta3.client.pythonize">
+<code class="sig-prename descclassname">ta2.ta3.client.</code><code class="sig-name descname">pythonize</code><span class="sig-paren">(</span><em class="sig-param">name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ta2/ta3/client.html#pythonize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ta2.ta3.client.pythonize" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="ta2.ta3.core_servicer.html" class="btn btn-neutral float-right" title="ta2.ta3.core_servicer module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="ta2.ta3.html" class="btn btn-neutral float-left" title="ta2.ta3 package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, MIT Data To AI Lab
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
