@@ -3,8 +3,7 @@
 <i>An open source project from Data to AI Lab at MIT.</i>
 </p>
 
-
-[![PyPi Shield](https://img.shields.io/pypi/v/mit-d3m-ta2.svg)](https://pypi.python.org/pypi/mit-d3m-ta2)
+[![Release Shield](https://img.shields.io/github/release-pre/HDI-Project/mit-d3m-ta2.svg)](https://github.com/HDI-Project/mit-d3m-ta2/releases)
 [![Travis CI Shield](https://travis-ci.org/HDI-Project/mit-d3m-ta2.svg?branch=master)](https://travis-ci.org/HDI-Project/mit-d3m-ta2)
 
 
