@@ -13,7 +13,7 @@
 
   
   
-    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="shortcut icon" href="../_static/dai-logo-white.ico"/>
   
   
   
@@ -38,7 +38,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="ta2.ta3 package" href="ta2.ta3.html" />
-    <link rel="prev" title="Installation" href="../getting_started/install.html" /> 
+    <link rel="prev" title="MIT-D3M-TA2" href="../readme.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -55,6 +55,9 @@
             <a href="../index.html" class="icon icon-home"> mit-d3m-ta2
           
 
+          
+            
+            <img src="../_static/dai-logo-white-200.png" class="logo" alt="Logo"/>
           
           </a>
 
@@ -81,13 +84,30 @@
             
               <p class="caption"><span class="caption-text">Getting Started</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../index.html">Welcome</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/install.html">Installation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../getting_started/install.html#stable-release">Stable release</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../getting_started/install.html#from-sources">From sources</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../getting_started/install.html#development-setup">Development Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../readme.html">MIT-D3M-TA2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../readme.html#overview">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../readme.html#install">Install</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../readme.html#requirements">Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../readme.html#install-the-latest-release">Install the latest release</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../readme.html#install-for-development">Install for Development</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../readme.html#data-format">Data Format</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../readme.html#datasets-collection">Datasets Collection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../readme.html#d3m-seed-datasets">D3M Seed Datasets</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../readme.html#leaderboard">Leaderboard</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../readme.html#usage">Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../readme.html#local-testing">Local Testing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../readme.html#ta2-standalone-mode">TA2 Standalone Mode</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../readme.html#ta2-ta3-api-mode">TA2-TA3 API Mode</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../readme.html#docker-usage">Docker Usage</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../readme.html#submission">Submission</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Resources</span></p>
 <ul class="current">
@@ -95,6 +115,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#subpackages">Subpackages</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="ta2.ta3.html">ta2.ta3 package</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="ta2.ta3.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="ta2.ta3.html#module-ta2.ta3">Module contents</a></li>
 </ul>
 </li>
 </ul>
@@ -104,11 +125,28 @@
 <li class="toctree-l3"><a class="reference internal" href="ta2.template.html">ta2.template module</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#module-ta2">Module contents</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../authors.html">Credits</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../authors.html#development-lead">Development Lead</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../authors.html#contributors">Contributors</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../contributing.html#types-of-contributions">Types of Contributions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../contributing.html#report-bugs">Report Bugs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../contributing.html#fix-bugs">Fix Bugs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../contributing.html#implement-features">Implement Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../contributing.html#write-documentation">Write Documentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../contributing.html#submit-feedback">Submit Feedback</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../contributing.html#get-started">Get Started!</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contributing.html#pull-request-guidelines">Pull Request Guidelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contributing.html#unit-testing-guidelines">Unit Testing Guidelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contributing.html#tips">Tips</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contributing.html#release-workflow">Release Workflow</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../history.html">History</a></li>
@@ -178,14 +216,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="module-ta2">
-<span id="ta2-package"></span><h1>ta2 package<a class="headerlink" href="#module-ta2" title="Permalink to this headline">¶</a></h1>
-<p>Top-level package for mit-d3m-ta2.</p>
-<dl class="function">
-<dt id="ta2.logging_setup">
-<code class="sig-prename descclassname">ta2.</code><code class="sig-name descname">logging_setup</code><span class="sig-paren">(</span><em class="sig-param">verbosity=1</em>, <em class="sig-param">logfile=None</em>, <em class="sig-param">logger_name=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ta2.html#logging_setup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ta2.logging_setup" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
+  <div class="section" id="ta2-package">
+<h1>ta2 package<a class="headerlink" href="#ta2-package" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="subpackages">
 <h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
@@ -197,6 +229,7 @@
 <li class="toctree-l3"><a class="reference internal" href="ta2.ta3.server.html">ta2.ta3.server module</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="ta2.ta3.html#module-ta2.ta3">Module contents</a></li>
 </ul>
 </li>
 </ul>
@@ -211,6 +244,15 @@
 </ul>
 </div>
 </div>
+<div class="section" id="module-ta2">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-ta2" title="Permalink to this headline">¶</a></h2>
+<p>Top-level package for mit-d3m-ta2.</p>
+<dl class="function">
+<dt id="ta2.logging_setup">
+<code class="sig-prename descclassname">ta2.</code><code class="sig-name descname">logging_setup</code><span class="sig-paren">(</span><em class="sig-param">verbosity=1</em>, <em class="sig-param">logfile=None</em>, <em class="sig-param">logger_name=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ta2.html#logging_setup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ta2.logging_setup" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
 </div>
 
 
@@ -224,7 +266,7 @@
         <a href="ta2.ta3.html" class="btn btn-neutral float-right" title="ta2.ta3 package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="../getting_started/install.html" class="btn btn-neutral float-left" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="../readme.html" class="btn btn-neutral float-left" title="MIT-D3M-TA2" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

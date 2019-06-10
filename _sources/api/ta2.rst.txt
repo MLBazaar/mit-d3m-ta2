@@ -1,11 +1,6 @@
 ta2 package
 ===========
 
-.. automodule:: ta2
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 Subpackages
 -----------
 
@@ -20,3 +15,11 @@ Submodules
 
    ta2.search
    ta2.template
+
+Module contents
+---------------
+
+.. automodule:: ta2
+   :members:
+   :undoc-members:
+   :show-inheritance:
