@@ -19,8 +19,6 @@
 # absolute, like shown here.
 
 import sphinx_rtd_theme # For read the docs theme
-from recommonmark.parser import CommonMarkParser
-# from recommonmark.transform import AutoStructify
 
 import ta2
 
@@ -38,22 +36,14 @@ extensions = [
     'sphinx.ext.githubpages',
     'sphinx.ext.viewcode',
     'sphinx.ext.napoleon',
-    # 'IPython.sphinxext.ipython_console_highlighting',
-    # 'IPython.sphinxext.ipython_directive',
 ]
-
-# ipython_execlines = ["import pandas as pd", "pd.set_option('display.width', 1000000)"]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
-source_suffix = ['.rst', '.md', '.ipynb']
-
-# source_parsers = {
-#     '.md': CommonMarkParser,
-# }
+source_suffix = ['.rst', '.md']
 
 # The master toctree document.
 master_doc = 'index'
@@ -64,7 +54,7 @@ slug = 'ta2'
 title = project + ' Documentation',
 copyright = '2018, MIT Data To AI Lab'
 author = 'MIT Data To AI Lab'
-description = 'Pipelines and Primitives for Machine Learning and Data Science.'
+description = 'MIT-Featuretools TA2 submission for the D3M program.'
 user = 'HDI-Project'
 
 # The version info for the project you're documenting, acts as replacement
@@ -127,12 +117,14 @@ html_theme_options = {
 # The name of an image file (relative to this directory) to use as a favicon of
 # the docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
 # pixels large.
-html_favicon = 'images/favicon.ico'
+# html_favicon = 'images/favicon.ico'
+html_favicon = 'images/dai-logo-white.ico'
 
 # If given, this must be the name of an image file (path relative to the
 # configuration directory) that is the logo of the docs. It is placed at
 # the top of the sidebar; its width should therefore not exceed 200 pixels.
 # html_logo = 'images/mlblocks-logo-small.png'
+html_logo = 'images/dai-logo-white-200.png'
 
 # -- Options for HTMLHelp output ---------------------------------------
 
