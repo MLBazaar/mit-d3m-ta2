@@ -56,19 +56,19 @@ def test_pipelinesearcher(makedirs_mock):
 
     assert instance.input == 'input'
     assert instance.output == 'output'
-    assert instance.dump
+    assert not instance.dump
     assert instance.ranked_dir == '{}/pipelines_ranked'.format(instance.output)
     assert isinstance(instance.data_pipeline, Pipeline)
     assert isinstance(instance.scoring_pipeline, Pipeline)
 
     # other parameters
-    instance = PipelineSearcher(input_dir='new-input', output_dir='new-output', dump=False)
+    instance = PipelineSearcher(input_dir='new-input', output_dir='new-output', dump=True)
 
     makedirs_mock.assert_called_with(instance.ranked_dir, exist_ok=True)
 
     assert instance.input == 'new-input'
     assert instance.output == 'new-output'
-    assert not instance.dump
+    assert instance.dump
     assert instance.ranked_dir == '{}/pipelines_ranked'.format(instance.output)
     assert isinstance(instance.data_pipeline, Pipeline)
     assert isinstance(instance.scoring_pipeline, Pipeline)
@@ -269,7 +269,7 @@ def test_pipelinesearcher_save_pipeline(random_mock):
     assert not open_mock.called
 
     # saving the pipeline on file (dump = True)
-    instance = PipelineSearcher()
+    instance = PipelineSearcher(dump=True)
     instance.solutions = []     # normally, setted in `PipelineSearcher.setup_search`
 
     with patch('ta2.search.open', open_mock) as _:
