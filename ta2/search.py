@@ -101,7 +101,7 @@ class PipelineSearcher:
 
         raise ValueError('Unsupported type of problem')
 
-    def __init__(self, input_dir='input', output_dir='output', dump=True):
+    def __init__(self, input_dir='input', output_dir='output', dump=False):
         self.input = input_dir
         self.output = output_dir
         self.dump = dump
