@@ -1,7 +1,7 @@
 import json
 from collections import defaultdict
 from datetime import timedelta
-from unittest.mock import MagicMock, mock_open, patch
+from unittest.mock import MagicMock, call, mock_open, patch
 
 import numpy as np
 import pytest
@@ -44,32 +44,43 @@ def test_to_dicts():
 
 
 @patch('ta2.search.os.makedirs')
-def test_pipelinesearcher(makedirs_mock):
-    # static methods
-    assert hasattr(PipelineSearcher, '_find_datasets')
-    assert hasattr(PipelineSearcher, '_new_pipeline')
-
-    # default parameters
+def test_pipelinesearcher_defaults(makedirs_mock):
     instance = PipelineSearcher()
 
-    makedirs_mock.assert_called_with(instance.ranked_dir, exist_ok=True)
+    expected_calls = [
+        call('output/pipelines_ranked', exist_ok=True),
+        call('output/pipelines_scored', exist_ok=True),
+        call('output/pipelines_searched', exist_ok=True),
+    ]
+    assert makedirs_mock.call_args_list == expected_calls
 
     assert instance.input == 'input'
     assert instance.output == 'output'
     assert not instance.dump
-    assert instance.ranked_dir == '{}/pipelines_ranked'.format(instance.output)
+    assert instance.ranked_dir == 'output/pipelines_ranked'
+    assert instance.scored_dir == 'output/pipelines_scored'
+    assert instance.searched_dir == 'output/pipelines_searched'
     assert isinstance(instance.data_pipeline, Pipeline)
     assert isinstance(instance.scoring_pipeline, Pipeline)
 
-    # other parameters
+
+@patch('ta2.search.os.makedirs')
+def test_pipelinesearcher(makedirs_mock):
     instance = PipelineSearcher(input_dir='new-input', output_dir='new-output', dump=True)
 
-    makedirs_mock.assert_called_with(instance.ranked_dir, exist_ok=True)
+    expected_calls = [
+        call('new-output/pipelines_ranked', exist_ok=True),
+        call('new-output/pipelines_scored', exist_ok=True),
+        call('new-output/pipelines_searched', exist_ok=True),
+    ]
+    assert makedirs_mock.call_args_list == expected_calls
 
     assert instance.input == 'new-input'
     assert instance.output == 'new-output'
     assert instance.dump
-    assert instance.ranked_dir == '{}/pipelines_ranked'.format(instance.output)
+    assert instance.ranked_dir == 'new-output/pipelines_ranked'
+    assert instance.scored_dir == 'new-output/pipelines_scored'
+    assert instance.searched_dir == 'new-output/pipelines_searched'
     assert isinstance(instance.data_pipeline, Pipeline)
     assert isinstance(instance.scoring_pipeline, Pipeline)
     assert instance.datasets == {}
@@ -198,7 +209,7 @@ def test_pipelinesearcher_score_pipeline(evaluate_mock):
     }
 
     # with custom metrics
-    result = instance.score_pipeline(
+    instance.score_pipeline(
         dataset, problem, pipeline_mock,
         metrics=metrics, random_seed=random_seed,
         folds=folds, stratified=stratified, shuffle=shuffle
@@ -219,11 +230,10 @@ def test_pipelinesearcher_score_pipeline(evaluate_mock):
     )
 
     assert pipeline_mock.cv_scores == [score.value[0] for score in expected_scores]
-    assert result == np.mean(pipeline_mock.cv_scores)
 
     # with problem metrics
 
-    result = instance.score_pipeline(
+    instance.score_pipeline(
         dataset, problem, pipeline_mock,
         metrics=None, random_seed=random_seed,
         folds=folds, stratified=stratified, shuffle=shuffle
@@ -244,44 +254,6 @@ def test_pipelinesearcher_score_pipeline(evaluate_mock):
     )
 
     assert pipeline_mock.cv_scores == [score.value[0] for score in expected_scores]
-    assert result == np.mean(pipeline_mock.cv_scores)
-
-
-@patch('ta2.search.random.random')
-def test_pipelinesearcher_save_pipeline(random_mock):
-    id = 'test-id'
-    score = 1.0
-    random_mock.return_value = 2
-    pipeline_mock = MagicMock(id=id, score=score)
-    pipeline_mock.to_json_structure = MagicMock(return_value={})
-    open_mock = mock_open()
-
-    # avoid saving pipeline on file
-    instance = PipelineSearcher(dump=False)
-    instance.solutions = []     # normally, setted in `PipelineSearcher.setup_search`
-
-    result = instance._save_pipeline(pipeline_mock, None)  # normalized_score (None) not used in this case
-
-    assert result is None
-    assert pipeline_mock.to_json_structure.call_count == 1
-    assert instance.solutions == [{'score': score}]
-    assert not random_mock.called
-    assert not open_mock.called
-
-    # saving the pipeline on file (dump = True)
-    instance = PipelineSearcher(dump=True)
-    instance.solutions = []     # normally, setted in `PipelineSearcher.setup_search`
-
-    with patch('ta2.search.open', open_mock) as _:
-        result = instance._save_pipeline(pipeline_mock, 1)
-
-    assert result is None
-    assert pipeline_mock.to_json_structure.call_count == 2
-    assert instance.solutions == [{'score': score, 'pipeline_rank': 2.e-12}]
-    assert random_mock.call_count == 1
-    assert open_mock.call_count == 1
-
-    open_mock.assert_called_with('{}/{}.json'.format(instance.ranked_dir, id), 'w')
 
 
 @patch('ta2.search.datetime')
