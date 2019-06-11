@@ -13,8 +13,8 @@ from d3m.runtime import Runtime, score
 
 from ta2 import logging_setup
 from ta2.search import PipelineSearcher
-from ta2.ta3.server import serve
 from ta2.ta3.client import TA3APIClient
+from ta2.ta3.server import serve
 
 
 def load_dataset(root_path, phase, inner_phase=None):
@@ -200,7 +200,7 @@ def _ta3_test(args):
     client = TA3APIClient(args.port, local_input, remote_input)
 
     print('### Hello ###')
-    hello = client.hello()
+    client.hello()
 
     for dataset in args.dataset:
         _ta3_test_dataset(client, dataset, args.timeout / 60)
@@ -218,93 +218,6 @@ def _server(args):
         timeout = 600
 
     serve(args.port, input_dir, output_dir, timeout, args.debug)
-
-
-# def get_parser():
-# 
-#     # Logging
-#     logging_args = argparse.ArgumentParser(add_help=False)
-#     logging_args.add_argument('-v', '--verbose', action='count', default=0,
-#                               help='Be verbose. Use -vv for increased verbosity')
-#     logging_args.add_argument('-l', '--logfile', type=str, nargs='?',
-#                               help='Path to the logging file. If not given, log to stdout')
-# 
-#     # IO Specification
-#     io_args = argparse.ArgumentParser(add_help=False)
-#     io_args.add_argument('-i', '--input', default='input',
-#                          help='Path to the datsets root folder')
-#     io_args.add_argument('-o', '--output', default='output',
-#                          help='Path to the folder where outputs will be stored')
-# 
-#     # Datasets
-#     dataset_args = argparse.ArgumentParser(add_help=False)
-#     dataset_args.add_argument('dataset', nargs='+', help='Name of the dataset to use for the test')
-# 
-#     # Search Configuration
-#     search_args = argparse.ArgumentParser(add_help=False)
-#     search_args.add_argument('-t', '--timeout', type=int,
-#                              help='Maximum time allowed for the tuning, in number of seconds')
-# 
-#     # TA3 Server Args
-#     server_args = argparse.ArgumentParser(add_help=False)
-#     server_args.add_argument('--debug', action='store_true',
-#                              help='Start the server in sync mode. Needed for debugging.')
-#     server_args.add_argument('-L', '--server-logfile', default='logs/ta3_api_server.log',
-#                              help='Path to the server logging file')
-# 
-#     # TA3-TA2 Common Args
-#     ta3_args = argparse.ArgumentParser(add_help=False)
-#     ta3_args.add_argument('--port', type=int, default=45042,
-#                           help='Port to use, both for client and server.')
-# 
-#     # Global Parser
-#     parser = argparse.ArgumentParser(
-#         description='MIT-D3M-TA2 Command Line Interface',
-#         parents=[logging_args, io_args, search_args]
-#     )
-# 
-#     subparsers = parser.add_subparsers(title='mode', help='Command to execute')
-#     parser.set_defaults(command=None)
-# 
-#     # TA2 Standalone Test
-#     ta2_parser = subparsers.add_parser(
-#         'ta2',
-#         parents=[logging_args, io_args, search_args, dataset_args],
-#         help='Run TA2 Standalone Test'
-#     )
-#     ta2_parser.set_defaults(command=_ta2_test)
-#     ta2_parser.add_argument(
-#         '-r', '--report',
-#         help='Path to the CSV file where scores will be dumped. If not given, print to stdout.')
-#     ta2_parser.add_argument(
-#         '-b', '--budget', type=int,
-#         help='Maximum number of tuning iterations to perform')
-# 
-#     # TA3-TA2 API Test
-#     ta3_parser = subparsers.add_parser(
-#         'ta3',
-#         parents=[logging_args, io_args, search_args, ta3_args, dataset_args],
-#         help='Run TA3-TA2 API Test'
-#     )
-#     ta3_parser.set_defaults(command=_ta3_test)
-#     ta3_parser.add_argument('--server', action='store_true', help=(
-#         'Start a server instance in background.'
-#     ))
-#     ta3_parser.add_argument('--docker', action='store_true', help=(
-#         'Adapt input paths to work with a dockerized TA2.'
-#     ))
-# 
-#     # TA3-TA2 Server
-#     server_parser = subparsers.add_parser(
-#         'server',
-#         parents=[logging_args, io_args, ta3_args, search_args],
-#         help='Start a TA3-TA2 Server'
-#     )
-#     server_parser.set_defaults(command=_server)
-#     server_parser.add_argument('--debug', action='store_true',
-#                                help='Start the server in sync mode. Needed for debugging.')
-# 
-#     return parser
 
 
 def parse_args(ta3=False):
@@ -401,21 +314,3 @@ def ta2():
 def ta3():
     args = parse_args(True)
     _ta3_test(args)
-
-
-# def main():
-#     parser = get_parser()
-#     args = parser.parse_args()
-# 
-#     logging_setup(args.verbose, args.logfile)
-#     logging.getLogger("d3m.metadata.pipeline_run").setLevel(logging.ERROR)
-# 
-#     if not args.command:
-#         parser.print_help()
-#         parser.exit()
-# 
-#     args.command(args)
-# 
-# 
-# if __name__ == '__main__':
-#     main()
