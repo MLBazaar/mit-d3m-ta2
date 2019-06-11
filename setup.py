@@ -5,12 +5,11 @@ from setuptools import setup, find_packages
 
 
 install_requires = [
-    'd3m==2019.4.4',
+    'd3m==2019.6.7',
     'baytune==0.2.4',
     'tabulate>=0.8.3,<0.9',
-    'pandas==0.23.4',
     'numpy==1.15.4',
-    'scikit-learn[alldeps]==0.20.2',
+    'scikit-learn[alldeps]==0.20.3',
 ]
 
 
@@ -35,14 +34,13 @@ development_requires = [
     'm2r>=0.2.0',
     'Sphinx>=1.7.1',
     'sphinx_rtd_theme>=0.2.4',
-    'recommonmark>=0.4.0',
 
     # style check
     'flake8>=3.7.7',
     'isort>=4.3.4',
 
     # fix style issues
-    'autoflake>=1.1',
+    'autoflake>=1.2',
     'autopep8>=1.4.3',
 
     # distribute on PyPI
@@ -50,8 +48,8 @@ development_requires = [
     'wheel>=0.30.0',
 
     # Advanced testing
-    'coverage>=4.5.1',
     'tox>=2.9.1',
+    'coverage>=4.5.1',
 ]
 
 
@@ -67,6 +65,12 @@ setup(
         'Programming Language :: Python :: 3.6',
     ],
     description='MIT-Featuretools TA2 submission for the D3M program.',
+    entry_points={
+        'console_scripts': [
+            'ta2=ta2.__main__:ta2',
+            'ta3=ta2.__main__:ta3',
+        ]
+    },
     extras_require={
         'test': tests_require,
         'dev': development_requires + tests_require,

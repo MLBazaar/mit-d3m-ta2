@@ -1,4 +1,4 @@
--e git+https://gitlab.com/datadrivendiscovery/ta3ta2-api.git@58f2da314ea5fa5c2d517f9c2463a7aea4f719f3#egg=ta3ta2-api
--e git+https://gitlab.com/datadrivendiscovery/sklearn-wrap.git@2a3a1864473aa5b57421bf89fd2ad88b04a86e2c#egg=sklearn_wrap
--e git+https://gitlab.com/datadrivendiscovery/common-primitives.git@3df2ad23e1801e43166c64dc5767d847f232181d#egg=common_primitives
--e git+https://github.com/dvdmjohnson/d3m_michigan_primitives.git@da649e7c0808b1f9300d4b5501f171993f60404f#egg=spider
+-e git+https://gitlab.com/datadrivendiscovery/ta3ta2-api.git@5f806841f6aa8df64540cee37805586116633e6c#egg=ta3ta2-api
+-e git+https://gitlab.com/datadrivendiscovery/sklearn-wrap.git@594f2a84ddd1e8b68fde672f21a746dcda7678e9#egg=sklearn_wrap
+-e git+https://gitlab.com/datadrivendiscovery/common-primitives.git@fb94e67355a117fde5c414f88a31dc7accb8746d#egg=common_primitives
+-e git+https://gitlab.com/datadrivendiscovery/tests-data.git@e6299dfefcdfdc309dac0dc28b9bbf3eb9193cae#egg=test_primitives&subdirectory=primitives

@@ -3,7 +3,6 @@ import itertools
 import json
 import logging
 import os
-import random
 import warnings
 from collections import defaultdict
 from datetime import datetime, timedelta
@@ -17,6 +16,7 @@ from d3m.metadata.problem import TaskType
 from d3m.runtime import evaluate
 
 from ta2.template import load_template
+from ta2.utils import dump_pipeline
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 PIPELINES_DIR = os.path.join(BASE_DIR, 'pipelines')
@@ -96,9 +96,9 @@ class PipelineSearcher:
 
         if data_modality == 'single_table':
             if task_type == TaskType.CLASSIFICATION.name:
-                return 'gradient_boosting_classification.all_hp.yml'
+                return 'xgb_classification.all_hp.yml'
             elif task_type == TaskType.REGRESSION.name:
-                return 'gradient_boosting_regression.all_hp.yml'
+                return 'xgb_regression.all_hp.yml'
         elif data_modality == 'image':
             if task_type == TaskType.CLASSIFICATION.name:
                 return 'image_classification.yml'
@@ -107,13 +107,17 @@ class PipelineSearcher:
 
         raise ValueError('Unsupported problem')
 
-    def __init__(self, input_dir='input', output_dir='output', dump=True):
+    def __init__(self, input_dir='input', output_dir='output', dump=False):
         self.input = input_dir
         self.output = output_dir
         self.dump = dump
 
         self.ranked_dir = os.path.join(self.output, 'pipelines_ranked')
+        self.scored_dir = os.path.join(self.output, 'pipelines_scored')
+        self.searched_dir = os.path.join(self.output, 'pipelines_searched')
         os.makedirs(self.ranked_dir, exist_ok=True)
+        os.makedirs(self.scored_dir, exist_ok=True)
+        os.makedirs(self.searched_dir, exist_ok=True)
 
         self.datasets = self._find_datasets(input_dir)
         self.data_pipeline = self._load_pipeline('kfold_pipeline.yml')
@@ -145,29 +149,26 @@ class PipelineSearcher:
         pipeline.cv_scores = [score.value[0] for score in all_scores]
         pipeline.score = np.mean(pipeline.cv_scores)
 
-        return pipeline.score
+    def _save_pipeline(self, pipeline):
+        pipeline_dict = pipeline.to_json_structure()
 
-    def _save_pipeline(self, pipeline, normalized_score):
-        pipeline_json = pipeline.to_json_structure()
-        pipeline_json['score'] = pipeline.score
-        self.solutions.append(pipeline_json)
+        if pipeline.score is None:
+            dump_pipeline(pipeline_dict, self.searched_dir)
+        else:
+            dump_pipeline(pipeline_dict, self.scored_dir)
 
-        if self.dump:
-            rank = (1 - normalized_score) + random.random() * 1.e-12   # to avoid collisions
-            pipeline_json['pipeline_rank'] = rank
-            # pipeline_json['pipeline_rank'] = pipeline.rank
+            if self.dump:
+                dump_pipeline(pipeline_dict, self.ranked_dir, pipeline.normalized_score)
 
-            pipeline_filename = pipeline.id + '.json'
-            pipeline_path = os.path.join(self.ranked_dir, pipeline_filename)
-
-            with open(pipeline_path, 'w') as pipeline_file:
-                json.dump(pipeline_json, pipeline_file, indent=4)
+            pipeline_dict['score'] = pipeline.score
+            pipeline_dict['normalized_score'] = pipeline.normalized_score
+            self.solutions.append(pipeline_dict)
 
     @staticmethod
     def _new_pipeline(pipeline, hyperparams=None):
         hyperparams = to_dicts(hyperparams) if hyperparams else dict()
 
-        new_pipeline = Pipeline(context=Context.TESTING)
+        new_pipeline = Pipeline()
         for input_ in pipeline.inputs:
             new_pipeline.add_input(name=input_['name'])
 
@@ -267,26 +268,28 @@ class PipelineSearcher:
                 params = '\n'.join('{}: {}'.format(k, v) for k, v in proposal.items())
                 LOGGER.info("Scoring pipeline %s: %s\n%s", i + 1, pipeline.id, params)
                 try:
-                    score = self.score_pipeline(dataset, problem, pipeline)
-                    normalized_score = metric.normalize(score)
+                    self.score_pipeline(dataset, problem, pipeline)
+                    pipeline.normalized_score = metric.normalize(pipeline.score)
                 except Exception:
                     LOGGER.exception("Error scoring pipeline %s", pipeline.id)
-                    score = None
-                    normalized_score = 0.0
+                    pipeline.score = None
+                    pipeline.normalized_score = 0.0
 
                 try:
-                    self._save_pipeline(pipeline, normalized_score)
+                    self._save_pipeline(pipeline)
                 except Exception:
                     LOGGER.exception("Error saving pipeline %s", pipeline.id)
 
-                tuner.add(proposal, normalized_score)
-                LOGGER.info("Pipeline %s score: %s - %s", pipeline.id, score, normalized_score)
+                tuner.add(proposal, pipeline.normalized_score)
+                LOGGER.info("Pipeline %s score: %s - %s",
+                            pipeline.id, pipeline.score, pipeline.normalized_score)
 
-                if normalized_score > best_normalized:
-                    LOGGER.info("New best pipeline found! %s > %s", score, best_score)
+                if pipeline.normalized_score > best_normalized:
+                    LOGGER.info("New best pipeline found! %s is better than %s",
+                                pipeline.score, best_score)
                     best_pipeline = pipeline.id
-                    best_score = score
-                    best_normalized = normalized_score
+                    best_score = pipeline.score
+                    best_normalized = pipeline.normalized_score
 
                 proposal = tuner.propose(1)
 

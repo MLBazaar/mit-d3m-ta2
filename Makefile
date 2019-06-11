@@ -49,9 +49,7 @@ clean-pyc: ## remove Python file artifacts
 .PHONY: clean-docs
 clean-docs: ## remove previously built docs
 	rm -rf docs/build
-	rm -f docs/ta2.rst
-	rm -f docs/ta2.*.rst
-	rm -f docs/modules.rst
+	rm -rf docs/api
 	$(MAKE) -C docs clean
 
 .PHONY: clean-coverage
@@ -106,7 +104,7 @@ fix-lint: ## fix lint issues using autoflake, autopep8, and isort
 
 .PHONY: test
 test: ## run tests quickly with the default Python
-	python -m pytest tests/unit --cov=ta2
+	python -m pytest tests --cov=ta2
 
 .PHONY: test-all
 test-all: ## run tests on every Python version with tox
@@ -124,7 +122,7 @@ coverage: ## check code coverage quickly with the default Python
 
 .PHONY: docs
 docs: clean-docs ## generate Sphinx HTML documentation, including API docs
-	sphinx-apidoc --module-first --separate -T -o docs/api/ ta2
+	sphinx-apidoc --separate -T -o docs/api/ ta2
 	$(MAKE) -C docs html
 
 .PHONY: view-docs
