@@ -100,7 +100,8 @@
 <li class="toctree-l1"><a class="reference internal" href="readme.html#usage">Usage</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="readme.html#local-testing">Local Testing</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="readme.html#ta2-standalone-mode">TA2 Standalone Mode</a></li>
-<li class="toctree-l3"><a class="reference internal" href="readme.html#ta2-ta3-api-mode">TA2-TA3 API Mode</a></li>
+<li class="toctree-l3"><a class="reference internal" href="readme.html#ta2-ta3-server-mode">TA2-TA3 Server Mode</a></li>
+<li class="toctree-l3"><a class="reference internal" href="readme.html#ta2-ta3-test">TA2-TA3 Test</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="readme.html#docker-usage">Docker Usage</a></li>
@@ -408,45 +409,50 @@ allowed for the tuning (<code class="docutils literal notranslate"><span class="
 <p>Two scripts are included in the repository for local testing:</p>
 <div class="section" id="ta2-standalone-mode">
 <h3>TA2 Standalone Mode<a class="headerlink" href="#ta2-standalone-mode" title="Permalink to this headline">¶</a></h3>
-<p>The TA2 Standalone mode can be executed locally using the <code class="docutils literal notranslate"><span class="pre">ta2_test.py</span></code> script.</p>
-<p>To use this script, call it using python and passing one or more dataset names
-as positional arguments, along with any of the optional named arguments.</p>
-<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">ta2_test</span><span class="p">.</span><span class="n">py</span> <span class="o">-</span><span class="n">b10</span> <span class="o">-</span><span class="n">t60</span> <span class="o">-</span><span class="n">v</span> <span class="mi">185</span><span class="n">_baseball</span>
+<p>The TA2 Standalone mode can be executed locally using the <code class="docutils literal notranslate"><span class="pre">ta2</span></code> command line interface.</p>
+<p>To use this, run the <code class="docutils literal notranslate"><span class="pre">ta2</span> <span class="pre">standalone</span></code> command passing one or more dataset names as positional
+arguments, as well as any of the optional named arguments.</p>
+<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span><span class="n">ta2</span> <span class="n">standalone</span> <span class="o">-</span><span class="n">b10</span> <span class="o">-</span><span class="n">t60</span> <span class="o">-</span><span class="n">v</span> <span class="mi">185</span><span class="n">_baseball</span>
 </pre></div>
 </div>
-<p>For a full description of the script options, execute <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">ta2_test.py</span> <span class="pre">--help</span></code>.</p>
+<p>For a full description of the script options, execute <code class="docutils literal notranslate"><span class="pre">ta2</span> <span class="pre">standalone</span> <span class="pre">--help</span></code>.</p>
 </div>
-<div class="section" id="ta2-ta3-api-mode">
-<h3>TA2-TA3 API Mode<a class="headerlink" href="#ta2-ta3-api-mode" title="Permalink to this headline">¶</a></h3>
-<p>The TA2-TA3 API mode can be executed locally using the <code class="docutils literal notranslate"><span class="pre">ta3_test.py</span></code> script.</p>
-<p>This script will start a ta2 server in the background and then send a series of requests
-using the ta3 client to fully test a dataset.</p>
-<p>To use this script, call it using python and passing one or more dataset names
-as positional arguments, along with any of the optional named arguments. If no dataset
-names are given, all the datasets found in the input folder will be tested in succession.</p>
-<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">ta3_test</span><span class="p">.</span><span class="n">py</span> <span class="o">-</span><span class="n">v</span> <span class="mi">185</span><span class="n">_baseball</span>
+<div class="section" id="ta2-ta3-server-mode">
+<h3>TA2-TA3 Server Mode<a class="headerlink" href="#ta2-ta3-server-mode" title="Permalink to this headline">¶</a></h3>
+<p>The TA2-TA3 API mode can be executed using the <code class="docutils literal notranslate"><span class="pre">ta2</span> <span class="pre">server</span></code> command, as well as any of the
+optional named arguments required.</p>
+<p>This will start a ta2 server in the background ready to serve requests from a ta3 client.</p>
+<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span><span class="n">ta2</span> <span class="n">server</span> <span class="o">-</span><span class="n">v</span>
 </pre></div>
 </div>
-<p>By default, the logs of the server will be stored inside the <code class="docutils literal notranslate"><span class="pre">logs</span></code> folder, and the output
-from the client will be shown in stdout, but this behavior can be optionally changed by
-passing additional arguments.</p>
-<p>Optionally, the server can be prevented from being started in the background by using the
-<code class="docutils literal notranslate"><span class="pre">--no-server</span></code> flag. This is useful if you are running the server in a separated process.</p>
-<p>For a full description of the script options, execute <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">ta3_test.py</span> <span class="pre">--help</span></code>.</p>
+<p>For a full description of the script options, execute <code class="docutils literal notranslate"><span class="pre">ta2</span> <span class="pre">server</span> <span class="pre">--help</span></code>.</p>
+</div>
+<div class="section" id="ta2-ta3-test">
+<h3>TA2-TA3 Test<a class="headerlink" href="#ta2-ta3-test" title="Permalink to this headline">¶</a></h3>
+<p>In order to test the TA2-TA3 Server, a convenience <code class="docutils literal notranslate"><span class="pre">ta3</span></code> command line interface has been included,
+which allows testing one or more datasets by issuing a predefined sequence of calls to the
+TA2-TA3 Server.</p>
+<p>To use it, run the <code class="docutils literal notranslate"><span class="pre">ta3</span></code> command passing one or more dataset names as positional
+arguments, as well as any of the optional named arguments.</p>
+<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span><span class="n">ta3</span> <span class="o">-</span><span class="n">b10</span> <span class="o">-</span><span class="n">t60</span> <span class="o">-</span><span class="n">v</span> <span class="mi">185</span><span class="n">_baseball</span>
+</pre></div>
+</div>
+<p>For a full description of the script options, execute <code class="docutils literal notranslate"><span class="pre">ta3</span> <span class="pre">--help</span></code>.</p>
+<p>Also remember that a TA2-TA3 Server must be running when you execute this script!</p>
 </div>
 </div>
 <div class="section" id="docker-usage">
 <h2>Docker Usage<a class="headerlink" href="#docker-usage" title="Permalink to this headline">¶</a></h2>
 <p>In order to run TA2-TA3 server from docker, you first have to build the image and
 execute the <code class="docutils literal notranslate"><span class="pre">run_docker.sh</span></code> script.
-After that, in a different console, you can run the <code class="docutils literal notranslate"><span class="pre">ta3_test.py</span></code> script passing it the
+After that, in a different console, you can run the <code class="docutils literal notranslate"><span class="pre">ta3</span></code> script passing it the
 <code class="docutils literal notranslate"><span class="pre">--docker</span></code> flag to adapt the input paths accordingly:</p>
 <div class="highlight-guess notranslate"><div class="highlight"><pre><span></span><span class="n">make</span> <span class="n">build</span>
 <span class="p">.</span><span class="o">/</span><span class="n">run_docker</span><span class="p">.</span><span class="n">sh</span>
 </pre></div>
 </div>
 <p>And, in a different terminal:</p>
-<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">ta3_test</span><span class="p">.</span><span class="n">py</span> <span class="o">-</span><span class="n">v</span> <span class="o">-</span><span class="n">t2</span> <span class="c1">--docker</span>
+<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span><span class="n">ta3</span> <span class="o">-</span><span class="n">v</span> <span class="o">-</span><span class="n">t2</span> <span class="c1">--docker</span>
 </pre></div>
 </div>
 </div>
