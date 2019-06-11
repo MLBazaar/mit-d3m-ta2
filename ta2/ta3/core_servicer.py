@@ -1,7 +1,6 @@
 import json
 import logging
 import os
-import random
 import tempfile
 import threading
 import time
@@ -21,6 +20,7 @@ from ta3ta2_api.problem_pb2 import PerformanceMetric, TaskSubtype, TaskType
 from ta3ta2_api.utils import decode_performance_metric, decode_problem_description, encode_score
 
 from ta2.search import PipelineSearcher
+from ta2.utils import dump_pipeline
 
 
 def recursivedict():
@@ -676,6 +676,7 @@ class CoreServicer(core_pb2_grpc.CoreServicer):
 
         self.input_dir = os.path.abspath(input_dir)
         self.output_dir = os.path.abspath(output_dir)
+        self.ranked_dir = os.path.join(self.output_dir, 'pipelines_ranked')
         self.timeout = timeout
         self.debug = debug
 
@@ -1162,8 +1163,7 @@ class CoreServicer(core_pb2_grpc.CoreServicer):
         for metric, pipeline in metric_pipelines:
             metric = decode_performance_metric(metric)
 
-            score = searcher.score_pipeline(dataset, problem, pipeline, [metric], **cv_args)
-            pipeline.score = score
+            searcher.score_pipeline(dataset, problem, pipeline, [metric], **cv_args)
 
     def ScoreSolution(self, request, context):
         """
@@ -1293,6 +1293,7 @@ class CoreServicer(core_pb2_grpc.CoreServicer):
             pipeline = Pipeline.from_json_structure(solution)
             pipeline.cv_scores = list()
             pipeline.score = solution.get('score')
+            pipeline.normalized_score = solution.get('normalized_score')
             solution['session'] = session
 
             return pipeline, session
@@ -1600,19 +1601,6 @@ class CoreServicer(core_pb2_grpc.CoreServicer):
 
         return self._stream(session, self._get_produce_solution_results, close_on_done=True)
 
-    def dump_pipeline(self, pipeline, rank):
-        if rank is None:
-            rank = (1 - pipeline.score) + random.random() * 1.e-12   # to avoid collisions
-
-        pipeline_json = pipeline.to_json_structure()
-        pipeline_json['pipeline_rank'] = rank
-
-        pipeline_filename = pipeline.id + '.json'
-        pipeline_path = os.path.join(self.output_dir, 'pipelines_ranked', pipeline_filename)
-
-        with open(pipeline_path, 'w') as pipeline_file:
-            json.dump(pipeline_json, pipeline_file, indent=4)
-
     def SolutionExport(self, request, context):
         """
         rpc SolutionExport (SolutionExportRequest) returns (SolutionExportResponse) {}
@@ -1636,7 +1624,8 @@ class CoreServicer(core_pb2_grpc.CoreServicer):
 
         runtime = self._get_fitted_solution(fitted_solution_id)
 
-        self.dump_pipeline(runtime.pipeline, rank)
+        pipeline = runtime.pipeline
+        dump_pipeline(pipeline, self.ranked_dir, pipeline.normalized_score, rank=rank)
 
         return core_pb2.SolutionExportResponse()
 
