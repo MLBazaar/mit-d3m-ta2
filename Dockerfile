@@ -1,4 +1,4 @@
-FROM registry.datadrivendiscovery.org/jpl/docker_images/complete:ubuntu-bionic-python36-v2019.6.7-20190611-060317
+FROM registry.datadrivendiscovery.org/jpl/docker_images/complete:ubuntu-bionic-python36-v2019.6.7-20190611-205824
 
 ARG D3MPORT=45042
 
@@ -18,7 +18,6 @@ RUN pip3 install -e /user_dev
 
 # Copy code
 COPY ta2 /user_dev/ta2
-COPY ta2_test.py /user_dev/
 
 WORKDIR /user_dev
 CMD ["python3", "/user_dev/ta2/ta3/server.py", "-v"]

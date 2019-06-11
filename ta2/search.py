@@ -60,8 +60,8 @@ def to_dicts(hyperparameters):
 class PipelineSearcher:
 
     def _detect_data_modality(self, dataset):
-        return 'image'
-        # return 'single_table'
+        # return 'image'
+        return 'single_table'
 
     @staticmethod
     def _find_datasets(input_dir):
@@ -98,6 +98,8 @@ class PipelineSearcher:
             if task_type == TaskType.CLASSIFICATION.name:
                 return 'xgb_classification.all_hp.yml'
             elif task_type == TaskType.REGRESSION.name:
+                return 'xgb_regression.all_hp.yml'
+            elif task_type == TaskType.COLLABORATIVE_FILTERING.name:
                 return 'xgb_regression.all_hp.yml'
         elif data_modality == 'image':
             if task_type == TaskType.CLASSIFICATION.name:

@@ -2,3 +2,4 @@
 -e git+https://gitlab.com/datadrivendiscovery/sklearn-wrap.git@594f2a84ddd1e8b68fde672f21a746dcda7678e9#egg=sklearn_wrap
 -e git+https://gitlab.com/datadrivendiscovery/common-primitives.git@fb94e67355a117fde5c414f88a31dc7accb8746d#egg=common_primitives
 -e git+https://gitlab.com/datadrivendiscovery/tests-data.git@e6299dfefcdfdc309dac0dc28b9bbf3eb9193cae#egg=test_primitives&subdirectory=primitives
+-e git+https://github.com/Featuretools/ta1-primitives.git@b62cfcd039404c971b32037fa2722c7a0a49171e#egg=featuretools_ta1
