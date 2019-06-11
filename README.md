@@ -145,46 +145,52 @@ Two scripts are included in the repository for local testing:
 
 ### TA2 Standalone Mode
 
-The TA2 Standalone mode can be executed locally using the `ta2_test.py` script.
+The TA2 Standalone mode can be executed locally using the `ta2` command line interface.
 
-To use this script, call it using python and passing one or more dataset names
-as positional arguments, along with any of the optional named arguments.
-
-```
-python ta2_test.py -b10 -t60 -v 185_baseball
-```
-
-For a full description of the script options, execute `python ta2_test.py --help`.
-
-### TA2-TA3 API Mode
-
-The TA2-TA3 API mode can be executed locally using the `ta3_test.py` script.
-
-This script will start a ta2 server in the background and then send a series of requests
-using the ta3 client to fully test a dataset.
-
-To use this script, call it using python and passing one or more dataset names
-as positional arguments, along with any of the optional named arguments. If no dataset
-names are given, all the datasets found in the input folder will be tested in succession.
+To use this, run the `ta2 standalone` command passing one or more dataset names as positional
+arguments, as well as any of the optional named arguments.
 
 ```
-python ta3_test.py -v 185_baseball
+ta2 standalone -b10 -t60 -v 185_baseball
 ```
 
-By default, the logs of the server will be stored inside the `logs` folder, and the output
-from the client will be shown in stdout, but this behavior can be optionally changed by
-passing additional arguments.
+For a full description of the script options, execute `ta2 standalone --help`.
 
-Optionally, the server can be prevented from being started in the background by using the
-`--no-server` flag. This is useful if you are running the server in a separated process.
+### TA2-TA3 Server Mode
 
-For a full description of the script options, execute `python ta3_test.py --help`.
+The TA2-TA3 API mode can be executed using the `ta2 server` command, as well as any of the
+optional named arguments required.
+
+This will start a ta2 server in the background ready to serve requests from a ta3 client.
+
+```
+ta2 server -v
+```
+
+For a full description of the script options, execute `ta2 server --help`.
+
+### TA2-TA3 Test
+
+In order to test the TA2-TA3 Server, a convenience `ta3` command line interface has been included,
+which allows testing one or more datasets by issuing a predefined sequence of calls to the
+TA2-TA3 Server.
+
+To use it, run the `ta3` command passing one or more dataset names as positional
+arguments, as well as any of the optional named arguments.
+
+```
+ta3 -b10 -t60 -v 185_baseball
+```
+
+For a full description of the script options, execute `ta3 --help`.
+
+Also remember that a TA2-TA3 Server must be running when you execute this script!
 
 ## Docker Usage
 
 In order to run TA2-TA3 server from docker, you first have to build the image and
 execute the `run_docker.sh` script.
-After that, in a different console, you can run the `ta3_test.py` script passing it the
+After that, in a different console, you can run the `ta3` script passing it the
 `--docker` flag to adapt the input paths accordingly:
 
 ```
@@ -195,7 +201,7 @@ make build
 And, in a different terminal:
 
 ```
-python ta3_test.py -v -t2 --docker
+ta3 -v -t2 --docker
 ```
 
 # Submission
