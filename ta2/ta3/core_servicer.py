@@ -1293,6 +1293,7 @@ class CoreServicer(core_pb2_grpc.CoreServicer):
             pipeline = Pipeline.from_json_structure(solution)
             pipeline.cv_scores = list()
             pipeline.score = solution.get('score')
+            pipeline.normalized_score = solution.get('normalized_score')
             solution['session'] = session
 
             return pipeline, session
