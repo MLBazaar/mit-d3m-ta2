@@ -95,9 +95,11 @@ class PipelineSearcher:
         LOGGER.info("Loading pipeline for task type %s", task_type)
 
         if task_type == TaskType.CLASSIFICATION:
-            return 'gradient_boosting_classification.all_hp.yml'
+            # return 'gradient_boosting_classification.all_hp.yml'
+            return 'xgb_classification.all_hp.yml'
         elif task_type == TaskType.REGRESSION:
-            return 'gradient_boosting_regression.all_hp.yml'
+            # return 'gradient_boosting_regression.all_hp.yml'
+            return 'xgb_regression.all_hp.yml'
 
         raise ValueError('Unsupported type of problem')
 

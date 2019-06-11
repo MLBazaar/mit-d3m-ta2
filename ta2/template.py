@@ -7,7 +7,7 @@ from collections import defaultdict
 import yaml
 from btb.hyper_parameter import HyperParameter
 from d3m import index
-from d3m.metadata.base import ArgumentType, Context
+from d3m.metadata.base import ArgumentType
 from d3m.metadata.hyperparams import Union
 from d3m.metadata.pipeline import Pipeline, PrimitiveStep
 
@@ -83,7 +83,7 @@ def load_template(template_name):
 
     steps = template['steps']
 
-    pipeline = Pipeline(context=Context.TESTING)
+    pipeline = Pipeline()
     pipeline.add_input(name='inputs')
 
     for step_num, primitive_config in enumerate(steps):
