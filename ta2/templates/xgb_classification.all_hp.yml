@@ -1,0 +1,58 @@
+steps:
+  - primitive: d3m.primitives.data_transformation.denormalize.Common
+  - primitive: d3m.primitives.data_transformation.dataset_to_dataframe.Common
+  - primitive: d3m.primitives.data_transformation.column_parser.DataFrameCommon
+  - primitive: d3m.primitives.data_cleaning.imputer.SKlearn
+    hyperparams:
+      use_semantic_types:
+        data: true
+      return_result:
+        data: replace
+  - primitive: d3m.primitives.classification.xgboost_gbtree.DataFrameCommon
+    arguments:
+      inputs:
+        type: CONTAINER
+        data: steps.3.produce
+      outputs:
+        type: CONTAINER
+        data: steps.3.produce
+    hyperparams:
+      n_jobs:
+        data: -1
+      return_result:
+        data: replace
+  - primitive: d3m.primitives.data_transformation.construct_predictions.DataFrameCommon
+    arguments:
+      inputs:
+        type: CONTAINER
+        data: steps.4.produce
+      reference:
+        type: CONTAINER
+        data: steps.2.produce
+tunable_hyperparameters:
+  '3':
+    strategy:
+      default: mean
+      range: [median, most_frequent, mean]
+      type: string
+  '4':
+    n_estimators:
+      default: 100
+      range: [10, 1000]
+      type: int
+    learning_rate:
+      default: 0.1
+      range: [0.0001, 1]
+      type: float
+    max_depth:
+      default: 3
+      range: [3, 20]
+      type: int
+    gamma:
+      default: 0
+      range: [0, 1]
+      type: float
+    min_child_weight:
+      default: 1
+      range: [1, 10]
+      type: int
