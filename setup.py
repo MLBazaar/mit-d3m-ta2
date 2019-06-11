@@ -66,6 +66,12 @@ setup(
         'Programming Language :: Python :: 3.6',
     ],
     description='MIT-Featuretools TA2 submission for the D3M program.',
+    entry_points={
+        'console_scripts': [
+            'ta2=ta2.__main__:ta2',
+            'ta3=ta2.__main__:ta3',
+        ]
+    },
     extras_require={
         'test': tests_require,
         'dev': development_requires + tests_require,
