@@ -158,7 +158,7 @@ def test_pipelinesearcher_get_template(logger_mock):
     result = instance._get_template(None, data)  # dataset (None) is not used
 
     assert logger_mock.call_count == 1
-    assert result == 'gradient_boosting_classification.all_hp.yml'
+    assert result == 'xgb_classification.all_hp.yml'
 
     # regression
     data['problem']['task_type'] = TaskType.REGRESSION
@@ -166,7 +166,7 @@ def test_pipelinesearcher_get_template(logger_mock):
     result = instance._get_template(None, data)  # dataset (None) is not used
 
     assert logger_mock.call_count == 2
-    assert result == 'gradient_boosting_regression.all_hp.yml'
+    assert result == 'xgb_regression.all_hp.yml'
 
     # not supported
     data['problem']['task_type'] = 'other-task-type'
