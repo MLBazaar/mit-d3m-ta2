@@ -6,7 +6,7 @@ spec:
   restartPolicy: Never
   containers:
   - name: ta2-container
-     image: registry.datadrivendiscovery.org/ta2-submissions/ta2-mit/june2019:latest
+    image: registry.datadrivendiscovery.org/ta2-submissions/ta2-mit/june2019:latest
     env:
     - name: D3MRUN
       value: "ta2"
