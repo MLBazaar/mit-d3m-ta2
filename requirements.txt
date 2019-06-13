@@ -3,3 +3,5 @@
 -e git+https://gitlab.com/datadrivendiscovery/common-primitives.git@fb94e67355a117fde5c414f88a31dc7accb8746d#egg=common_primitives
 -e git+https://gitlab.com/datadrivendiscovery/tests-data.git@e6299dfefcdfdc309dac0dc28b9bbf3eb9193cae#egg=test_primitives&subdirectory=primitives
 -e git+https://github.com/Featuretools/ta1-primitives.git@b62cfcd039404c971b32037fa2722c7a0a49171e#egg=featuretools_ta1
+# -e git+https://github.com/Featuretools/ta1-primitives.git@b2e910ea2e6ca9559945ac716b72dad1297234b1#egg=featuretools_ta1
+-e git+https://github.com/autonlab/fastlvm.git@9a844e009d36fa6302b2a776d97f6362f6edd9b6#egg=fastlvm

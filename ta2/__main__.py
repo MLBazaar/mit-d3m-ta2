@@ -1,7 +1,8 @@
 import argparse
 import logging
 import os
-import time
+import traceback
+from datetime import datetime
 
 import pandas as pd
 import tabulate
@@ -77,49 +78,37 @@ def score_pipeline(dataset_root, problem, pipeline_path):
     return scores.iloc[0].value
 
 
-def box_print(message):
-    print('#' * len(message))
+def box_print(message, strong=False):
+    char = '#' if strong else '*'
+    print(char * len(message))
     print(message)
-    print('#' * len(message))
+    print(char * len(message))
 
 
 def process_dataset(dataset, args):
-    start_time = time.time()
+    start_ts = datetime.utcnow()
 
-    box_print("Processing dataset {}".format(dataset))
+    box_print("Processing dataset {}".format(dataset), True)
+    ensure_downloaded(dataset, args.input)
     dataset_root = os.path.join(args.input, dataset)
     problem = load_problem(dataset_root, 'TRAIN')
 
     print("Searching Pipeline for dataset {}".format(dataset))
     result = search(dataset_root, problem, args)
-    best_id = result['pipeline']
-    best_score = result['score']
-    template = result['template']
-    data_modality = result['data_modality']
-    task_type = result['task_type']
-    tuning_iterations = result['tuning_iterations']
+    result['elapsed_time'] = datetime.utcnow() - start_ts
 
-    if best_id is None or best_score is None:
-        raise ValueError('Unsupported problem')
+    pipeline_id = result['pipeline']
+    cv_score = result['cv_score']
+    if cv_score is not None:
+        box_print("Best Pipeline: {} - CV Score: {}".format(pipeline_id, cv_score))
 
-    best_path = os.path.join(args.output, 'pipelines_ranked', best_id + '.json')
-    box_print("Best Pipeline: {} - CV Score: {}".format(best_id, best_score))
+        pipeline_path = os.path.join(args.output, 'pipelines_ranked', pipeline_id + '.json')
+        test_score = score_pipeline(dataset_root, problem, pipeline_path)
+        box_print("Test Score for pipeline {}: {}".format(pipeline_id, test_score))
 
-    test_score = score_pipeline(dataset_root, problem, best_path)
-    box_print("Test Score for pipeline {}: {}".format(best_id, test_score))
+        result['test_score'] = test_score
 
-    end_time = time.time()
-
-    return {
-        'dataset': dataset,
-        'template': template,
-        'cv_score': best_score,
-        'test_score': test_score,
-        'elapsed_time': end_time - start_time,  # seconds
-        'tuning_iterations': tuning_iterations,
-        'data_modality': data_modality,
-        'task_type': task_type
-    }
+    return result
 
 
 REPORT_COLUMNS = [
@@ -137,8 +126,15 @@ REPORT_COLUMNS = [
 def _ta2_test(args):
     results = list()
     for dataset in args.dataset:
-        ensure_downloaded(dataset, args.input)
-        results.append(process_dataset(dataset, args))
+        try:
+            results.append(process_dataset(dataset, args))
+        except Exception as ex:
+            box_print("Error processing dataset {}".format(dataset), True)
+            traceback.print_exc()
+            results.append({
+                'dataset': dataset,
+                'error': str(ex)
+            })
 
     report = pd.DataFrame(
         results,

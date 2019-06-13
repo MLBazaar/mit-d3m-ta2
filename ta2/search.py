@@ -10,7 +10,7 @@ from datetime import datetime, timedelta
 import numpy as np
 from btb.tuning import GP
 from d3m.container.dataset import Dataset
-from d3m.metadata.base import ArgumentType, Context
+from d3m.metadata.base import ALL_ELEMENTS, ArgumentType, Context
 from d3m.metadata.pipeline import Pipeline, PrimitiveStep
 from d3m.metadata.problem import TaskType
 from d3m.runtime import evaluate
@@ -57,11 +57,34 @@ def to_dicts(hyperparameters):
     return params_tree
 
 
+FILE_COLLECTION = 'https://metadata.datadrivendiscovery.org/types/FilesCollection'
+
+
 class PipelineSearcher:
 
     def _detect_data_modality(self, dataset):
-        # return 'image'
-        return 'single_table'
+        file_resources = dataset.metadata.get_elements_with_semantic_type(tuple(), FILE_COLLECTION)
+
+        if not file_resources:
+            if len(dataset.keys()) == 1:
+                return 'single_table'
+            else:
+                return 'multi_table'
+
+        for resource in file_resources:
+            media_types = dataset.metadata.query((resource, ALL_ELEMENTS, 0))['media_types']
+            if len(media_types) > 1:
+                raise ValueError('Unsupported problem: More than one file collection found')
+
+            media_type = media_types[0]
+            if media_type == 'text/plain':
+                return 'text'
+            elif media_type == 'image/jpeg':
+                return 'image'
+            elif media_type == 'text/csv':
+                return 'multi_table'
+
+        raise ValueError('Unsupported problem')
 
     @staticmethod
     def _find_datasets(input_dir):
@@ -94,20 +117,39 @@ class PipelineSearcher:
         LOGGER.info("Loading pipeline for data modality %s and task type %s",
                     data_modality, task_type)
 
-        if data_modality == 'single_table':
-            if task_type == TaskType.CLASSIFICATION.name:
-                return 'xgb_classification.all_hp.yml'
-            elif task_type == TaskType.REGRESSION.name:
-                return 'xgb_regression.all_hp.yml'
-            elif task_type == TaskType.COLLABORATIVE_FILTERING.name:
-                return 'xgb_regression.all_hp.yml'
-        elif data_modality == 'image':
-            if task_type == TaskType.CLASSIFICATION.name:
-                return 'image_classification.yml'
-            elif task_type == TaskType.REGRESSION.name:
-                return 'image_regression.yml'
+        # if data_modality == 'single_table':
+        #     if task_type == TaskType.CLASSIFICATION.name:
+        #         return 'dfs_xgb_classification.hp.yml'
+        #     elif task_type == TaskType.REGRESSION.name:
+        #         return 'dfs_xgb_regression.hp.yml'
+        #     elif task_type == TaskType.COLLABORATIVE_FILTERING.name:
+        #         return 'dfs_xgb_regression.hp.yml'
+        # if data_modality == 'multi_table':
+        #     if task_type == TaskType.CLASSIFICATION.name:
+        #         return 'multi_table_lda_logreg_classification.yml'
+        #         # return 'multi_table_dfs_xgb_classification.all_hp.yml'
+        #     elif task_type == TaskType.REGRESSION.name:
+        #         return 'dfs_xgb_regression.hp.yml'
+        #         # return 'multi_table_lda_lars_regression.yml'
+        #         # return 'multi_table_dfs_xgb_regression.all_hp.yml'
+        # elif data_modality == 'text':
+        #     if task_type == TaskType.CLASSIFICATION.name:
+        #         return 'dfs_xgb_classification.hp.yml'
+        #     elif task_type == TaskType.REGRESSION.name:
+        #         return 'dfs_xgb_regression.hp.yml'
 
-        raise ValueError('Unsupported problem')
+        if task_type == TaskType.REGRESSION.name:
+            return 'dfs_xgb_regression.hp.yml'
+        elif task_type == TaskType.COLLABORATIVE_FILTERING.name:
+            return 'dfs_xgb_regression.hp.yml'
+
+        # Classification and others
+        if data_modality == 'multi_table':
+            return 'multi_table_lda_logreg_classification.yml'
+        else:
+            return 'dfs_xgb_classification.hp.yml'
+
+        return 'dfs_xgb_classification.hp.yml'
 
     def __init__(self, input_dir='input', output_dir='output', dump=False):
         self.input = input_dir
@@ -147,6 +189,12 @@ class PipelineSearcher:
             data_random_seed=random_seed,
             scoring_random_seed=random_seed,
         )
+
+        if not all_scores:
+            failed_result = all_results[-1]
+            message = failed_result.pipeline_run.status['message']
+            LOGGER.error(message)
+            raise Exception(failed_result.error)
 
         pipeline.cv_scores = [score.value[0] for score in all_scores]
         pipeline.score = np.mean(pipeline.cv_scores)
@@ -263,12 +311,12 @@ class PipelineSearcher:
 
         try:
             proposal = defaults
-            for i in iterator:
+            for iteration in iterator:
                 self.check_stop()
                 pipeline = self._new_pipeline(template, proposal)
 
                 params = '\n'.join('{}: {}'.format(k, v) for k, v in proposal.items())
-                LOGGER.info("Scoring pipeline %s: %s\n%s", i + 1, pipeline.id, params)
+                LOGGER.info("Scoring pipeline %s: %s\n%s", iteration + 1, pipeline.id, params)
                 try:
                     self.score_pipeline(dataset, problem, pipeline)
                     pipeline.normalized_score = metric.normalize(pipeline.score)
@@ -301,10 +349,10 @@ class PipelineSearcher:
         self.done = True
         return {
             'pipeline': best_pipeline,
-            'score': best_score,
+            'cv_score': best_score,
             'template': template_name,
             'data_modality': data_modality,
             'task_type': task_type,
             'task_subtype': problem['problem']['task_subtype'].name.lower(),
-            'tuning_iterations': i
+            'tuning_iterations': iteration
         }

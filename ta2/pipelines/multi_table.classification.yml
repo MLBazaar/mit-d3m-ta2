@@ -1,0 +1,130 @@
+created: '2019-05-21T18:49:55.668692Z'
+digest: 2e354793e7fc074c310595a492b8627cebedf22ac26d60a02c13ee6e801fd6de
+id: f663b5ff-80cc-4093-8222-257e3a0a11e8
+inputs:
+- name: dataset inputs
+outputs:
+- data: steps.5.produce
+  name: output predictions
+schema: https://metadata.datadrivendiscovery.org/schemas/v0/pipeline.json
+steps:
+
+
+- arguments:
+    inputs:
+      data: inputs.0
+      type: CONTAINER
+  outputs:
+  - id: produce
+  primitive:
+    digest: 00ae7955cc0abce2a3ddee96247209f3395009ae6553c7ce8caa577e402754db
+    id: f31f8c1f-d1c5-43e5-a4b2-2ae4a761ef2e
+    name: Denormalize datasets
+    python_path: d3m.primitives.data_transformation.denormalize.Common
+    version: 0.2.0
+  type: PRIMITIVE
+
+
+- arguments:
+    inputs:
+      data: steps.0.produce
+      type: CONTAINER
+  outputs:
+  - id: produce
+  primitive:
+    digest: 0d46a2c5bc374e305682dc4f1c322518c07638153a8365034a513ea46960802b
+    id: 4b42ce1e-9b98-4a25-b68e-fad13311eb65
+    name: Extract a DataFrame from a Dataset
+    python_path: d3m.primitives.data_transformation.dataset_to_dataframe.Common
+    version: 0.3.0
+  type: PRIMITIVE
+
+
+- arguments:
+    inputs:
+      data: steps.1.produce
+      type: CONTAINER
+  hyperparams:
+    semantic_types:
+      data:
+      - https://metadata.datadrivendiscovery.org/types/TrueTarget
+      type: VALUE
+  outputs:
+  - id: produce
+  primitive:
+    digest: 297a4943484bcd532650d5727e23b3d11ca702688d7b64dfb5df8bf1282eaa47
+    id: 4503a4c6-42f7-45a1-a1d4-ed69699cf5e1
+    name: Extracts columns by semantic type
+    python_path: d3m.primitives.data_transformation.extract_columns_by_semantic_types.DataFrameCommon
+    version: 0.2.0
+  type: PRIMITIVE
+
+
+- arguments:
+    inputs:
+      data: steps.1.produce
+      type: CONTAINER
+  hyperparams:
+    frac:
+      data: 0.001
+      type: VALUE
+    iters:
+      data: 100
+      type: VALUE
+    k:
+      data: 100
+      type: VALUE
+  outputs:
+  - id: produce
+  primitive:
+    digest: 01ffc57859fa7d45857d1c33bffbdb69a9a0cd45f4f12916378d6751c0a80861
+    id: f410b951-1cb6-481c-8d95-2d97b31d411d
+    name: Latent Dirichlet Allocation Topic Modelling
+    python_path: d3m.primitives.natural_language_processing.lda.Fastlvm
+    version: 3.0.1
+  type: PRIMITIVE
+
+
+- arguments:
+    inputs:
+      data: steps.3.produce
+      type: CONTAINER
+    outputs:
+      data: steps.2.produce
+      type: CONTAINER
+  hyperparams:
+    class_weight:
+      data:
+        case: str
+        value: balanced
+      type: VALUE
+    penalty:
+      data: l1
+      type: VALUE
+  outputs:
+  - id: produce
+  primitive:
+    digest: cdcc79c6cee40349bd0151f5d9a5d3b5913a70f66b18b04053c24c4fc40d449e
+    id: b9c81b40-8ed1-3b23-80cf-0d6fe6863962
+    name: sklearn.linear_model.logistic.LogisticRegression
+    python_path: d3m.primitives.classification.logistic_regression.SKlearn
+    version: 2019.4.4
+  type: PRIMITIVE
+
+
+- arguments:
+    inputs:
+      data: steps.4.produce
+      type: CONTAINER
+    reference:
+      data: steps.1.produce
+      type: CONTAINER
+  outputs:
+  - id: produce
+  primitive:
+    digest: cfb2d595652c4ae0d24e67d4cb8e4916c9f3c2753eaccc2935263d054b3682fa
+    id: 8d38b340-f83f-4877-baaa-162f8e551736
+    name: Construct pipeline predictions output
+    python_path: d3m.primitives.data_transformation.construct_predictions.DataFrameCommon
+    version: 0.3.0
+  type: PRIMITIVE
