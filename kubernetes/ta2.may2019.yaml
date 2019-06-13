@@ -6,7 +6,7 @@ spec:
   restartPolicy: Never
   containers:
   - name: ta2-container
-     image: registry.datadrivendiscovery.org/ta2-submissions/ta2-mit/june2019:latest
+    image: registry.datadrivendiscovery.org/ta2-submissions/ta2-mit/may2019:latest
     env:
     - name: D3MRUN
       value: "ta2"
@@ -26,8 +26,6 @@ spec:
       value: "56Gi"
     - name: D3MTIMEOUT
       value: "600"
-    - name: D3MCONTEXT
-      value: "TESTING"
     volumeMounts:
       - name: input-data
         mountPath: /input
@@ -43,7 +41,7 @@ spec:
         memory: 56Gi
         cpu: 8
   - name: ta3-dummy
-    image: registry.gitlab.com/datadrivendiscovery/dummy-ta3/dummy-ta3:2019.6.11
+    image: registry.gitlab.com/datadrivendiscovery/dummy-ta3/dummy-ta3:latest
     imagePullPolicy: Always
     command: [ "/bin/bash", "/TA3/run.sh", "--host-address", "localhost" ]
     env:
@@ -67,8 +65,6 @@ spec:
       value: "10Gi"
     - name: D3MTIMEOUT
       value: "600"
-    - name: D3MCONTEXT
-      value: "TESTING"
     volumeMounts:
       - name: input-data
         mountPath: /input
