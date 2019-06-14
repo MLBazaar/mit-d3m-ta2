@@ -1,0 +1,1 @@
+-e git+https://gitlab.com/datadrivendiscovery/ta3ta2-api.git@5f806841f6aa8df64540cee37805586116633e6c#egg=ta3ta2-api

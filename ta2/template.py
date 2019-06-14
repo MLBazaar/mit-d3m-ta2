@@ -1,4 +1,5 @@
 import argparse
+import importlib
 import logging
 import os
 import warnings
@@ -69,75 +70,6 @@ def extract_pipeline_tunables(pipeline):
     return tunables, defaults
 
 
-def load_template(template_name):
-    """load a simplified version of a yaml pipeline, with hyperparameters."""
-
-    if os.path.exists(template_name):
-        template_path = template_name
-    else:
-        template_path = os.path.join(TEMPLATES_DIR, template_name)
-
-    LOGGER.info('Loading template %s', template_path)
-    with open(template_path, 'r') as template_file:
-        template = yaml.safe_load(template_file)
-
-    steps = template['steps']
-
-    pipeline = Pipeline()
-    pipeline.add_input(name='inputs')
-
-    for step_num, primitive_config in enumerate(steps):
-        primitive_name = primitive_config['primitive']
-        print("Loading primitive {}".format(primitive_name))
-        primitive = index.get_primitive(primitive_name)
-        step = PrimitiveStep(primitive=primitive)
-
-        if step_num == 0:
-            data_reference = 'inputs.0'
-        else:
-            data_reference = 'steps.{}.produce'.format(step_num - 1)
-
-        arguments = primitive_config.get('arguments')
-        if not arguments:
-            arguments = {
-                'inputs': {
-                    'type': 'CONTAINER',
-                    'data': data_reference,
-                }
-            }
-
-        for name, argument in arguments.items():
-            step.add_argument(
-                name=name,
-                argument_type=ArgumentType[argument['type']],
-                data_reference=argument['data']
-            )
-
-        hyperparams = primitive_config.get('hyperparams', dict())
-        for name, hyperparam in hyperparams.items():
-            step.add_hyperparameter(
-                name=name,
-                argument_type=ArgumentType[hyperparam.get('type', 'VALUE')],
-                data=hyperparam['data']
-            )
-
-        step.add_output('produce')
-        pipeline.add_step(step)
-
-    data_reference = 'steps.{}.produce'.format(len(steps) - 1)
-    pipeline.add_output(name='output predictions', data_reference=data_reference)
-
-    if 'tunable_hyperparameters' in template:
-        LOGGER.info('Using predefined tunable hyperparameters')
-        tunables, defaults = get_tunables(template['tunable_hyperparameters'])
-    else:
-        LOGGER.info('Extracting tunables from pipeline')
-        tunables, defaults = extract_pipeline_tunables(pipeline)
-
-    print("Pipeline {} loaded".format(pipeline.id))
-    return pipeline, tunables, defaults
-
-
 def get_tunables(tunable_hyperparameters):
     tunables = list()
     defaults = dict()
@@ -172,6 +104,82 @@ def get_tunable_hyperparameters(tunables, defaults):
         }
 
     return dict(tunable_hyperparameters)
+
+
+def load_template(template_name):
+    """load a simplified version of a yaml pipeline, with hyperparameters."""
+
+    if os.path.exists(template_name):
+        template_path = template_name
+    else:
+        template_path = os.path.join(TEMPLATES_DIR, template_name)
+
+    LOGGER.info('Loading template %s', template_path)
+    with open(template_path, 'r') as template_file:
+        template = yaml.safe_load(template_file)
+
+    steps = template['steps']
+
+    pipeline = Pipeline()
+    pipeline.add_input(name='inputs')
+
+    for step_num, primitive_config in enumerate(steps):
+        primitive_name = primitive_config['primitive']
+        print("Loading primitive {}".format(primitive_name))
+        primitive = index.get_primitive(primitive_name)
+        step = PrimitiveStep(primitive=primitive)
+
+        if step_num == 0:
+            data_reference = 'inputs.0'
+        else:
+            data_reference = 'steps.{}.produce'.format(step_num - 1)
+
+        arguments = primitive_config.get('arguments', dict())
+        if 'inputs' not in arguments:
+            arguments['inputs'] = {
+                'data': data_reference,
+            }
+
+        for name, argument in arguments.items():
+            step.add_argument(
+                name=name,
+                argument_type=ArgumentType[argument.get('type', 'CONTAINER')],
+                data_reference=argument['data']
+            )
+
+        hyperparams = primitive_config.get('hyperparams', dict())
+        for name, hyperparam in hyperparams.items():
+            data = hyperparam['data']
+            if isinstance(data, dict):
+                data = data['value']
+                if isinstance(data, dict):
+                    if 'class' in data:
+                        package, class_name = data['class'].rsplit('.', 1)
+                        data = getattr(importlib.import_module(package), class_name)
+                    else:
+                        raise ValueError('Unsupported template')
+
+            step.add_hyperparameter(
+                name=name,
+                argument_type=ArgumentType[hyperparam.get('type', 'VALUE')],
+                data=data
+            )
+
+        step.add_output('produce')
+        pipeline.add_step(step)
+
+    data_reference = 'steps.{}.produce'.format(len(steps) - 1)
+    pipeline.add_output(name='output predictions', data_reference=data_reference)
+
+    if 'tunable_hyperparameters' in template:
+        LOGGER.info('Using predefined tunable hyperparameters')
+        tunables, defaults = get_tunables(template['tunable_hyperparameters'])
+    else:
+        LOGGER.info('Extracting tunables from pipeline')
+        tunables, defaults = extract_pipeline_tunables(pipeline)
+
+    print("Pipeline {} loaded".format(pipeline.id))
+    return pipeline, tunables, defaults
 
 
 def add_tunable_hyperparameters(input_path, output_path):

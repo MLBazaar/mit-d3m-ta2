@@ -1,0 +1,143 @@
+created: '2019-06-11T17:06:43.391967Z'
+digest: 1ab531587f625c16ddbc4c09658d03d8788e9e4cf1796983d15be5a4b1198367
+id: b0e1df29-5e58-4917-9137-25f6d074f622
+inputs:
+- name: inputs
+outputs:
+- data: steps.6.produce
+  name: output predictions
+schema: https://metadata.datadrivendiscovery.org/schemas/v0/pipeline.json
+steps:
+
+
+- arguments:
+    inputs:
+      data: inputs.0
+      type: CONTAINER
+  hyperparams:
+    fit_primitive:
+      data: 'no'
+      type: VALUE
+    primitive:
+      data:
+        case: transformer
+        value:
+          class: d3m.primitives.data_transformation.column_parser.DataFrameCommon
+      type: VALUE
+    resources:
+      data:
+        case: all
+        value: all
+      type: VALUE
+  outputs:
+  - id: produce
+  primitive:
+    digest: 1981e5dc0af05eff1b69b547b59b3f428dad0348ebcfb13754ac471f42b43df3
+    id: 5bef5738-1638-48d6-9935-72445f0eecdc
+    name: Map DataFrame resources to new resources using provided primitive
+    python_path: d3m.primitives.operator.dataset_map.DataFrameCommon
+    version: 0.1.0
+  type: PRIMITIVE
+
+
+- arguments:
+    inputs:
+      data: steps.0.produce
+      type: CONTAINER
+  outputs:
+  - id: produce
+  primitive:
+    digest: b862f09582ee220bc9c373ade09ac2f71e92995f5f63b8c35ea3769d998effab
+    id: e659ef3a-f17c-4bbf-9e5a-13de79a4e55b
+    name: Multi Table Deep Feature Synthesis
+    python_path: d3m.primitives.feature_construction.deep_feature_synthesis.MultiTableFeaturization
+    version: 0.6.0
+  type: PRIMITIVE
+
+
+- arguments:
+    inputs:
+      data: steps.1.produce
+      type: CONTAINER
+  hyperparams:
+    semantic_types:
+      data:
+      - https://metadata.datadrivendiscovery.org/types/Attribute
+      type: VALUE
+  outputs:
+  - id: produce
+  primitive:
+    digest: 297a4943484bcd532650d5727e23b3d11ca702688d7b64dfb5df8bf1282eaa47
+    id: 4503a4c6-42f7-45a1-a1d4-ed69699cf5e1
+    name: Extracts columns by semantic type
+    python_path: d3m.primitives.data_transformation.extract_columns_by_semantic_types.DataFrameCommon
+    version: 0.2.0
+  type: PRIMITIVE
+
+
+- arguments:
+    inputs:
+      data: steps.1.produce
+      type: CONTAINER
+  hyperparams:
+    semantic_types:
+      data:
+      - https://metadata.datadrivendiscovery.org/types/TrueTarget
+      type: VALUE
+  outputs:
+  - id: produce
+  primitive:
+    digest: 297a4943484bcd532650d5727e23b3d11ca702688d7b64dfb5df8bf1282eaa47
+    id: 4503a4c6-42f7-45a1-a1d4-ed69699cf5e1
+    name: Extracts columns by semantic type
+    python_path: d3m.primitives.data_transformation.extract_columns_by_semantic_types.DataFrameCommon
+    version: 0.2.0
+  type: PRIMITIVE
+
+
+- arguments:
+    inputs:
+      data: steps.2.produce
+      type: CONTAINER
+  outputs:
+  - id: produce
+  primitive:
+    digest: f8a5b9fdfe8ea607bd3396901f9af2a82e66d149b11e91d11208d9b2aa134b3b
+    id: 6c5dcfa3-1f87-4066-b16a-88c9c971f6e3
+    name: Single Table Deep Feature Synthesis
+    python_path: d3m.primitives.feature_construction.deep_feature_synthesis.SingleTableFeaturization
+    version: 0.6.0
+  type: PRIMITIVE
+
+
+- arguments:
+    inputs:
+      data: steps.4.produce
+      type: CONTAINER
+  outputs:
+  - id: produce
+  primitive:
+    digest: 9878fdeb255c5b4fb2beaf053e68b2913e3d7b1c26e40c530c1cb4fe562fde26
+    id: d016df89-de62-3c53-87ed-c06bb6a23cde
+    name: sklearn.impute.SimpleImputer
+    python_path: d3m.primitives.data_cleaning.imputer.SKlearn
+    version: 2019.4.4
+  type: PRIMITIVE
+
+
+- arguments:
+    inputs:
+      data: steps.5.produce
+      type: CONTAINER
+    outputs:
+      data: steps.3.produce
+      type: CONTAINER
+  outputs:
+  - id: produce
+  primitive:
+    digest: 1b533bbbbde00ad20543225f9edea21806a780612102cf3a4e0a00c205f53bde
+    id: f0fd7a62-09b5-3abc-93bb-f5f999f7cc80
+    name: sklearn.ensemble.forest.RandomForestRegressor
+    python_path: d3m.primitives.regression.random_forest.SKlearn
+    version: 2019.4.4
+  type: PRIMITIVE

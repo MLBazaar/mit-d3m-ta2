@@ -10,6 +10,7 @@ install_requires = [
     'tabulate>=0.8.3,<0.9',
     'numpy==1.15.4',
     'scikit-learn[alldeps]==0.20.3',
+    'python-prctl==1.7',
 ]
 
 
@@ -67,8 +68,9 @@ setup(
     description='MIT-Featuretools TA2 submission for the D3M program.',
     entry_points={
         'console_scripts': [
-            'ta2=ta2.__main__:ta2',
-            'ta3=ta2.__main__:ta3',
+            'ta2-server=ta2.__main__:ta2_server',
+            'ta2-test=ta2.__main__:ta2_test',
+            'ta3-test=ta2.__main__:ta3_test',
         ]
     },
     extras_require={

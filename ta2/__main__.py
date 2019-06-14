@@ -1,7 +1,8 @@
 import argparse
 import logging
 import os
-import time
+import traceback
+from datetime import datetime
 
 import pandas as pd
 import tabulate
@@ -15,6 +16,7 @@ from ta2 import logging_setup
 from ta2.search import PipelineSearcher
 from ta2.ta3.client import TA3APIClient
 from ta2.ta3.server import serve
+from ta2.utils import ensure_downloaded
 
 
 def load_dataset(root_path, phase, inner_phase=None):
@@ -76,63 +78,67 @@ def score_pipeline(dataset_root, problem, pipeline_path):
     return scores.iloc[0].value
 
 
-def box_print(message):
-    print('#' * len(message))
+def box_print(message, strong=False):
+    char = '#' if strong else '*'
+    print(char * len(message))
     print(message)
-    print('#' * len(message))
+    print(char * len(message))
 
 
 def process_dataset(dataset, args):
-    start_time = time.time()
+    start_ts = datetime.utcnow()
 
-    box_print("Processing dataset {}".format(dataset))
+    box_print("Processing dataset {}".format(dataset), True)
+    ensure_downloaded(dataset, args.input)
     dataset_root = os.path.join(args.input, dataset)
     problem = load_problem(dataset_root, 'TRAIN')
 
     print("Searching Pipeline for dataset {}".format(dataset))
     result = search(dataset_root, problem, args)
-    best_id = result['pipeline']
-    best_score = result['score']
-    template = result['template']
-    data_modality = result['data_modality']
-    task_type = result['task_type']
-    tuning_iterations = result['tuning_iterations']
+    result['elapsed_time'] = datetime.utcnow() - start_ts
 
-    if best_id is None or best_score is None:
-        raise ValueError('Unsupported problem')
+    pipeline_id = result['pipeline']
+    cv_score = result['cv_score']
+    if cv_score is not None:
+        box_print("Best Pipeline: {} - CV Score: {}".format(pipeline_id, cv_score))
 
-    best_path = os.path.join(args.output, 'pipelines_ranked', best_id + '.json')
-    box_print("Best Pipeline: {} - CV Score: {}".format(best_id, best_score))
+        pipeline_path = os.path.join(args.output, 'pipelines_ranked', pipeline_id + '.json')
+        test_score = score_pipeline(dataset_root, problem, pipeline_path)
+        box_print("Test Score for pipeline {}: {}".format(pipeline_id, test_score))
 
-    test_score = score_pipeline(dataset_root, problem, best_path)
-    box_print("Test Score for pipeline {}: {}".format(best_id, test_score))
+        result['test_score'] = test_score
 
-    end_time = time.time()
+    return result
 
-    return {
-        'dataset': dataset,
-        'template': template,
-        'cv_score': best_score,
-        'test_score': test_score,
-        'elapsed_time': end_time - start_time,  # seconds
-        'tuning_iterations': tuning_iterations,
-        'data_modality': data_modality,
-        'task_type': task_type
-    }
+
+REPORT_COLUMNS = [
+    'dataset',
+    'template',
+    'cv_score',
+    'test_score',
+    'elapsed_time',
+    'tuning_iterations',
+    'data_modality',
+    'task_type'
+]
 
 
 def _ta2_test(args):
     results = list()
-    for d in args.dataset:
+    for dataset in args.dataset:
         try:
-            results.append(process_dataset(d, args))
-        except ValueError:
-            continue
+            results.append(process_dataset(dataset, args))
+        except Exception as ex:
+            box_print("Error processing dataset {}".format(dataset), True)
+            traceback.print_exc()
+            results.append({
+                'dataset': dataset,
+                'error': str(ex)
+            })
 
     report = pd.DataFrame(
         results,
-        columns=['dataset', 'template', 'cv_score', 'test_score',
-                 'elapsed_time', 'tuning_iterations', 'data_modality', 'task_type']
+        columns=REPORT_COLUMNS
     )
 
     if args.report:
@@ -144,7 +150,7 @@ def _ta2_test(args):
             report,
             showindex=False,
             tablefmt='github',
-            headers=report.columns
+            headers=REPORT_COLUMNS
         ))
 
 
@@ -203,6 +209,7 @@ def _ta3_test(args):
     client.hello()
 
     for dataset in args.dataset:
+        ensure_downloaded(dataset, args.input)
         _ta3_test_dataset(client, dataset, args.timeout / 60)
 
 
@@ -220,7 +227,7 @@ def _server(args):
     serve(args.port, input_dir, output_dir, timeout, args.debug)
 
 
-def parse_args(ta3=False):
+def parse_args(mode=None):
 
     # Logging
     logging_args = argparse.ArgumentParser(add_help=False)
@@ -250,7 +257,19 @@ def parse_args(ta3=False):
     ta3_args.add_argument('--port', type=int, default=45042,
                           help='Port to use, both for client and server.')
 
-    if ta3:
+    if mode == 'ta2':
+        parser = argparse.ArgumentParser(
+            description='TA2 in Standalone Mode',
+            parents=[logging_args, io_args, search_args, dataset_args],
+        )
+        parser.add_argument(
+            '-r', '--report',
+            help='Path to the CSV file where scores will be dumped.')
+        parser.add_argument(
+            '-b', '--budget', type=int,
+            help='Maximum number of tuning iterations to perform')
+
+    elif mode == 'ta3':
         parser = argparse.ArgumentParser(
             description='TA3-TA2 API Test',
             parents=[logging_args, io_args, search_args, ta3_args, dataset_args],
@@ -261,38 +280,13 @@ def parse_args(ta3=False):
         parser.add_argument('--docker', action='store_true', help=(
             'Adapt input paths to work with a dockerized TA2.'
         ))
-
-    else:
+    elif mode == 'server':
         parser = argparse.ArgumentParser(
-            description='MIT-D3M-TA2 Command Line Interface',
-            parents=[logging_args, io_args, search_args]
-        )
-
-        subparsers = parser.add_subparsers(title='mode', dest='mode', help='Command to execute')
-        subparsers.required = True
-
-        # TA2 Standalone
-        standalone_parser = subparsers.add_parser(
-            'standalone',
-            parents=[logging_args, io_args, search_args, dataset_args],
-            help='Run TA2 in Standalone Mode'
-        )
-        standalone_parser.set_defaults(command=_ta2_test)
-        standalone_parser.add_argument(
-            '-r', '--report',
-            help='Path to the CSV file where scores will be dumped.')
-        standalone_parser.add_argument(
-            '-b', '--budget', type=int,
-            help='Maximum number of tuning iterations to perform')
-
-        # TA3-TA2 Server
-        server_parser = subparsers.add_parser(
-            'server',
+            description='TA3-TA2 Server',
             parents=[logging_args, io_args, ta3_args, search_args],
-            help='Start a TA3-TA2 Server'
         )
-        server_parser.set_defaults(command=_server)
-        server_parser.add_argument(
+        parser.set_defaults(command=_server)
+        parser.add_argument(
             '--debug', action='store_true',
             help='Start the server in sync mode. Needed for debugging.')
 
@@ -303,14 +297,16 @@ def parse_args(ta3=False):
     return args
 
 
-def ta2():
-    args = parse_args()
-    if args.mode == 'standalone':
-        _ta2_test(args)
-    else:
-        _server(args)
+def ta2_test():
+    args = parse_args('ta2')
+    _ta2_test(args)
 
 
-def ta3():
-    args = parse_args(True)
+def ta3_test():
+    args = parse_args('ta3')
     _ta3_test(args)
+
+
+def ta2_server():
+    args = parse_args('server')
+    _server(args)
