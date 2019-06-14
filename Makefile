@@ -197,16 +197,13 @@ ifeq ($(CHANGELOG_LINES),0)
 endif
 
 .PHONY: release
-release: check-release bumpversion-release publish bumpversion-patch
+release: check-release bumpversion-release bumpversion-patch
 
 .PHONY: release-minor
 release-minor: check-release bumpversion-minor release
 
 .PHONY: release-major
 release-major: check-release bumpversion-major release
-
-.PHONY: test-release
-test-release: check-release test-bumpversion-release test-publish test-bumpversion-patch
 
 
 # SUBMISSION TARGETS
