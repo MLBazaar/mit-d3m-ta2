@@ -117,37 +117,35 @@ class PipelineSearcher:
         LOGGER.info("Loading pipeline for data modality %s and task type %s",
                     data_modality, task_type)
 
-        # if data_modality == 'single_table':
-        #     if task_type == TaskType.CLASSIFICATION.name:
-        #         return 'dfs_xgb_classification.hp.yml'
-        #     elif task_type == TaskType.REGRESSION.name:
-        #         return 'dfs_xgb_regression.hp.yml'
-        #     elif task_type == TaskType.COLLABORATIVE_FILTERING.name:
-        #         return 'dfs_xgb_regression.hp.yml'
-        # if data_modality == 'multi_table':
-        #     if task_type == TaskType.CLASSIFICATION.name:
-        #         return 'multi_table_lda_logreg_classification.yml'
-        #         # return 'multi_table_dfs_xgb_classification.all_hp.yml'
-        #     elif task_type == TaskType.REGRESSION.name:
-        #         return 'dfs_xgb_regression.hp.yml'
-        #         # return 'multi_table_lda_lars_regression.yml'
-        #         # return 'multi_table_dfs_xgb_regression.all_hp.yml'
-        # elif data_modality == 'text':
-        #     if task_type == TaskType.CLASSIFICATION.name:
-        #         return 'dfs_xgb_classification.hp.yml'
-        #     elif task_type == TaskType.REGRESSION.name:
-        #         return 'dfs_xgb_regression.hp.yml'
+        if data_modality == 'single_table':
+            if task_type == TaskType.CLASSIFICATION.name:
+                return 'dfs_xgb_classification.hp.yml'
+            elif task_type == TaskType.REGRESSION.name:
+                return 'dfs_xgb_regression.hp.yml'
+            elif task_type == TaskType.COLLABORATIVE_FILTERING.name:
+                return 'dfs_xgb_regression.hp.yml'
+        if data_modality == 'multi_table':
+            if task_type == TaskType.CLASSIFICATION.name:
+                return 'multi_table_dfs_xgb_classification.yml'
+            elif task_type == TaskType.REGRESSION.name:
+                return 'multi_table_dfs_xgb_regression.yml'
+        elif data_modality == 'text':
+            if task_type == TaskType.CLASSIFICATION.name:
+                return 'dfs_xgb_classification.hp.yml'
+            elif task_type == TaskType.REGRESSION.name:
+                return 'dfs_xgb_regression.hp.yml'
 
-        if task_type == TaskType.REGRESSION.name:
-            return 'dfs_xgb_regression.hp.yml'
-        elif task_type == TaskType.COLLABORATIVE_FILTERING.name:
-            return 'dfs_xgb_regression.hp.yml'
+        # if task_type == TaskType.REGRESSION.name:
+        #     return 'dfs_xgb_regression.hp.yml'
+        # elif task_type == TaskType.COLLABORATIVE_FILTERING.name:
+        #     return 'dfs_xgb_regression.hp.yml'
 
         # Classification and others
-        if data_modality == 'multi_table':
-            return 'multi_table_lda_logreg_classification.yml'
-        else:
-            return 'dfs_xgb_classification.hp.yml'
+        # if data_modality == 'multi_table':
+        #     # return 'multi_table_lda_logreg_classification.yml'
+        #     return 'multi_table_dfs_xgb_classification.yml'
+        # else:
+        #     return 'dfs_xgb_classification.hp.yml'
 
         return 'dfs_xgb_classification.hp.yml'
 
@@ -284,7 +282,7 @@ class PipelineSearcher:
 
         LOGGER.info("Timeout: %s; Max end: %s", self.timeout, self.max_end_time)
 
-    def search(self, problem, timeout=None, budget=None):
+    def search(self, problem, timeout=None, budget=None, template_name=None):
 
         self.setup_search(timeout)
 
@@ -296,7 +294,9 @@ class PipelineSearcher:
         task_type = problem['problem']['task_type'].name
 
         LOGGER.info("Loading the template and the tuner")
-        template_name = self._get_template(data_modality, task_type)
+        if template_name is None:
+            template_name = self._get_template(data_modality, task_type)
+
         template, tunables, defaults = load_template(template_name)
         tuner = GP(tunables, r_minimum=10)
 

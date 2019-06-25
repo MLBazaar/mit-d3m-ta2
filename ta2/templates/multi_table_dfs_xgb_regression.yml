@@ -1,0 +1,55 @@
+steps:
+- primitive: d3m.primitives.operator.dataset_map.DataFrameCommon
+  hyperparams:
+    fit_primitive:
+      data: 'no'
+    primitive:
+      data:
+        case: transformer
+        value:
+          class: d3m.primitives.data_transformation.column_parser.DataFrameCommon
+    resources:
+      data:
+        case: all
+        value: all
+- primitive: d3m.primitives.feature_construction.deep_feature_synthesis.MultiTableFeaturization
+- primitive: d3m.primitives.feature_construction.deep_feature_synthesis.SingleTableFeaturization
+- primitive: d3m.primitives.data_cleaning.imputer.SKlearn
+  hyperparams:
+    use_semantic_types:
+      data: true
+- primitive: d3m.primitives.regression.xgboost_gbtree.DataFrameCommon
+  arguments:
+    outputs:
+      data: steps.1.produce
+- primitive: d3m.primitives.data_transformation.construct_predictions.DataFrameCommon
+  arguments:
+    reference:
+      data: steps.1.produce
+tunable_hyperparameters:
+  '3':
+    strategy:
+      default: mean
+      range: [median, most_frequent, mean]
+      type: string
+  '4':
+    n_estimators:
+      default: 100
+      range: [10, 1000]
+      type: int
+    learning_rate:
+      default: 0.1
+      range: [0.0001, 1]
+      type: float
+    max_depth:
+      default: 3
+      range: [3, 20]
+      type: int
+    gamma:
+      default: 0
+      range: [0, 1]
+      type: float
+    min_child_weight:
+      default: 1
+      range: [1, 10]
+      type: int

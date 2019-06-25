@@ -42,7 +42,7 @@ def search(dataset_root, problem, args):
 
     pps = PipelineSearcher(args.input, args.output, dump=True)
 
-    return pps.search(problem, timeout=args.timeout, budget=args.budget)
+    return pps.search(problem, args.timeout, args.budget, args.template)
 
 
 def score_pipeline(dataset_root, problem, pipeline_path):
@@ -268,6 +268,9 @@ def parse_args(mode=None):
         parser.add_argument(
             '-b', '--budget', type=int,
             help='Maximum number of tuning iterations to perform')
+        parser.add_argument(
+            '-T', '--template',
+            help='Name of the template to Use.')
 
     elif mode == 'ta3':
         parser = argparse.ArgumentParser(
