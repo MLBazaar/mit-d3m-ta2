@@ -1,4 +1,4 @@
-FROM registry.datadrivendiscovery.org/jpl/docker_images/complete:ubuntu-bionic-python36-v2019.6.7-20190611-205824
+FROM registry.datadrivendiscovery.org/jpl/docker_images/complete:ubuntu-bionic-python36-v2019.6.7-20190622-073225
 
 ARG D3MPORT=45042
 WORKDIR /user_dev
