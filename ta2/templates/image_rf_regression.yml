@@ -1,0 +1,44 @@
+steps:
+    - primitive: d3m.primitives.data_transformation.denormalize.Common
+    - primitive: d3m.primitives.data_transformation.dataset_to_dataframe.Common
+    - primitive: d3m.primitives.data_preprocessing.image_reader.DataFrameCommon
+      hyperparams:
+        use_columns:
+          data: [0, 1]
+        return_result:
+          data: replace
+    - primitive: d3m.primitives.data_transformation.column_parser.DataFrameCommon
+      hyperparams:
+        parse_semantic_types:
+          data:
+            - http://schema.org/Boolean
+            - http://schema.org/Integer
+            - http://schema.org/Float
+            - https://metadata.datadrivendiscovery.org/types/FloatVector
+    - primitive: d3m.primitives.feature_extraction.image_transfer.DistilImageTransfer
+      arguments:
+        inputs:
+          data: steps.3.produce
+    - primitive: d3m.primitives.data_transformation.extract_columns_by_semantic_types.DataFrameCommon
+      arguments:
+        inputs:
+          data: steps.2.produce
+      hyperparams:
+        semantic_types:
+          data:
+            - https://metadata.datadrivendiscovery.org/types/Target
+            - https://metadata.datadrivendiscovery.org/types/TrueTarget
+            - https://metadata.datadrivendiscovery.org/types/SuggestedTarget
+    - primitive: d3m.primitives.learner.random_forest.DistilEnsembleForest
+      arguments:
+        inputs:
+          data: steps.4.produce
+        outputs:
+          data: steps.5.produce
+      hyperparams:
+        metric:
+          data: meanSquaredError
+    - primitive: d3m.primitives.data_transformation.construct_predictions.DataFrameCommon
+      arguments:
+        reference:
+          data: steps.1.produce

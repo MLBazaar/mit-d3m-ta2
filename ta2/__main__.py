@@ -19,10 +19,14 @@ from ta2.ta3.server import serve
 from ta2.utils import ensure_downloaded
 
 
-def load_dataset(root_path, phase, inner_phase=None):
-    inner_phase = inner_phase or phase
+def load_dataset(root_path, phase, inner_phase='TEST'):
+    inner_phase = phase
     path = os.path.join(root_path, phase, 'dataset_' + inner_phase, 'datasetDoc.json')
-    return Dataset.load(dataset_uri='file://' + os.path.abspath(path))
+    if os.path.exists(path):
+        return Dataset.load(dataset_uri='file://' + os.path.abspath(path))
+    else:
+        path = os.path.join(root_path, phase, 'dataset_' + inner_phase, 'datasetDoc.json')
+        return Dataset.load(dataset_uri='file://' + os.path.abspath(path))
 
 
 def load_problem(root_path, phase):
@@ -96,6 +100,7 @@ def process_dataset(dataset, args):
     print("Searching Pipeline for dataset {}".format(dataset))
     result = search(dataset_root, problem, args)
     result['elapsed_time'] = datetime.utcnow() - start_ts
+    result['dataset'] = dataset
 
     pipeline_id = result['pipeline']
     cv_score = result['cv_score']
@@ -135,6 +140,13 @@ def _ta2_test(args):
                 'dataset': dataset,
                 'error': str(ex)
             })
+
+        report_while_runing = pd.DataFrame(
+            results,
+            columns=REPORT_COLUMNS
+        )
+
+        report_while_runing.to_csv('live_report.csv', index=False)
 
     report = pd.DataFrame(
         results,

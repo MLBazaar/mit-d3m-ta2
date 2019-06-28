@@ -13,7 +13,7 @@ from d3m.container.dataset import Dataset
 from d3m.metadata.base import ALL_ELEMENTS, ArgumentType, Context
 from d3m.metadata.pipeline import Pipeline, PrimitiveStep
 from d3m.metadata.problem import TaskType
-from d3m.runtime import evaluate
+from d3m.runtime import DEFAULT_SCORING_PIPELINE_PATH, evaluate
 
 from ta2.template import load_template
 from ta2.utils import dump_pipeline
@@ -79,7 +79,7 @@ class PipelineSearcher:
             media_type = media_types[0]
             if media_type == 'text/plain':
                 return 'text'
-            elif media_type == 'image/jpeg':
+            elif media_type == 'image/jpeg' or media_type == 'image/png':
                 return 'image'
             elif media_type == 'text/csv':
                 return 'multi_table'
@@ -134,6 +134,11 @@ class PipelineSearcher:
                 return 'dfs_xgb_classification.hp.yml'
             elif task_type == TaskType.REGRESSION.name:
                 return 'dfs_xgb_regression.hp.yml'
+        elif data_modality == 'image':
+            if task_type == TaskType.REGRESSION.name:
+                return 'image_rf_regression.yml'
+            else:
+                return 'image_classification.yml'
 
         # if task_type == TaskType.REGRESSION.name:
         #     return 'dfs_xgb_regression.hp.yml'
@@ -163,7 +168,7 @@ class PipelineSearcher:
 
         self.datasets = self._find_datasets(input_dir)
         self.data_pipeline = self._load_pipeline('kfold_pipeline.yml')
-        self.scoring_pipeline = self._load_pipeline('scoring_pipeline.yml')
+        self.scoring_pipeline = self._load_pipeline(DEFAULT_SCORING_PIPELINE_PATH)
 
     def score_pipeline(self, dataset, problem, pipeline, metrics=None, random_seed=0,
                        folds=5, stratified=False, shuffle=False):

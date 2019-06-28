@@ -1,0 +1,3 @@
+steps:
+    - primitive: d3m.primitives.data_transformation.denormalize.Common
+    - primitive: d3m.primitives.classification.gaussian_classification.MeanBaseline
