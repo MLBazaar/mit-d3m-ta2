@@ -1,6 +1,7 @@
 import argparse
 import logging
 import os
+import sys
 import traceback
 from datetime import datetime
 
@@ -130,6 +131,13 @@ REPORT_COLUMNS = [
 
 def _ta2_test(args):
     results = list()
+    if args.all:
+        print('Processing all datasets from input folder')
+        args.dataset = os.listdir(args.input)
+    elif not args.dataset:
+        print('ERROR: provide at least one dataset name or set --all')
+        sys.exit(1)
+
     for dataset in args.dataset:
         try:
             results.append(process_dataset(dataset, args))
@@ -257,7 +265,9 @@ def parse_args(mode=None):
 
     # Datasets
     dataset_args = argparse.ArgumentParser(add_help=False)
-    dataset_args.add_argument('dataset', nargs='+', help='Name of the dataset to use for the test')
+    dataset_args.add_argument('-a', '--all', action='store_true',
+                              help='Process all the datasets found in the input folder')
+    dataset_args.add_argument('dataset', nargs='*', help='Name of the dataset to use for the test')
 
     # Search Configuration
     search_args = argparse.ArgumentParser(add_help=False)
