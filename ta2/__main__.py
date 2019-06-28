@@ -45,7 +45,7 @@ def load_pipeline(pipeline_path):
 
 def search(dataset_root, problem, args):
 
-    pps = PipelineSearcher(args.input, args.output, dump=True)
+    pps = PipelineSearcher(args.input, args.output, dump=True, hard_timeout=True)
 
     return pps.search(problem, args.timeout, args.budget, args.template)
 
