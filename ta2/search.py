@@ -3,6 +3,7 @@ import itertools
 import json
 import logging
 import os
+import random
 import warnings
 from collections import defaultdict
 from datetime import datetime, timedelta
@@ -210,9 +211,11 @@ class PipelineSearcher:
         else:
             dump_pipeline(pipeline_dict, self.scored_dir)
 
+            rank = (1 - pipeline.normalized_score) + random.random() * 1.e-12   # avoid collisions
             if self.dump:
-                dump_pipeline(pipeline_dict, self.ranked_dir, pipeline.normalized_score)
+                dump_pipeline(pipeline_dict, self.ranked_dir, rank)
 
+            pipeline_dict['rank'] = rank
             pipeline_dict['score'] = pipeline.score
             pipeline_dict['normalized_score'] = pipeline.normalized_score
             self.solutions.append(pipeline_dict)

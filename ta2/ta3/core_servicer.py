@@ -15,8 +15,7 @@ from d3m.metadata.pipeline import Pipeline
 from d3m.metadata.problem import Problem
 from d3m.runtime import Runtime
 from google.protobuf.timestamp_pb2 import Timestamp
-from ta3ta2_api import core_pb2, core_pb2_grpc, pipeline_pb2, primitive_pb2, value_pb2
-from ta3ta2_api.problem_pb2 import PerformanceMetric, TaskSubtype, TaskType
+from ta3ta2_api import core_pb2, core_pb2_grpc, pipeline_pb2, primitive_pb2, problem_pb2, value_pb2
 from ta3ta2_api.utils import decode_performance_metric, decode_problem_description, encode_score
 
 from ta2.search import PipelineSearcher
@@ -689,8 +688,8 @@ class CoreServicer(core_pb2_grpc.CoreServicer):
             "about": {
                 "problemID": problem.id,
                 "problemName": problem.name,
-                "taskType": TaskType.Name(problem.task_type).lower(),
-                "taskSubType": TaskSubtype.Name(problem.task_subtype),
+                "taskType": problem_pb2.TaskType.Name(problem.task_type).lower(),
+                "taskSubType": problem_pb2.TaskSubtype.Name(problem.task_subtype),
                 "problemVersion": problem.version,
                 "problemSchemaVersion": "3.0"
             },
@@ -712,7 +711,9 @@ class CoreServicer(core_pb2_grpc.CoreServicer):
                 ],
                 "performanceMetrics": [
                     {
-                        "metric": camel_case(PerformanceMetric.Name(metric.metric).lower())
+                        "metric": camel_case(
+                            problem_pb2.PerformanceMetric.Name(metric.metric).lower()
+                        )
                     }
                     for metric in problem.performance_metrics
                 ]
@@ -764,6 +765,7 @@ class CoreServicer(core_pb2_grpc.CoreServicer):
             threading.Thread(target=self._run_session, args=args).start()
 
     def SearchSolutions(self, request, context):
+        LOGGER.info("\n######## SearchSolutions ########\n%s########", request)
         """
         rpc SearchSolutions (SearchSolutionsRequest) returns (SearchSolutionsResponse) {}
 
@@ -909,37 +911,59 @@ class CoreServicer(core_pb2_grpc.CoreServicer):
                 done_ticks=returned,
                 all_ticks=0.,
                 solution_id=solution['id'],
-                internal_score=solution['score']
-                # scores=[
-                #     core_pb2.SolutionSearchScore(
-                #         scoring_configuration=core_pb2.ScoringConfiguration(
-                #             method=core_pb2.EvaluationMethod.Value('K_FOLD'),
-                #             folds=5,
-                #             train_test_ratio=0.,
-                #             shuffle=True,
-                #             random_seed=0,
-                #             stratified=False
-                #         ),
-                #         scores=[
-                #             core_pb2.Score(
-                #                 fold=0,
-                #                 targets=[
-                #                     ProblemTarget(
-                #                         target_index=0,
-                #                         resource_id="0",
-                #                         # column_index=0,
-                #                         # column_name="dummy",
-                #                         # clusters_number=0
-                #                     )
-                #                 ],
-                #                 value=value_pb2.Value(int64=1)
-                #             )
-                #         ]
-                #     )
-                # ]
+                internal_score=solution['score'],
+                scores=[
+                    core_pb2.SolutionSearchScore(
+                        # scoring_configuration=core_pb2.ScoringConfiguration(
+                        #     method=core_pb2.EvaluationMethod.Value('K_FOLD'),
+                        #     folds=5,
+                        #     train_test_ratio=0.,
+                        #     shuffle=True,
+                        #     random_seed=0,
+                        #     stratified=False
+                        # ),
+                        scores=[
+                            core_pb2.Score(
+                                metric=problem_pb2.ProblemPerformanceMetric(
+                                    metric=problem_pb2.PerformanceMetric.Value('RANK')
+                                ),
+                                fold=0,
+                                value=value_pb2.Value(
+                                    raw=value_pb2.ValueRaw(double=solution['rank'])
+                                )
+                            )
+                        ]
+                    ),
+                    # core_pb2.SolutionSearchScore(
+                    #     scoring_configuration=core_pb2.ScoringConfiguration(
+                    #         method=core_pb2.EvaluationMethod.Value('K_FOLD'),
+                    #         folds=5,
+                    #         train_test_ratio=0.,
+                    #         shuffle=True,
+                    #         random_seed=0,
+                    #         stratified=False
+                    #     ),
+                    #     scores=[
+                    #         core_pb2.Score(
+                    #             fold=0,
+                    #             targets=[
+                    #                 ProblemTarget(
+                    #                     target_index=0,
+                    #                     resource_id="0",
+                    #                     # column_index=0,
+                    #                     # column_name="dummy",
+                    #                     # clusters_number=0
+                    #                 )
+                    #             ],
+                    #             value=value_pb2.Value(int64=1)
+                    #         )
+                    #     ]
+                    # )
+                ]
             )
 
     def GetSearchSolutionsResults(self, request, context):
+        LOGGER.info("\n######## GetSearchSolutionsResults ########\n%s########", request)
         """
         rpc GetSearchSolutionsResults (GetSearchSolutionsResultsRequest) returns (stream GetSearchSolutionsResultsResponse) {}
 
@@ -989,6 +1013,7 @@ class CoreServicer(core_pb2_grpc.CoreServicer):
         return self._stream(session, self._get_search_soltuion_results)
 
     def EndSearchSolutions(self, request, context):
+        LOGGER.info("\n######## EndSearchSolutions ########\n%s########", request)
         """
         rpc EndSearchSolutions (EndSearchSolutionsRequest) returns (EndSearchSolutionsResponse) {}
 
@@ -1022,6 +1047,7 @@ class CoreServicer(core_pb2_grpc.CoreServicer):
         return core_pb2.EndSearchSolutionsResponse()
 
     def StopSearchSolutions(self, request, context):
+        LOGGER.info("\n######## StopSearchSolutions ########\n%s########", request)
         """
         rpc StopSearchSolutions (StopSearchSolutionsRequest) returns (StopSearchSolutionsResponse) {}
 
@@ -1049,6 +1075,7 @@ class CoreServicer(core_pb2_grpc.CoreServicer):
         return core_pb2.StopSearchSolutionsResponse()
 
     def DescribeSolution(self, request, context):
+        LOGGER.info("\n######## DescribeSolution ########\n%s########", request)
         """
         rpc DescribeSolution (DescribeSolutionRequest) returns (DescribeSolutionResponse) {}
 
@@ -1166,6 +1193,7 @@ class CoreServicer(core_pb2_grpc.CoreServicer):
             searcher.score_pipeline(dataset, problem, pipeline, [metric], **cv_args)
 
     def ScoreSolution(self, request, context):
+        LOGGER.info("\n######## ScoreSolution ########\n%s########", request)
         """
         rpc ScoreSolution (ScoreSolutionRequest) returns (ScoreSolutionResponse) {}
 
@@ -1255,6 +1283,7 @@ class CoreServicer(core_pb2_grpc.CoreServicer):
             )
 
     def GetScoreSolutionResults(self, request, context):
+        LOGGER.info("\n######## GetScoreSolutionResults ########\n%s########", request)
         """
         rpc GetScoreSolutionResults (GetScoreSolutionResultsRequest) returns (stream GetScoreSolutionResultsResponse) {}
 
@@ -1316,6 +1345,7 @@ class CoreServicer(core_pb2_grpc.CoreServicer):
         self.DB['fitted_solutions'][pipeline.id] = runtime
 
     def FitSolution(self, request, context):
+        LOGGER.info("\n######## FitSolution ########\n%s########", request)
         """
         rpc FitSolution (FitSolutionRequest) returns (FitSolutionResponse) {}
 
@@ -1403,6 +1433,7 @@ class CoreServicer(core_pb2_grpc.CoreServicer):
             )
 
     def GetFitSolutionResults(self, request, context):
+        LOGGER.info("\n######## GetFitSolutionResults ########\n%s########", request)
         """
         rpc GetFitSolutionResults (GetFitSolutionResultsRequest) returns (stream GetFitSolutionResultsResponse) {}
 
@@ -1495,6 +1526,7 @@ class CoreServicer(core_pb2_grpc.CoreServicer):
             produce_results.values[exposed_name].to_csv(csv_path, index=None)
 
     def ProduceSolution(self, request, context):
+        LOGGER.info("\n######## ProduceSolution ########\n%s########", request)
         """
         rpc ProduceSolution (ProduceSolutionRequest) returns (ProduceSolutionResponse) {}
 
@@ -1573,6 +1605,7 @@ class CoreServicer(core_pb2_grpc.CoreServicer):
             )
 
     def GetProduceSolutionResults(self, request, context):
+        LOGGER.info("\n######## GetProduceSolutionResults ########\n%s########", request)
         """
         rpc GetProduceSolutionResults (GetProduceSolutionResultsRequest) returns (stream GetProduceSolutionResultsResponse) {}
 
@@ -1602,6 +1635,7 @@ class CoreServicer(core_pb2_grpc.CoreServicer):
         return self._stream(session, self._get_produce_solution_results, close_on_done=True)
 
     def SolutionExport(self, request, context):
+        LOGGER.info("\n######## SolutionExport ########\n%s########", request)
         """
         rpc SolutionExport (SolutionExportRequest) returns (SolutionExportResponse) {}
 
@@ -1625,11 +1659,12 @@ class CoreServicer(core_pb2_grpc.CoreServicer):
         runtime = self._get_fitted_solution(fitted_solution_id)
 
         pipeline = runtime.pipeline
-        dump_pipeline(pipeline, self.ranked_dir, pipeline.normalized_score, rank=rank)
+        dump_pipeline(pipeline, self.ranked_dir, rank=rank)
 
         return core_pb2.SolutionExportResponse()
 
     def UpdateProblem(self, request, context):
+        LOGGER.info("\n######## UpdateProblem ########\n%s########", request)
         """
         rpc UpdateProblem (UpdateProblemRequest) returns (UpdateProblemResponse) {}
 
@@ -1656,6 +1691,7 @@ class CoreServicer(core_pb2_grpc.CoreServicer):
         return core_pb2.UpdateProblemResponse()
 
     def ListPrimitives(self, request, context):
+        LOGGER.info("\n######## ListPrimitives ########\n%s########", request)
         """
         rpc ListPrimitives (ListPrimitivesRequest) returns (ListPrimitivesResponse) {}
 
@@ -1694,6 +1730,7 @@ class CoreServicer(core_pb2_grpc.CoreServicer):
         )
 
     def Hello(self, request, context):
+        LOGGER.info("\n######## Hello ########\n%s########", request)
         """
         rpc Hello (HelloRequest) returns (HelloResponse) {}
 

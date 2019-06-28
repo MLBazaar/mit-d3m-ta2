@@ -2,9 +2,8 @@
 
 import io
 import json
-import os
 import logging
-import random
+import os
 import tarfile
 import urllib
 
@@ -39,7 +38,7 @@ def ensure_downloaded(dataset_name, data_path=DATA_PATH):
         _download(dataset_name, data_path)
 
 
-def dump_pipeline(pipeline, dump_dir, score=None, rank=None):
+def dump_pipeline(pipeline, dump_dir, rank=None):
     if not isinstance(pipeline, dict):
         pipeline = pipeline.to_json_structure()
 
@@ -47,9 +46,6 @@ def dump_pipeline(pipeline, dump_dir, score=None, rank=None):
     pipeline_path = os.path.join(dump_dir, pipeline_filename)
     with open(pipeline_path, 'w') as pipeline_file:
         json.dump(pipeline, pipeline_file, indent=4)
-
-    if score is not None and rank is None:
-        rank = (1 - score) + random.random() * 1.e-12   # avoid collisions
 
     if rank is not None:
         rank_filename = pipeline['id'] + '.rank'
