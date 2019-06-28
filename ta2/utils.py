@@ -42,6 +42,10 @@ def dump_pipeline(pipeline, dump_dir, rank=None):
     if not isinstance(pipeline, dict):
         pipeline = pipeline.to_json_structure()
 
+    if 'session' in pipeline:
+        pipeline = pipeline.copy()
+        del pipeline['session']
+
     pipeline_filename = pipeline['id'] + '.json'
     pipeline_path = os.path.join(dump_dir, pipeline_filename)
     with open(pipeline_path, 'w') as pipeline_file:

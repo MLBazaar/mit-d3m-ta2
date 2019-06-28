@@ -1041,8 +1041,8 @@ class CoreServicer(core_pb2_grpc.CoreServicer):
             for solution in searcher.solutions:
                 self.DB['solutions'].pop(solution['id'], None)
 
-            while not searcher.done:
-                time.sleep(1)
+            # while not searcher.done:
+            #     time.sleep(1)
 
         return core_pb2.EndSearchSolutionsResponse()
 
@@ -1069,8 +1069,8 @@ class CoreServicer(core_pb2_grpc.CoreServicer):
             searcher = session['searcher']
             searcher.stop()
 
-            while not searcher.done:
-                time.sleep(1)
+            # while not searcher.done:
+            #     time.sleep(1)
 
         return core_pb2.StopSearchSolutionsResponse()
 
@@ -1510,9 +1510,18 @@ class CoreServicer(core_pb2_grpc.CoreServicer):
 
         return exposed_outputs
 
+    def _get_solution(self, solution_id):
+        solution = self.DB['solutions'].get(solution_id)
+        if not solution:
+            raise ValueError('Invalid solution_id')
+
+        return solution
+
     def _get_fitted_solution(self, solution_id):
-        runtime = self.DB['fitted_solutions'].get(solution_id)
+        fitted_solutions = self.DB['fitted_solutions']
+        runtime = fitted_solutions.get(solution_id)
         if not runtime:
+            LOGGER.error(list(fitted_solutions.keys()))
             raise ValueError('Invalid fitted_solution_id')
 
         return runtime
@@ -1653,13 +1662,12 @@ class CoreServicer(core_pb2_grpc.CoreServicer):
 
         message SolutionExportResponse {}
         """
-        fitted_solution_id = request.solution_id
+        solution_id = request.solution_id
         rank = request.rank
 
-        runtime = self._get_fitted_solution(fitted_solution_id)
+        solution = self._get_solution(solution_id)
 
-        pipeline = runtime.pipeline
-        dump_pipeline(pipeline, self.ranked_dir, rank=rank)
+        dump_pipeline(solution, self.ranked_dir, rank=rank)
 
         return core_pb2.SolutionExportResponse()
 
