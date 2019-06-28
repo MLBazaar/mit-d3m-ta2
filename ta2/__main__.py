@@ -325,3 +325,7 @@ def ta3_test():
 def ta2_server():
     args = parse_args('server')
     _server(args)
+
+
+if __name__ == '__main__':
+    ta2_test()
