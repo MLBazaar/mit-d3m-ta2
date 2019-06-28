@@ -1,6 +1,9 @@
 -e git+https://gitlab.com/datadrivendiscovery/ta3ta2-api.git@5f806841f6aa8df64540cee37805586116633e6c#egg=ta3ta2-api
 -e git+https://gitlab.com/datadrivendiscovery/sklearn-wrap.git@594f2a84ddd1e8b68fde672f21a746dcda7678e9#egg=sklearn_wrap
--e git+https://gitlab.com/datadrivendiscovery/common-primitives.git@fb94e67355a117fde5c414f88a31dc7accb8746d#egg=common_primitives
+-e git+https://gitlab.com/datadrivendiscovery/common-primitives.git@48c0ebf7bb5b86ee6f00a38ae52546dc4c5b3be5#egg=common_primitives
 -e git+https://gitlab.com/datadrivendiscovery/tests-data.git@e6299dfefcdfdc309dac0dc28b9bbf3eb9193cae#egg=test_primitives&subdirectory=primitives
 -e git+https://github.com/Featuretools/ta1-primitives.git@b8899ef5a3c0bb686b56ba3a170d4b1037a9d461#egg=featuretools_ta1
 # -e git+https://github.com/autonlab/fastlvm.git@9a844e009d36fa6302b2a776d97f6362f6edd9b6#egg=fastlvm
+git+https://gitlab.com/datadrivendiscovery/sklearn-wrap.git@aab0f8373dfc08e52a61f21998fe2fd7d8d4860a#egg=sklearn_wrap
+-e git+https://github.com/uncharted-distil/distil-primitives.git@21b0a71a8585ce7b894ce241296d51c763f2078d#egg=distil-primitives
+-e git+https://github.com/usc-isi-i2/dsbox-primitives@5da8179cd96d3b0a64c970f1ee43f2960667fa8b#egg=dsbox-primitives

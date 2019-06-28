@@ -19,13 +19,13 @@ from ta2.ta3.server import serve
 from ta2.utils import ensure_downloaded
 
 
-def load_dataset(root_path, phase, inner_phase='TEST'):
-    inner_phase = phase
+def load_dataset(root_path, phase, inner_phase=None):
+    inner_phase = inner_phase or phase
     path = os.path.join(root_path, phase, 'dataset_' + inner_phase, 'datasetDoc.json')
     if os.path.exists(path):
         return Dataset.load(dataset_uri='file://' + os.path.abspath(path))
     else:
-        path = os.path.join(root_path, phase, 'dataset_' + inner_phase, 'datasetDoc.json')
+        path = os.path.join(root_path, phase, 'dataset_' + phase, 'datasetDoc.json')
         return Dataset.load(dataset_uri='file://' + os.path.abspath(path))
 
 
