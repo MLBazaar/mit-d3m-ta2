@@ -10,7 +10,7 @@ from d3m.container.dataset import Dataset
 from d3m.metadata.base import Context
 from d3m.metadata.pipeline import Pipeline
 from d3m.metadata.problem import Problem
-from d3m.runtime import Runtime, score
+from d3m.runtime import DEFAULT_SCORING_PIPELINE_PATH, Runtime, score
 
 from ta2 import logging_setup
 from ta2.search import PipelineSearcher
@@ -74,7 +74,7 @@ def score_pipeline(dataset_root, problem, pipeline_path):
     metrics = problem['problem']['performance_metrics']
 
     print("Computing the score")
-    scoring_pipeline = load_pipeline('ta2/pipelines/scoring_pipeline.yml')
+    scoring_pipeline = load_pipeline(DEFAULT_SCORING_PIPELINE_PATH)
     scores, scoring_pipeline_run = score(
         scoring_pipeline, problem, predictions, [test_dataset], metrics,
         context=Context.TESTING, random_seed=0,
