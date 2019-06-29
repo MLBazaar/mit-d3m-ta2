@@ -68,11 +68,16 @@ def to_dicts(hyperparameters):
 
 
 FILE_COLLECTION = 'https://metadata.datadrivendiscovery.org/types/FilesCollection'
+GRAPH = 'https://metadata.datadrivendiscovery.org/types/Graph'
 
 
 class PipelineSearcher:
 
     def _detect_data_modality(self, dataset):
+        graph_resources = dataset.metadata.get_elements_with_semantic_type(tuple(), GRAPH)
+        if graph_resources:
+            return 'graph'
+
         file_resources = dataset.metadata.get_elements_with_semantic_type(tuple(), FILE_COLLECTION)
 
         if not file_resources:
@@ -89,10 +94,10 @@ class PipelineSearcher:
             media_type = media_types[0]
             if media_type == 'text/plain':
                 return 'text'
-            elif media_type == 'image/jpeg' or media_type == 'image/png':
+            elif 'image' in media_type:
                 return 'image'
             elif media_type == 'text/csv':
-                return 'multi_table'
+                return 'timeseries'
 
         raise ValueError('Unsupported problem')
 
@@ -127,6 +132,7 @@ class PipelineSearcher:
         LOGGER.info("Loading pipeline for data modality %s and task type %s",
                     data_modality, task_type)
 
+        template = None
         if data_modality == 'single_table':
             if task_type == TaskType.CLASSIFICATION.name:
                 template = Templates.SINGLE_TABLE_CLASSIFICATION
@@ -134,21 +140,28 @@ class PipelineSearcher:
                 template = Templates.SINGLE_TABLE_REGRESSION
             elif task_type == TaskType.COLLABORATIVE_FILTERING.name:
                 template = Templates.SINGLE_TABLE_REGRESSION
+            elif task_type == TaskType.TIME_SERIES_FORECASTING.name:
+                template = Templates.SINGLE_TABLE_REGRESSION
         if data_modality == 'multi_table':
             if task_type == TaskType.CLASSIFICATION.name:
-                template = 'multi_table_dfs_xgb_classification.yml'
+                template = Templates.MULTI_TABLE_CLASSIFICATION
             elif task_type == TaskType.REGRESSION.name:
-                template = 'multi_table_dfs_xgb_regression.yml'
+                template = Templates.MULTI_TABLE_REGRESSION
+        # if data_modality == 'timeseries':
+        #     if task_type == TaskType.CLASSIFICATION.name:
+        #         template = Templates.MULTI_TABLE_CLASSIFICATION
+        #     elif task_type == TaskType.REGRESSION.name:
+        #         template = Templates.MULTI_TABLE_REGRESSION
         elif data_modality == 'text':
             if task_type == TaskType.CLASSIFICATION.name:
                 template = Templates.SINGLE_TABLE_CLASSIFICATION
             elif task_type == TaskType.REGRESSION.name:
                 template = Templates.SINGLE_TABLE_REGRESSION
-        elif data_modality == 'image':
-            if task_type == TaskType.CLASSIFICATION.name:
-                template = Templates.IMAGE_CLASSIFICATION
-            elif task_type == TaskType.REGRESSION.name:
-                template = Templates.IMAGE_REGRESSION
+        # elif data_modality == 'image':
+        #     if task_type == TaskType.CLASSIFICATION.name:
+        #         template = Templates.IMAGE_CLASSIFICATION
+        #     elif task_type == TaskType.REGRESSION.name:
+        #         template = Templates.IMAGE_REGRESSION
 
         if template:
             return template.value
