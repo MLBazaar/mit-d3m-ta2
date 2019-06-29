@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>ta2.ta3.core_servicer &mdash; mit-d3m-ta2 0.0.1-dev documentation</title>
+  <title>ta2.ta3.core_servicer &mdash; mit-d3m-ta2 0.1.0-dev documentation</title>
   
 
   
@@ -122,6 +122,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../api/ta2.html#submodules">Submodules</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../api/ta2.search.html">ta2.search module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../api/ta2.template.html">ta2.template module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../api/ta2.utils.html">ta2.utils module</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../../api/ta2.html#module-ta2">Module contents</a></li>
@@ -148,7 +149,10 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../contributing.html#release-workflow">Release Workflow</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../../history.html">History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../history.html">History</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../history.html#id1">0.1.0</a></li>
+</ul>
+</li>
 </ul>
 
             
@@ -217,7 +221,6 @@
 <span></span><span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">random</span>
 <span class="kn">import</span> <span class="nn">tempfile</span>
 <span class="kn">import</span> <span class="nn">threading</span>
 <span class="kn">import</span> <span class="nn">time</span>
@@ -232,11 +235,11 @@
 <span class="kn">from</span> <span class="nn">d3m.metadata.problem</span> <span class="k">import</span> <span class="n">Problem</span>
 <span class="kn">from</span> <span class="nn">d3m.runtime</span> <span class="k">import</span> <span class="n">Runtime</span>
 <span class="kn">from</span> <span class="nn">google.protobuf.timestamp_pb2</span> <span class="k">import</span> <span class="n">Timestamp</span>
-<span class="kn">from</span> <span class="nn">ta3ta2_api</span> <span class="k">import</span> <span class="n">core_pb2</span><span class="p">,</span> <span class="n">core_pb2_grpc</span><span class="p">,</span> <span class="n">pipeline_pb2</span><span class="p">,</span> <span class="n">primitive_pb2</span><span class="p">,</span> <span class="n">value_pb2</span>
-<span class="kn">from</span> <span class="nn">ta3ta2_api.problem_pb2</span> <span class="k">import</span> <span class="n">PerformanceMetric</span><span class="p">,</span> <span class="n">TaskSubtype</span><span class="p">,</span> <span class="n">TaskType</span>
+<span class="kn">from</span> <span class="nn">ta3ta2_api</span> <span class="k">import</span> <span class="n">core_pb2</span><span class="p">,</span> <span class="n">core_pb2_grpc</span><span class="p">,</span> <span class="n">pipeline_pb2</span><span class="p">,</span> <span class="n">primitive_pb2</span><span class="p">,</span> <span class="n">problem_pb2</span><span class="p">,</span> <span class="n">value_pb2</span>
 <span class="kn">from</span> <span class="nn">ta3ta2_api.utils</span> <span class="k">import</span> <span class="n">decode_performance_metric</span><span class="p">,</span> <span class="n">decode_problem_description</span><span class="p">,</span> <span class="n">encode_score</span>
 
 <span class="kn">from</span> <span class="nn">ta2.search</span> <span class="k">import</span> <span class="n">PipelineSearcher</span>
+<span class="kn">from</span> <span class="nn">ta2.utils</span> <span class="k">import</span> <span class="n">dump_pipeline</span>
 
 
 <div class="viewcode-block" id="recursivedict"><a class="viewcode-back" href="../../../api/ta2.ta3.core_servicer.html#ta2.ta3.core_servicer.recursivedict">[docs]</a><span class="k">def</span> <span class="nf">recursivedict</span><span class="p">():</span>
@@ -892,6 +895,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">input_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">input_dir</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">output_dir</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ranked_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span> <span class="s1">&#39;pipelines_ranked&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span> <span class="o">=</span> <span class="n">timeout</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">debug</span> <span class="o">=</span> <span class="n">debug</span>
 
@@ -904,8 +908,8 @@
             <span class="s2">&quot;about&quot;</span><span class="p">:</span> <span class="p">{</span>
                 <span class="s2">&quot;problemID&quot;</span><span class="p">:</span> <span class="n">problem</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
                 <span class="s2">&quot;problemName&quot;</span><span class="p">:</span> <span class="n">problem</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-                <span class="s2">&quot;taskType&quot;</span><span class="p">:</span> <span class="n">TaskType</span><span class="o">.</span><span class="n">Name</span><span class="p">(</span><span class="n">problem</span><span class="o">.</span><span class="n">task_type</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span>
-                <span class="s2">&quot;taskSubType&quot;</span><span class="p">:</span> <span class="n">TaskSubtype</span><span class="o">.</span><span class="n">Name</span><span class="p">(</span><span class="n">problem</span><span class="o">.</span><span class="n">task_subtype</span><span class="p">),</span>
+                <span class="s2">&quot;taskType&quot;</span><span class="p">:</span> <span class="n">problem_pb2</span><span class="o">.</span><span class="n">TaskType</span><span class="o">.</span><span class="n">Name</span><span class="p">(</span><span class="n">problem</span><span class="o">.</span><span class="n">task_type</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span>
+                <span class="s2">&quot;taskSubType&quot;</span><span class="p">:</span> <span class="n">problem_pb2</span><span class="o">.</span><span class="n">TaskSubtype</span><span class="o">.</span><span class="n">Name</span><span class="p">(</span><span class="n">problem</span><span class="o">.</span><span class="n">task_subtype</span><span class="p">),</span>
                 <span class="s2">&quot;problemVersion&quot;</span><span class="p">:</span> <span class="n">problem</span><span class="o">.</span><span class="n">version</span><span class="p">,</span>
                 <span class="s2">&quot;problemSchemaVersion&quot;</span><span class="p">:</span> <span class="s2">&quot;3.0&quot;</span>
             <span class="p">},</span>
@@ -927,7 +931,9 @@
                 <span class="p">],</span>
                 <span class="s2">&quot;performanceMetrics&quot;</span><span class="p">:</span> <span class="p">[</span>
                     <span class="p">{</span>
-                        <span class="s2">&quot;metric&quot;</span><span class="p">:</span> <span class="n">camel_case</span><span class="p">(</span><span class="n">PerformanceMetric</span><span class="o">.</span><span class="n">Name</span><span class="p">(</span><span class="n">metric</span><span class="o">.</span><span class="n">metric</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+                        <span class="s2">&quot;metric&quot;</span><span class="p">:</span> <span class="n">camel_case</span><span class="p">(</span>
+                            <span class="n">problem_pb2</span><span class="o">.</span><span class="n">PerformanceMetric</span><span class="o">.</span><span class="n">Name</span><span class="p">(</span><span class="n">metric</span><span class="o">.</span><span class="n">metric</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+                        <span class="p">)</span>
                     <span class="p">}</span>
                     <span class="k">for</span> <span class="n">metric</span> <span class="ow">in</span> <span class="n">problem</span><span class="o">.</span><span class="n">performance_metrics</span>
                 <span class="p">]</span>
@@ -979,6 +985,7 @@
             <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_run_session</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="n">args</span><span class="p">)</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 
 <div class="viewcode-block" id="CoreServicer.SearchSolutions"><a class="viewcode-back" href="../../../api/ta2.ta3.core_servicer.html#ta2.ta3.core_servicer.CoreServicer.SearchSolutions">[docs]</a>    <span class="k">def</span> <span class="nf">SearchSolutions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">######## SearchSolutions ########</span><span class="se">\n</span><span class="si">%s</span><span class="s2">########&quot;</span><span class="p">,</span> <span class="n">request</span><span class="p">)</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        rpc SearchSolutions (SearchSolutionsRequest) returns (SearchSolutionsResponse) {}</span>
 
@@ -1124,37 +1131,59 @@
                 <span class="n">done_ticks</span><span class="o">=</span><span class="n">returned</span><span class="p">,</span>
                 <span class="n">all_ticks</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span>
                 <span class="n">solution_id</span><span class="o">=</span><span class="n">solution</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">],</span>
-                <span class="n">internal_score</span><span class="o">=</span><span class="n">solution</span><span class="p">[</span><span class="s1">&#39;score&#39;</span><span class="p">]</span>
-                <span class="c1"># scores=[</span>
-                <span class="c1">#     core_pb2.SolutionSearchScore(</span>
-                <span class="c1">#         scoring_configuration=core_pb2.ScoringConfiguration(</span>
-                <span class="c1">#             method=core_pb2.EvaluationMethod.Value(&#39;K_FOLD&#39;),</span>
-                <span class="c1">#             folds=5,</span>
-                <span class="c1">#             train_test_ratio=0.,</span>
-                <span class="c1">#             shuffle=True,</span>
-                <span class="c1">#             random_seed=0,</span>
-                <span class="c1">#             stratified=False</span>
-                <span class="c1">#         ),</span>
-                <span class="c1">#         scores=[</span>
-                <span class="c1">#             core_pb2.Score(</span>
-                <span class="c1">#                 fold=0,</span>
-                <span class="c1">#                 targets=[</span>
-                <span class="c1">#                     ProblemTarget(</span>
-                <span class="c1">#                         target_index=0,</span>
-                <span class="c1">#                         resource_id=&quot;0&quot;,</span>
-                <span class="c1">#                         # column_index=0,</span>
-                <span class="c1">#                         # column_name=&quot;dummy&quot;,</span>
-                <span class="c1">#                         # clusters_number=0</span>
-                <span class="c1">#                     )</span>
-                <span class="c1">#                 ],</span>
-                <span class="c1">#                 value=value_pb2.Value(int64=1)</span>
-                <span class="c1">#             )</span>
-                <span class="c1">#         ]</span>
-                <span class="c1">#     )</span>
-                <span class="c1"># ]</span>
+                <span class="n">internal_score</span><span class="o">=</span><span class="n">solution</span><span class="p">[</span><span class="s1">&#39;score&#39;</span><span class="p">],</span>
+                <span class="n">scores</span><span class="o">=</span><span class="p">[</span>
+                    <span class="n">core_pb2</span><span class="o">.</span><span class="n">SolutionSearchScore</span><span class="p">(</span>
+                        <span class="c1"># scoring_configuration=core_pb2.ScoringConfiguration(</span>
+                        <span class="c1">#     method=core_pb2.EvaluationMethod.Value(&#39;K_FOLD&#39;),</span>
+                        <span class="c1">#     folds=5,</span>
+                        <span class="c1">#     train_test_ratio=0.,</span>
+                        <span class="c1">#     shuffle=True,</span>
+                        <span class="c1">#     random_seed=0,</span>
+                        <span class="c1">#     stratified=False</span>
+                        <span class="c1"># ),</span>
+                        <span class="n">scores</span><span class="o">=</span><span class="p">[</span>
+                            <span class="n">core_pb2</span><span class="o">.</span><span class="n">Score</span><span class="p">(</span>
+                                <span class="n">metric</span><span class="o">=</span><span class="n">problem_pb2</span><span class="o">.</span><span class="n">ProblemPerformanceMetric</span><span class="p">(</span>
+                                    <span class="n">metric</span><span class="o">=</span><span class="n">problem_pb2</span><span class="o">.</span><span class="n">PerformanceMetric</span><span class="o">.</span><span class="n">Value</span><span class="p">(</span><span class="s1">&#39;RANK&#39;</span><span class="p">)</span>
+                                <span class="p">),</span>
+                                <span class="n">fold</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                                <span class="n">value</span><span class="o">=</span><span class="n">value_pb2</span><span class="o">.</span><span class="n">Value</span><span class="p">(</span>
+                                    <span class="n">raw</span><span class="o">=</span><span class="n">value_pb2</span><span class="o">.</span><span class="n">ValueRaw</span><span class="p">(</span><span class="n">double</span><span class="o">=</span><span class="n">solution</span><span class="p">[</span><span class="s1">&#39;rank&#39;</span><span class="p">])</span>
+                                <span class="p">)</span>
+                            <span class="p">)</span>
+                        <span class="p">]</span>
+                    <span class="p">),</span>
+                    <span class="c1"># core_pb2.SolutionSearchScore(</span>
+                    <span class="c1">#     scoring_configuration=core_pb2.ScoringConfiguration(</span>
+                    <span class="c1">#         method=core_pb2.EvaluationMethod.Value(&#39;K_FOLD&#39;),</span>
+                    <span class="c1">#         folds=5,</span>
+                    <span class="c1">#         train_test_ratio=0.,</span>
+                    <span class="c1">#         shuffle=True,</span>
+                    <span class="c1">#         random_seed=0,</span>
+                    <span class="c1">#         stratified=False</span>
+                    <span class="c1">#     ),</span>
+                    <span class="c1">#     scores=[</span>
+                    <span class="c1">#         core_pb2.Score(</span>
+                    <span class="c1">#             fold=0,</span>
+                    <span class="c1">#             targets=[</span>
+                    <span class="c1">#                 ProblemTarget(</span>
+                    <span class="c1">#                     target_index=0,</span>
+                    <span class="c1">#                     resource_id=&quot;0&quot;,</span>
+                    <span class="c1">#                     # column_index=0,</span>
+                    <span class="c1">#                     # column_name=&quot;dummy&quot;,</span>
+                    <span class="c1">#                     # clusters_number=0</span>
+                    <span class="c1">#                 )</span>
+                    <span class="c1">#             ],</span>
+                    <span class="c1">#             value=value_pb2.Value(int64=1)</span>
+                    <span class="c1">#         )</span>
+                    <span class="c1">#     ]</span>
+                    <span class="c1"># )</span>
+                <span class="p">]</span>
             <span class="p">)</span>
 
 <div class="viewcode-block" id="CoreServicer.GetSearchSolutionsResults"><a class="viewcode-back" href="../../../api/ta2.ta3.core_servicer.html#ta2.ta3.core_servicer.CoreServicer.GetSearchSolutionsResults">[docs]</a>    <span class="k">def</span> <span class="nf">GetSearchSolutionsResults</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">######## GetSearchSolutionsResults ########</span><span class="se">\n</span><span class="si">%s</span><span class="s2">########&quot;</span><span class="p">,</span> <span class="n">request</span><span class="p">)</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        rpc GetSearchSolutionsResults (GetSearchSolutionsResultsRequest) returns (stream GetSearchSolutionsResultsResponse) {}</span>
 
@@ -1204,6 +1233,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stream</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_search_soltuion_results</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="CoreServicer.EndSearchSolutions"><a class="viewcode-back" href="../../../api/ta2.ta3.core_servicer.html#ta2.ta3.core_servicer.CoreServicer.EndSearchSolutions">[docs]</a>    <span class="k">def</span> <span class="nf">EndSearchSolutions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">######## EndSearchSolutions ########</span><span class="se">\n</span><span class="si">%s</span><span class="s2">########&quot;</span><span class="p">,</span> <span class="n">request</span><span class="p">)</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        rpc EndSearchSolutions (EndSearchSolutionsRequest) returns (EndSearchSolutionsResponse) {}</span>
 
@@ -1231,12 +1261,13 @@
             <span class="k">for</span> <span class="n">solution</span> <span class="ow">in</span> <span class="n">searcher</span><span class="o">.</span><span class="n">solutions</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">DB</span><span class="p">[</span><span class="s1">&#39;solutions&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">solution</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">],</span> <span class="kc">None</span><span class="p">)</span>
 
-            <span class="k">while</span> <span class="ow">not</span> <span class="n">searcher</span><span class="o">.</span><span class="n">done</span><span class="p">:</span>
-                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="c1"># while not searcher.done:</span>
+            <span class="c1">#     time.sleep(1)</span>
 
         <span class="k">return</span> <span class="n">core_pb2</span><span class="o">.</span><span class="n">EndSearchSolutionsResponse</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="CoreServicer.StopSearchSolutions"><a class="viewcode-back" href="../../../api/ta2.ta3.core_servicer.html#ta2.ta3.core_servicer.CoreServicer.StopSearchSolutions">[docs]</a>    <span class="k">def</span> <span class="nf">StopSearchSolutions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">######## StopSearchSolutions ########</span><span class="se">\n</span><span class="si">%s</span><span class="s2">########&quot;</span><span class="p">,</span> <span class="n">request</span><span class="p">)</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        rpc StopSearchSolutions (StopSearchSolutionsRequest) returns (StopSearchSolutionsResponse) {}</span>
 
@@ -1258,12 +1289,13 @@
             <span class="n">searcher</span> <span class="o">=</span> <span class="n">session</span><span class="p">[</span><span class="s1">&#39;searcher&#39;</span><span class="p">]</span>
             <span class="n">searcher</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
 
-            <span class="k">while</span> <span class="ow">not</span> <span class="n">searcher</span><span class="o">.</span><span class="n">done</span><span class="p">:</span>
-                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="c1"># while not searcher.done:</span>
+            <span class="c1">#     time.sleep(1)</span>
 
         <span class="k">return</span> <span class="n">core_pb2</span><span class="o">.</span><span class="n">StopSearchSolutionsResponse</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="CoreServicer.DescribeSolution"><a class="viewcode-back" href="../../../api/ta2.ta3.core_servicer.html#ta2.ta3.core_servicer.CoreServicer.DescribeSolution">[docs]</a>    <span class="k">def</span> <span class="nf">DescribeSolution</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">######## DescribeSolution ########</span><span class="se">\n</span><span class="si">%s</span><span class="s2">########&quot;</span><span class="p">,</span> <span class="n">request</span><span class="p">)</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        rpc DescribeSolution (DescribeSolutionRequest) returns (DescribeSolutionResponse) {}</span>
 
@@ -1378,10 +1410,10 @@
         <span class="k">for</span> <span class="n">metric</span><span class="p">,</span> <span class="n">pipeline</span> <span class="ow">in</span> <span class="n">metric_pipelines</span><span class="p">:</span>
             <span class="n">metric</span> <span class="o">=</span> <span class="n">decode_performance_metric</span><span class="p">(</span><span class="n">metric</span><span class="p">)</span>
 
-            <span class="n">score</span> <span class="o">=</span> <span class="n">searcher</span><span class="o">.</span><span class="n">score_pipeline</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">problem</span><span class="p">,</span> <span class="n">pipeline</span><span class="p">,</span> <span class="p">[</span><span class="n">metric</span><span class="p">],</span> <span class="o">**</span><span class="n">cv_args</span><span class="p">)</span>
-            <span class="n">pipeline</span><span class="o">.</span><span class="n">score</span> <span class="o">=</span> <span class="n">score</span>
+            <span class="n">searcher</span><span class="o">.</span><span class="n">score_pipeline</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">problem</span><span class="p">,</span> <span class="n">pipeline</span><span class="p">,</span> <span class="p">[</span><span class="n">metric</span><span class="p">],</span> <span class="o">**</span><span class="n">cv_args</span><span class="p">)</span>
 
 <div class="viewcode-block" id="CoreServicer.ScoreSolution"><a class="viewcode-back" href="../../../api/ta2.ta3.core_servicer.html#ta2.ta3.core_servicer.CoreServicer.ScoreSolution">[docs]</a>    <span class="k">def</span> <span class="nf">ScoreSolution</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">######## ScoreSolution ########</span><span class="se">\n</span><span class="si">%s</span><span class="s2">########&quot;</span><span class="p">,</span> <span class="n">request</span><span class="p">)</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        rpc ScoreSolution (ScoreSolutionRequest) returns (ScoreSolutionResponse) {}</span>
 
@@ -1471,6 +1503,7 @@
             <span class="p">)</span>
 
 <div class="viewcode-block" id="CoreServicer.GetScoreSolutionResults"><a class="viewcode-back" href="../../../api/ta2.ta3.core_servicer.html#ta2.ta3.core_servicer.CoreServicer.GetScoreSolutionResults">[docs]</a>    <span class="k">def</span> <span class="nf">GetScoreSolutionResults</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">######## GetScoreSolutionResults ########</span><span class="se">\n</span><span class="si">%s</span><span class="s2">########&quot;</span><span class="p">,</span> <span class="n">request</span><span class="p">)</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        rpc GetScoreSolutionResults (GetScoreSolutionResultsRequest) returns (stream GetScoreSolutionResultsResponse) {}</span>
 
@@ -1509,6 +1542,7 @@
             <span class="n">pipeline</span> <span class="o">=</span> <span class="n">Pipeline</span><span class="o">.</span><span class="n">from_json_structure</span><span class="p">(</span><span class="n">solution</span><span class="p">)</span>
             <span class="n">pipeline</span><span class="o">.</span><span class="n">cv_scores</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
             <span class="n">pipeline</span><span class="o">.</span><span class="n">score</span> <span class="o">=</span> <span class="n">solution</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;score&#39;</span><span class="p">)</span>
+            <span class="n">pipeline</span><span class="o">.</span><span class="n">normalized_score</span> <span class="o">=</span> <span class="n">solution</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;normalized_score&#39;</span><span class="p">)</span>
             <span class="n">solution</span><span class="p">[</span><span class="s1">&#39;session&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">session</span>
 
             <span class="k">return</span> <span class="n">pipeline</span><span class="p">,</span> <span class="n">session</span>
@@ -1531,6 +1565,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">DB</span><span class="p">[</span><span class="s1">&#39;fitted_solutions&#39;</span><span class="p">][</span><span class="n">pipeline</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">runtime</span>
 
 <div class="viewcode-block" id="CoreServicer.FitSolution"><a class="viewcode-back" href="../../../api/ta2.ta3.core_servicer.html#ta2.ta3.core_servicer.CoreServicer.FitSolution">[docs]</a>    <span class="k">def</span> <span class="nf">FitSolution</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">######## FitSolution ########</span><span class="se">\n</span><span class="si">%s</span><span class="s2">########&quot;</span><span class="p">,</span> <span class="n">request</span><span class="p">)</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        rpc FitSolution (FitSolutionRequest) returns (FitSolutionResponse) {}</span>
 
@@ -1618,6 +1653,7 @@
             <span class="p">)</span>
 
 <div class="viewcode-block" id="CoreServicer.GetFitSolutionResults"><a class="viewcode-back" href="../../../api/ta2.ta3.core_servicer.html#ta2.ta3.core_servicer.CoreServicer.GetFitSolutionResults">[docs]</a>    <span class="k">def</span> <span class="nf">GetFitSolutionResults</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">######## GetFitSolutionResults ########</span><span class="se">\n</span><span class="si">%s</span><span class="s2">########&quot;</span><span class="p">,</span> <span class="n">request</span><span class="p">)</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        rpc GetFitSolutionResults (GetFitSolutionResultsRequest) returns (stream GetFitSolutionResultsResponse) {}</span>
 
@@ -1694,9 +1730,18 @@
 
         <span class="k">return</span> <span class="n">exposed_outputs</span>
 
+    <span class="k">def</span> <span class="nf">_get_solution</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solution_id</span><span class="p">):</span>
+        <span class="n">solution</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">DB</span><span class="p">[</span><span class="s1">&#39;solutions&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">solution_id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">solution</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid solution_id&#39;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">solution</span>
+
     <span class="k">def</span> <span class="nf">_get_fitted_solution</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">solution_id</span><span class="p">):</span>
-        <span class="n">runtime</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">DB</span><span class="p">[</span><span class="s1">&#39;fitted_solutions&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">solution_id</span><span class="p">)</span>
+        <span class="n">fitted_solutions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">DB</span><span class="p">[</span><span class="s1">&#39;fitted_solutions&#39;</span><span class="p">]</span>
+        <span class="n">runtime</span> <span class="o">=</span> <span class="n">fitted_solutions</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">solution_id</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">runtime</span><span class="p">:</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">fitted_solutions</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid fitted_solution_id&#39;</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">runtime</span>
@@ -1710,6 +1755,7 @@
             <span class="n">produce_results</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">exposed_name</span><span class="p">]</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">csv_path</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 
 <div class="viewcode-block" id="CoreServicer.ProduceSolution"><a class="viewcode-back" href="../../../api/ta2.ta3.core_servicer.html#ta2.ta3.core_servicer.CoreServicer.ProduceSolution">[docs]</a>    <span class="k">def</span> <span class="nf">ProduceSolution</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">######## ProduceSolution ########</span><span class="se">\n</span><span class="si">%s</span><span class="s2">########&quot;</span><span class="p">,</span> <span class="n">request</span><span class="p">)</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        rpc ProduceSolution (ProduceSolutionRequest) returns (ProduceSolutionResponse) {}</span>
 
@@ -1788,6 +1834,7 @@
             <span class="p">)</span>
 
 <div class="viewcode-block" id="CoreServicer.GetProduceSolutionResults"><a class="viewcode-back" href="../../../api/ta2.ta3.core_servicer.html#ta2.ta3.core_servicer.CoreServicer.GetProduceSolutionResults">[docs]</a>    <span class="k">def</span> <span class="nf">GetProduceSolutionResults</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">######## GetProduceSolutionResults ########</span><span class="se">\n</span><span class="si">%s</span><span class="s2">########&quot;</span><span class="p">,</span> <span class="n">request</span><span class="p">)</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        rpc GetProduceSolutionResults (GetProduceSolutionResultsRequest) returns (stream GetProduceSolutionResultsResponse) {}</span>
 
@@ -1816,20 +1863,8 @@
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stream</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_produce_solution_results</span><span class="p">,</span> <span class="n">close_on_done</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="CoreServicer.dump_pipeline"><a class="viewcode-back" href="../../../api/ta2.ta3.core_servicer.html#ta2.ta3.core_servicer.CoreServicer.dump_pipeline">[docs]</a>    <span class="k">def</span> <span class="nf">dump_pipeline</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pipeline</span><span class="p">,</span> <span class="n">rank</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">rank</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">rank</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">score</span><span class="p">)</span> <span class="o">+</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">*</span> <span class="mf">1.e-12</span>   <span class="c1"># to avoid collisions</span>
-
-        <span class="n">pipeline_json</span> <span class="o">=</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">to_json_structure</span><span class="p">()</span>
-        <span class="n">pipeline_json</span><span class="p">[</span><span class="s1">&#39;pipeline_rank&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rank</span>
-
-        <span class="n">pipeline_filename</span> <span class="o">=</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">id</span> <span class="o">+</span> <span class="s1">&#39;.json&#39;</span>
-        <span class="n">pipeline_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span> <span class="s1">&#39;pipelines_ranked&#39;</span><span class="p">,</span> <span class="n">pipeline_filename</span><span class="p">)</span>
-
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">pipeline_path</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">pipeline_file</span><span class="p">:</span>
-            <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">pipeline_json</span><span class="p">,</span> <span class="n">pipeline_file</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span></div>
-
 <div class="viewcode-block" id="CoreServicer.SolutionExport"><a class="viewcode-back" href="../../../api/ta2.ta3.core_servicer.html#ta2.ta3.core_servicer.CoreServicer.SolutionExport">[docs]</a>    <span class="k">def</span> <span class="nf">SolutionExport</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">######## SolutionExport ########</span><span class="se">\n</span><span class="si">%s</span><span class="s2">########&quot;</span><span class="p">,</span> <span class="n">request</span><span class="p">)</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        rpc SolutionExport (SolutionExportRequest) returns (SolutionExportResponse) {}</span>
 
@@ -1847,16 +1882,17 @@
 
 <span class="sd">        message SolutionExportResponse {}</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">fitted_solution_id</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">solution_id</span>
+        <span class="n">solution_id</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">solution_id</span>
         <span class="n">rank</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">rank</span>
 
-        <span class="n">runtime</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_fitted_solution</span><span class="p">(</span><span class="n">fitted_solution_id</span><span class="p">)</span>
+        <span class="n">solution</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_solution</span><span class="p">(</span><span class="n">solution_id</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">dump_pipeline</span><span class="p">(</span><span class="n">runtime</span><span class="o">.</span><span class="n">pipeline</span><span class="p">,</span> <span class="n">rank</span><span class="p">)</span>
+        <span class="n">dump_pipeline</span><span class="p">(</span><span class="n">solution</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ranked_dir</span><span class="p">,</span> <span class="n">rank</span><span class="o">=</span><span class="n">rank</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">core_pb2</span><span class="o">.</span><span class="n">SolutionExportResponse</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="CoreServicer.UpdateProblem"><a class="viewcode-back" href="../../../api/ta2.ta3.core_servicer.html#ta2.ta3.core_servicer.CoreServicer.UpdateProblem">[docs]</a>    <span class="k">def</span> <span class="nf">UpdateProblem</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">######## UpdateProblem ########</span><span class="se">\n</span><span class="si">%s</span><span class="s2">########&quot;</span><span class="p">,</span> <span class="n">request</span><span class="p">)</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        rpc UpdateProblem (UpdateProblemRequest) returns (UpdateProblemResponse) {}</span>
 
@@ -1883,6 +1919,7 @@
         <span class="k">return</span> <span class="n">core_pb2</span><span class="o">.</span><span class="n">UpdateProblemResponse</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="CoreServicer.ListPrimitives"><a class="viewcode-back" href="../../../api/ta2.ta3.core_servicer.html#ta2.ta3.core_servicer.CoreServicer.ListPrimitives">[docs]</a>    <span class="k">def</span> <span class="nf">ListPrimitives</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">######## ListPrimitives ########</span><span class="se">\n</span><span class="si">%s</span><span class="s2">########&quot;</span><span class="p">,</span> <span class="n">request</span><span class="p">)</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        rpc ListPrimitives (ListPrimitivesRequest) returns (ListPrimitivesResponse) {}</span>
 
@@ -1921,6 +1958,7 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="CoreServicer.Hello"><a class="viewcode-back" href="../../../api/ta2.ta3.core_servicer.html#ta2.ta3.core_servicer.CoreServicer.Hello">[docs]</a>    <span class="k">def</span> <span class="nf">Hello</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">######## Hello ########</span><span class="se">\n</span><span class="si">%s</span><span class="s2">########&quot;</span><span class="p">,</span> <span class="n">request</span><span class="p">)</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        rpc Hello (HelloRequest) returns (HelloResponse) {}</span>
 

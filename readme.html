@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>MIT-D3M-TA2 &mdash; mit-d3m-ta2 0.0.1-dev documentation</title>
+  <title>MIT-D3M-TA2 &mdash; mit-d3m-ta2 0.1.0-dev documentation</title>
   
 
   
@@ -124,6 +124,7 @@
 <li class="toctree-l2"><a class="reference internal" href="api/ta2.html#submodules">Submodules</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="api/ta2.search.html">ta2.search module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api/ta2.template.html">ta2.template module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/ta2.utils.html">ta2.utils module</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="api/ta2.html#module-ta2">Module contents</a></li>
@@ -150,7 +151,10 @@
 <li class="toctree-l2"><a class="reference internal" href="contributing.html#release-workflow">Release Workflow</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="history.html">History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="history.html">History</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="history.html#id1">0.1.0</a></li>
+</ul>
+</li>
 </ul>
 
             
@@ -309,7 +313,7 @@ repository</a>.</p>
 datasets repostory</a>.</p>
 <p>As specified in the <code class="docutils literal notranslate"><span class="pre">README</span></code> file form this repository, you will need <a class="reference external" href="https://git-lfs.github.com/">git-lfs</a>
 in order to download all the included files.</p>
-<p>Note that the complete collection of seed datasets is around 54 GB big, so the recommended approach
+<p>Note that the complete collection of seed datasets is around 60 GB big, so the recommended approach
 is to download only those parts of the repository that will be used following the instructions in
 the <a class="reference external" href="https://gitlab.datadrivendiscovery.org/d3m/datasets#partial-downloading">Partial Downloading section</a></p>
 <p>Once downloaded, the local testing commands can be used passing the <code class="docutils literal notranslate"><span class="pre">seed_datasets_current</span></code> root
@@ -412,21 +416,35 @@ allowed for the tuning (<code class="docutils literal notranslate"><span class="
 <h3>TA2 Standalone Mode<a class="headerlink" href="#ta2-standalone-mode" title="Permalink to this headline">¶</a></h3>
 <p>The TA2 Standalone mode can be executed locally using the <code class="docutils literal notranslate"><span class="pre">ta2</span></code> command line interface.</p>
 <p>To use this, run the <code class="docutils literal notranslate"><span class="pre">ta2</span> <span class="pre">standalone</span></code> command passing one or more dataset names as positional
-arguments, as well as any of the optional named arguments.</p>
-<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span><span class="n">ta2</span> <span class="n">standalone</span> <span class="o">-</span><span class="n">b10</span> <span class="o">-</span><span class="n">t60</span> <span class="o">-</span><span class="n">v</span> <span class="mi">185</span><span class="n">_baseball</span>
+arguments as well as either a budget. <code class="docutils literal notranslate"><span class="pre">-b</span></code>, or a timeout, <code class="docutils literal notranslate"><span class="pre">-t</span></code>.</p>
+<p>For example, in order to process the datasets <code class="docutils literal notranslate"><span class="pre">185_baseball</span></code> and <code class="docutils literal notranslate"><span class="pre">196_autoMpg</span></code> during 60 seconds
+each, the following command would be used:</p>
+<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span><span class="n">ta2</span><span class="o">-</span><span class="n">test</span> <span class="o">-</span><span class="n">t60</span> <span class="mi">185</span><span class="n">_baseball</span> <span class="mi">196</span><span class="n">_autoMpg</span>
 </pre></div>
 </div>
-<p>For a full description of the script options, execute <code class="docutils literal notranslate"><span class="pre">ta2</span> <span class="pre">standalone</span> <span class="pre">--help</span></code>.</p>
+<p>This will start searching and tuning the best pipeline possible for each dataset during a maximum
+of 60 seconds and, at the end, print a table with all the results on stdout.</p>
+<p>Additionally, the following options can be passed:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">-i</span> <span class="pre">INPUT_PATH</span></code>: Path to the folder where the datasets can be found. Defaults to <code class="docutils literal notranslate"><span class="pre">input</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-o</span> <span class="pre">OUTPUT_PATH</span></code>: Path to the folder where the output pipeliens will be saved. Defaults to <code class="docutils literal notranslate"><span class="pre">output</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-b</span> <span class="pre">BUDGET</span></code>: Maximum number of tuning iterations to perform.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-t</span> <span class="pre">TIMEOUT</span></code>: Maximum allowed time for the tuning, in seconds.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-a,</span> <span class="pre">--all</span></code>: Process all the datasets found in the input folder.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-v,</span> <span class="pre">--verbose</span></code>: Set logs to INFO level. Use it twice to increase verbosity to DEBUG.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-r</span> <span class="pre">CSV_PATH</span></code>: Store the results in the indicated CSV file instead of printing them on stdout.</p></li>
+</ul>
+<p>For a full description of the options, execute <code class="docutils literal notranslate"><span class="pre">ta2-test</span> <span class="pre">--help</span></code>.</p>
 </div>
 <div class="section" id="ta2-ta3-server-mode">
 <h3>TA2-TA3 Server Mode<a class="headerlink" href="#ta2-ta3-server-mode" title="Permalink to this headline">¶</a></h3>
 <p>The TA2-TA3 API mode can be executed using the <code class="docutils literal notranslate"><span class="pre">ta2</span> <span class="pre">server</span></code> command, as well as any of the
 optional named arguments required.</p>
 <p>This will start a ta2 server in the background ready to serve requests from a ta3 client.</p>
-<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span><span class="n">ta2</span> <span class="n">server</span> <span class="o">-</span><span class="n">v</span>
+<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span><span class="n">ta2</span><span class="o">-</span><span class="n">server</span>
 </pre></div>
 </div>
-<p>For a full description of the script options, execute <code class="docutils literal notranslate"><span class="pre">ta2</span> <span class="pre">server</span> <span class="pre">--help</span></code>.</p>
+<p>For a full description of the script options, execute <code class="docutils literal notranslate"><span class="pre">ta2-server</span> <span class="pre">--help</span></code>.</p>
 </div>
 <div class="section" id="ta2-ta3-test">
 <h3>TA2-TA3 Test<a class="headerlink" href="#ta2-ta3-test" title="Permalink to this headline">¶</a></h3>
@@ -434,11 +452,17 @@ optional named arguments required.</p>
 which allows testing one or more datasets by issuing a predefined sequence of calls to the
 TA2-TA3 Server.</p>
 <p>To use it, run the <code class="docutils literal notranslate"><span class="pre">ta3</span></code> command passing one or more dataset names as positional
-arguments, as well as any of the optional named arguments.</p>
-<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span><span class="n">ta3</span> <span class="o">-</span><span class="n">b10</span> <span class="o">-</span><span class="n">t60</span> <span class="o">-</span><span class="n">v</span> <span class="mi">185</span><span class="n">_baseball</span>
+arguments, as well as any of the optional arguments.</p>
+<p>For example, in order to process the datasets <code class="docutils literal notranslate"><span class="pre">185_baseball</span></code> and <code class="docutils literal notranslate"><span class="pre">196_autoMpg</span></code> during 60 seconds
+each, the following command would be used:</p>
+<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span><span class="n">ta3</span><span class="o">-</span><span class="n">test</span> <span class="o">-</span><span class="n">t60</span> <span class="mi">185</span><span class="n">_baseball</span> <span class="mi">196</span><span class="n">_autoMpg</span>
 </pre></div>
 </div>
-<p>For a full description of the script options, execute <code class="docutils literal notranslate"><span class="pre">ta3</span> <span class="pre">--help</span></code>.</p>
+<p><strong>NOTE</strong>: In order to be able to execute this command, a <code class="docutils literal notranslate"><span class="pre">ta2-server</span></code> process must be already
+running in the same machine.</p>
+<p>This will start sending requests to the <code class="docutils literal notranslate"><span class="pre">ta3-server</span></code> to search and tune the best pipeline
+possible for each dataset during a maximum of 60 seconds.</p>
+<p>For a full description of the script options, execute <code class="docutils literal notranslate"><span class="pre">ta3-test</span> <span class="pre">--help</span></code>.</p>
 <p>Also remember that a TA2-TA3 Server must be running when you execute this script!</p>
 </div>
 </div>

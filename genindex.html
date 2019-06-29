@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Index &mdash; mit-d3m-ta2 0.0.1-dev documentation</title>
+  <title>Index &mdash; mit-d3m-ta2 0.1.0-dev documentation</title>
   
 
   
@@ -123,6 +123,7 @@
 <li class="toctree-l2"><a class="reference internal" href="api/ta2.html#submodules">Submodules</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="api/ta2.search.html">ta2.search module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api/ta2.template.html">ta2.template module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api/ta2.utils.html">ta2.utils module</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="api/ta2.html#module-ta2">Module contents</a></li>
@@ -149,7 +150,10 @@
 <li class="toctree-l2"><a class="reference internal" href="contributing.html#release-workflow">Release Workflow</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="history.html">History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="history.html">History</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="history.html#id1">0.1.0</a></li>
+</ul>
+</li>
 </ul>
 
             
@@ -271,7 +275,7 @@
 </li>
       <li><a href="api/ta2.ta3.core_servicer.html#ta2.ta3.core_servicer.dt2ts">dt2ts() (in module ta2.ta3.core_servicer)</a>
 </li>
-      <li><a href="api/ta2.ta3.core_servicer.html#ta2.ta3.core_servicer.CoreServicer.dump_pipeline">dump_pipeline() (ta2.ta3.core_servicer.CoreServicer method)</a>
+      <li><a href="api/ta2.utils.html#ta2.utils.dump_pipeline">dump_pipeline() (in module ta2.utils)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -281,9 +285,11 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/ta2.ta3.client.html#ta2.ta3.client.TA3APIClient.end_search_solutions">end_search_solutions() (ta2.ta3.client.TA3APIClient method)</a>
 </li>
+      <li><a href="api/ta2.ta3.core_servicer.html#ta2.ta3.core_servicer.CoreServicer.EndSearchSolutions">EndSearchSolutions() (ta2.ta3.core_servicer.CoreServicer method)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/ta2.ta3.core_servicer.html#ta2.ta3.core_servicer.CoreServicer.EndSearchSolutions">EndSearchSolutions() (ta2.ta3.core_servicer.CoreServicer method)</a>
+      <li><a href="api/ta2.utils.html#ta2.utils.ensure_downloaded">ensure_downloaded() (in module ta2.utils)</a>
 </li>
       <li><a href="api/ta2.template.html#ta2.template.extract_pipeline_tunables">extract_pipeline_tunables() (in module ta2.template)</a>
 </li>
@@ -397,10 +403,10 @@
 </li>
       <li><a href="api/ta2.ta3.core_servicer.html#ta2.ta3.core_servicer.CoreServicer.SearchSolutions">SearchSolutions() (ta2.ta3.core_servicer.CoreServicer method)</a>
 </li>
-      <li><a href="api/ta2.ta3.server.html#ta2.ta3.server.serve">serve() (in module ta2.ta3.server)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/ta2.ta3.server.html#ta2.ta3.server.serve">serve() (in module ta2.ta3.server)</a>
+</li>
       <li><a href="api/ta2.search.html#ta2.search.PipelineSearcher.setup_search">setup_search() (ta2.search.PipelineSearcher method)</a>
 </li>
       <li><a href="api/ta2.ta3.client.html#ta2.ta3.client.TA3APIClient.solution_export">solution_export() (ta2.ta3.client.TA3APIClient method)</a>
@@ -410,8 +416,6 @@
       <li><a href="api/ta2.search.html#ta2.search.PipelineSearcher.stop">stop() (ta2.search.PipelineSearcher method)</a>
 </li>
       <li><a href="api/ta2.ta3.client.html#ta2.ta3.client.TA3APIClient.stop_search_solutions">stop_search_solutions() (ta2.ta3.client.TA3APIClient method)</a>
-</li>
-      <li><a href="api/ta2.search.html#ta2.search.StopSearch">StopSearch</a>
 </li>
       <li><a href="api/ta2.ta3.core_servicer.html#ta2.ta3.core_servicer.CoreServicer.StopSearchSolutions">StopSearchSolutions() (ta2.ta3.core_servicer.CoreServicer method)</a>
 </li>
@@ -429,13 +433,15 @@
 </li>
       <li><a href="api/ta2.ta3.client.html#module-ta2.ta3.client">ta2.ta3.client (module)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/ta2.ta3.core_servicer.html#module-ta2.ta3.core_servicer">ta2.ta3.core_servicer (module)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/ta2.ta3.server.html#module-ta2.ta3.server">ta2.ta3.server (module)</a>
 </li>
       <li><a href="api/ta2.template.html#module-ta2.template">ta2.template (module)</a>
+</li>
+      <li><a href="api/ta2.utils.html#module-ta2.utils">ta2.utils (module)</a>
 </li>
       <li><a href="api/ta2.ta3.client.html#ta2.ta3.client.TA3APIClient">TA3APIClient (class in ta2.ta3.client)</a>
 </li>

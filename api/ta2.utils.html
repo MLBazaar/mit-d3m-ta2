@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>ta2 &mdash; mit-d3m-ta2 0.1.0-dev documentation</title>
+  <title>ta2.utils module &mdash; mit-d3m-ta2 0.1.0-dev documentation</title>
   
 
   
@@ -36,7 +36,9 @@
   <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" /> 
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Credits" href="../authors.html" />
+    <link rel="prev" title="ta2.template module" href="ta2.template.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -109,23 +111,23 @@
 <li class="toctree-l1"><a class="reference internal" href="../readme.html#submission">Submission</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Resources</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../api/ta2.html">API Reference</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../api/ta2.html#subpackages">Subpackages</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../api/ta2.ta3.html">ta2.ta3 package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../api/ta2.ta3.html#submodules">Submodules</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../api/ta2.ta3.html#module-ta2.ta3">Module contents</a></li>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="ta2.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="ta2.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="ta2.ta3.html">ta2.ta3 package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="ta2.ta3.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="ta2.ta3.html#module-ta2.ta3">Module contents</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../api/ta2.html#submodules">Submodules</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../api/ta2.search.html">ta2.search module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../api/ta2.template.html">ta2.template module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../api/ta2.utils.html">ta2.utils module</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="ta2.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="ta2.search.html">ta2.search module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ta2.template.html">ta2.template module</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">ta2.utils module</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../api/ta2.html#module-ta2">Module contents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ta2.html#module-ta2">Module contents</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../authors.html">Credits</a><ul>
@@ -198,12 +200,18 @@
     
       <li><a href="../index.html">Docs</a> &raquo;</li>
         
-          <li><a href="index.html">Module code</a> &raquo;</li>
+          <li><a href="ta2.html">ta2 package</a> &raquo;</li>
         
-      <li>ta2</li>
+      <li>ta2.utils module</li>
     
     
       <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/HDI-Project/mit-d3m-ta2/blob/master/docs/api/ta2.utils.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
         
       </li>
     
@@ -215,43 +223,34 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <h1>Source code for ta2</h1><div class="highlight"><pre>
-<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+  <div class="section" id="module-ta2.utils">
+<span id="ta2-utils-module"></span><h1>ta2.utils module<a class="headerlink" href="#module-ta2.utils" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="ta2.utils.dump_pipeline">
+<code class="sig-prename descclassname">ta2.utils.</code><code class="sig-name descname">dump_pipeline</code><span class="sig-paren">(</span><em class="sig-param">pipeline</em>, <em class="sig-param">dump_dir</em>, <em class="sig-param">rank=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ta2/utils.html#dump_pipeline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ta2.utils.dump_pipeline" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
-<span class="sd">&quot;&quot;&quot;Top-level package for mit-d3m-ta2.&quot;&quot;&quot;</span>
+<dl class="function">
+<dt id="ta2.utils.ensure_downloaded">
+<code class="sig-prename descclassname">ta2.utils.</code><code class="sig-name descname">ensure_downloaded</code><span class="sig-paren">(</span><em class="sig-param">dataset_name</em>, <em class="sig-param">data_path='/home/travis/build/HDI-Project/mit-d3m-ta2/ta2/data'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ta2/utils.html#ensure_downloaded"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ta2.utils.ensure_downloaded" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
-<span class="n">__author__</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;MIT Data To AI Lab&quot;&quot;&quot;</span>
-<span class="n">__email__</span> <span class="o">=</span> <span class="s1">&#39;dailabmit@gmail.com&#39;</span>
-<span class="n">__version__</span> <span class="o">=</span> <span class="s1">&#39;0.1.0-dev&#39;</span>
+</div>
 
-<span class="kn">import</span> <span class="nn">logging</span>
-
-
-<div class="viewcode-block" id="logging_setup"><a class="viewcode-back" href="../api/ta2.html#ta2.logging_setup">[docs]</a><span class="k">def</span> <span class="nf">logging_setup</span><span class="p">(</span><span class="n">verbosity</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">logfile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">logger_name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">logger_name</span><span class="p">)</span>
-    <span class="n">log_level</span> <span class="o">=</span> <span class="p">(</span><span class="mi">3</span> <span class="o">-</span> <span class="n">verbosity</span><span class="p">)</span> <span class="o">*</span> <span class="mi">10</span>
-    <span class="n">fmt</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%(asctime)s</span><span class="s1"> - </span><span class="si">%(process)d</span><span class="s1"> - </span><span class="si">%(levelname)s</span><span class="s1"> - </span><span class="si">%(module)s</span><span class="s1"> - </span><span class="si">%(message)s</span><span class="s1">&#39;</span>
-    <span class="n">formatter</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="n">fmt</span><span class="p">)</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">log_level</span><span class="p">)</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">propagate</span> <span class="o">=</span> <span class="kc">False</span>
-
-    <span class="k">if</span> <span class="n">logfile</span><span class="p">:</span>
-        <span class="n">file_handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">FileHandler</span><span class="p">(</span><span class="n">logfile</span><span class="p">)</span>
-        <span class="n">file_handler</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
-        <span class="n">file_handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">file_handler</span><span class="p">)</span>
-
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">console_handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">()</span>
-        <span class="n">console_handler</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">log_level</span><span class="p">)</span>
-        <span class="n">console_handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">console_handler</span><span class="p">)</span></div>
-</pre></div>
 
            </div>
            
           </div>
           <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../authors.html" class="btn btn-neutral float-right" title="Credits" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="ta2.template.html" class="btn btn-neutral float-left" title="ta2.template module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
   
 
   <hr/>

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>ta2.ta3.core_servicer module &mdash; mit-d3m-ta2 0.0.1-dev documentation</title>
+  <title>ta2.ta3.core_servicer module &mdash; mit-d3m-ta2 0.1.0-dev documentation</title>
   
 
   
@@ -124,6 +124,7 @@
 <li class="toctree-l2"><a class="reference internal" href="ta2.html#submodules">Submodules</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="ta2.search.html">ta2.search module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="ta2.template.html">ta2.template module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ta2.utils.html">ta2.utils module</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="ta2.html#module-ta2">Module contents</a></li>
@@ -150,7 +151,10 @@
 <li class="toctree-l2"><a class="reference internal" href="../contributing.html#release-workflow">Release Workflow</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../history.html">History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../history.html">History</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../history.html#id1">0.1.0</a></li>
+</ul>
+</li>
 </ul>
 
             
@@ -235,430 +239,83 @@
 <dl class="method">
 <dt id="ta2.ta3.core_servicer.CoreServicer.DescribeSolution">
 <code class="sig-name descname">DescribeSolution</code><span class="sig-paren">(</span><em class="sig-param">request</em>, <em class="sig-param">context</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ta2/ta3/core_servicer.html#CoreServicer.DescribeSolution"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ta2.ta3.core_servicer.CoreServicer.DescribeSolution" title="Permalink to this definition">¶</a></dt>
-<dd><p>rpc DescribeSolution (DescribeSolutionRequest) returns (DescribeSolutionResponse) {}</p>
-<p>// Request a detailed description of the found solution.
-message DescribeSolutionRequest {</p>
-<blockquote>
-<div><p>string solution_id = 1;</p>
-</div></blockquote>
-<p>}</p>
-<dl class="simple">
-<dt>message DescribeSolutionResponse {</dt><dd><p>// A pipeline description. Nested pipelines should be fully described as well.
-PipelineDescription pipeline = 1;
-// Each step in a pipeline has description. These are reported in the order of steps in
-// the pipeline.
-repeated StepDescription steps = 2;</p>
-</dd>
-</dl>
-<p>}</p>
-</dd></dl>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="ta2.ta3.core_servicer.CoreServicer.EndSearchSolutions">
 <code class="sig-name descname">EndSearchSolutions</code><span class="sig-paren">(</span><em class="sig-param">request</em>, <em class="sig-param">context</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ta2/ta3/core_servicer.html#CoreServicer.EndSearchSolutions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ta2.ta3.core_servicer.CoreServicer.EndSearchSolutions" title="Permalink to this definition">¶</a></dt>
-<dd><p>rpc EndSearchSolutions (EndSearchSolutionsRequest) returns (EndSearchSolutionsResponse) {}</p>
-<p>// Ends the search and releases all resources associated with the solution search.
-// If the call is made in parallel with a running search and results are being streamed,
-// the search is stopped and the “GetSearchSolutionsResults” stream is closed by TA2
-// (as happens when the search is concluded on its own, or when a search is stopped
-// by “StopSearchSolutions”). Found solution IDs during the search are no longer valid
-// after this call.
-message EndSearchSolutionsRequest {</p>
-<blockquote>
-<div><p>string search_id = 1;</p>
-</div></blockquote>
-<p>}</p>
-<p>message EndSearchSolutionsResponse {}</p>
-</dd></dl>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="ta2.ta3.core_servicer.CoreServicer.FitSolution">
 <code class="sig-name descname">FitSolution</code><span class="sig-paren">(</span><em class="sig-param">request</em>, <em class="sig-param">context</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ta2/ta3/core_servicer.html#CoreServicer.FitSolution"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ta2.ta3.core_servicer.CoreServicer.FitSolution" title="Permalink to this definition">¶</a></dt>
-<dd><p>rpc FitSolution (FitSolutionRequest) returns (FitSolutionResponse) {}</p>
-<p>// Fit the solution on given inputs. If a solution is already fitted on inputs this is a NOOP
-// (if no additional outputs should be exposed). This can happen when a TA2 simultaneously
-// fits the solution as part of the solution search phase.
-message FitSolutionRequest {</p>
-<blockquote>
-<div><p>string solution_id = 1;
-repeated Value inputs = 2;
-// List of data references of step outputs which should be exposed to the TA3 system.
-// If you want to expose outputs of the whole pipeline (e.g., predictions themselves),
-// list them here as well. These can be recursive data references like
-// “steps.1.steps.4.produce” to point to an output inside a sub-pipeline.
-// Systems only have to support exposing final outputs and can return “ValueError” for
-// intermediate values.
-repeated string expose_outputs = 3;
-// Which value types should be used for exposing outputs. If not provided, the allowed
-// value types list from hello call is used instead.
-// The order is important as TA2 system will try value types in order until one works out,
-// or an error will be returned instead of the value. An error exposing a value does not
-// stop the overall process.
-repeated ValueType expose_value_types = 4;
-// Any users associated with this call itself. Optional.
-repeated SolutionRunUser users = 5;</p>
-</div></blockquote>
-<p>}</p>
-<dl class="simple">
-<dt>message FitSolutionResponse {</dt><dd><p>string request_id = 1;</p>
-</dd>
-</dl>
-<p>}</p>
-</dd></dl>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="ta2.ta3.core_servicer.CoreServicer.GetFitSolutionResults">
 <code class="sig-name descname">GetFitSolutionResults</code><span class="sig-paren">(</span><em class="sig-param">request</em>, <em class="sig-param">context</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ta2/ta3/core_servicer.html#CoreServicer.GetFitSolutionResults"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ta2.ta3.core_servicer.CoreServicer.GetFitSolutionResults" title="Permalink to this definition">¶</a></dt>
-<dd><p>rpc GetFitSolutionResults (GetFitSolutionResultsRequest) returns (stream GetFitSolutionResultsResponse) {}</p>
-<p>// Get all fitted results currently available and start receiving any further
-// new fitted results as well.
-message GetFitSolutionResultsRequest {</p>
-<blockquote>
-<div><p>string request_id = 1;</p>
-</div></blockquote>
-<p>}</p>
-<dl class="simple">
-<dt>message GetFitSolutionResultsResponse {</dt><dd><p>// Overall process progress.
-Progress progress = 1;
-// The list contains progress for each step in the pipeline, in order.
-// List can be incomplete while the process is in progress. Systems can provide
-// steps only at the end (when “progress” equals COMPLETED) and not during running.
-repeated StepProgress steps = 2;
-// A mapping between data references of step outputs and values.
-map&lt;string, Value&gt; exposed_outputs = 3;
-// The fitted solution ID, once progress = COMPLETED.
-string fitted_solution_id = 4;</p>
-</dd>
-</dl>
-<p>}</p>
-</dd></dl>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="ta2.ta3.core_servicer.CoreServicer.GetProduceSolutionResults">
 <code class="sig-name descname">GetProduceSolutionResults</code><span class="sig-paren">(</span><em class="sig-param">request</em>, <em class="sig-param">context</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ta2/ta3/core_servicer.html#CoreServicer.GetProduceSolutionResults"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ta2.ta3.core_servicer.CoreServicer.GetProduceSolutionResults" title="Permalink to this definition">¶</a></dt>
-<dd><p>rpc GetProduceSolutionResults (GetProduceSolutionResultsRequest) returns (stream GetProduceSolutionResultsResponse) {}</p>
-<p>// Get all producing results computed until now and start receiving any
-// new producing results computed as well.
-message GetProduceSolutionResultsRequest {</p>
-<blockquote>
-<div><p>string request_id = 1;</p>
-</div></blockquote>
-<p>}</p>
-<dl class="simple">
-<dt>message GetProduceSolutionResultsResponse {</dt><dd><p>// Overall process progress.
-Progress progress = 1;
-// The list contains progress for each step in the pipeline, in order.
-// List can be incomplete while the process is in progress. Systems can provide
-// steps only at the end (when “progress” equals COMPLETED) and not during running.
-repeated StepProgress steps = 2;
-// A mapping between data references of step outputs and values.
-map&lt;string, Value&gt; exposed_outputs = 3;</p>
-</dd>
-</dl>
-<p>}</p>
-</dd></dl>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="ta2.ta3.core_servicer.CoreServicer.GetScoreSolutionResults">
 <code class="sig-name descname">GetScoreSolutionResults</code><span class="sig-paren">(</span><em class="sig-param">request</em>, <em class="sig-param">context</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ta2/ta3/core_servicer.html#CoreServicer.GetScoreSolutionResults"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ta2.ta3.core_servicer.CoreServicer.GetScoreSolutionResults" title="Permalink to this definition">¶</a></dt>
-<dd><p>rpc GetScoreSolutionResults (GetScoreSolutionResultsRequest) returns (stream GetScoreSolutionResultsResponse) {}</p>
-<p>// Get all score results computed until now and start receiving any
-// new score results computed as well.
-message GetScoreSolutionResultsRequest {</p>
-<blockquote>
-<div><p>string request_id = 1;</p>
-</div></blockquote>
-<p>}</p>
-<dl class="simple">
-<dt>message GetScoreSolutionResultsResponse {</dt><dd><p>// Overall process progress.
-Progress progress = 1;
-// List of score results. List can be incomplete while the process is in progress.
-repeated Score scores = 2;</p>
-</dd>
-</dl>
-<p>}</p>
-</dd></dl>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="ta2.ta3.core_servicer.CoreServicer.GetSearchSolutionsResults">
 <code class="sig-name descname">GetSearchSolutionsResults</code><span class="sig-paren">(</span><em class="sig-param">request</em>, <em class="sig-param">context</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ta2/ta3/core_servicer.html#CoreServicer.GetSearchSolutionsResults"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ta2.ta3.core_servicer.CoreServicer.GetSearchSolutionsResults" title="Permalink to this definition">¶</a></dt>
-<dd><p>rpc GetSearchSolutionsResults (GetSearchSolutionsResultsRequest) returns (stream GetSearchSolutionsResultsResponse) {}</p>
-<p>// Get all solutions presently identified by the search and start receiving any
-// further solutions also found as well.
-message GetSearchSolutionsResultsRequest {</p>
-<blockquote>
-<div><p>string search_id = 1;</p>
-</div></blockquote>
-<p>}</p>
-<dl class="simple">
-<dt>message GetSearchSolutionsResultsResponse {</dt><dd><p>// Overall process progress, not progress per solution. While solutions are being found and
-// returned, or scores computed and updated, progress state should be kept at “RUNNING”.
-Progress progress = 1;
-// A measure of progress during search. It can be any number of internal steps or
-// actions a TA2 is doing during search. It can be even number of how many candidate
-// solutions were already examined. It does not even have to be an integer.
-// How regularly a change to this number is reported to TA3 is left to TA2’s discretion,
-// but a rule of thumb is at least once a minute if the number changes.
-double done_ticks = 2;
-// If TA2 knows how many internal steps or actions are there, it can set this field.
-// This can also be updated through time if more (or even less) internal steps or
-// actions are determined to be necessary. If this value is non-zero, then it should
-// always hold that “done_ticks” &lt;= “all_ticks”.
-double all_ticks = 3;
-string solution_id = 4;
-// Internal score for this solution between 0.0 and 1.0 where 1.0 is the highest score.
-// There is no other meaning to this score and it does not necessary depend on scores
-// listed in the problem description. Optional.
-// Because this field is optional, if omitted the default value will be 0. But 0 is a
-// valid value for this field. Because of that you should never omit the field.
-// If you do not have internal score to provide, use NaN for the value of this field
-// to signal that.
-double internal_score = 5;
-// TA2 might be able to provide more meaningful scores as well, depending on its
-// approach to solution search. Moreover, even the same TA2 might not use the same scoring
-// approach for all of its solutions. Optional.
-repeated SolutionSearchScore scores = 6;</p>
-</dd>
-</dl>
-<p>}</p>
-</dd></dl>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="ta2.ta3.core_servicer.CoreServicer.Hello">
 <code class="sig-name descname">Hello</code><span class="sig-paren">(</span><em class="sig-param">request</em>, <em class="sig-param">context</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ta2/ta3/core_servicer.html#CoreServicer.Hello"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ta2.ta3.core_servicer.CoreServicer.Hello" title="Permalink to this definition">¶</a></dt>
-<dd><p>rpc Hello (HelloRequest) returns (HelloResponse) {}</p>
-<p>message HelloResponse {
-// Some string identifying the name and version of the TA2 system.
-string user_agent = 1;
-// Shall be set to “protocol_version” above.
-string version = 2;
-// List of value types that a TA3 system can use to communicate values to a TA2 system.
-// The order is important as a TA3 system should try value types in order until one works
-// out, or an error will be returned instead of the value.
-repeated ValueType allowed_value_types = 3;
-// List of API extensions that a TA2 supports.
-repeated string supported_extensions = 4;
-}</p>
-</dd></dl>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="ta2.ta3.core_servicer.CoreServicer.ListPrimitives">
 <code class="sig-name descname">ListPrimitives</code><span class="sig-paren">(</span><em class="sig-param">request</em>, <em class="sig-param">context</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ta2/ta3/core_servicer.html#CoreServicer.ListPrimitives"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ta2.ta3.core_servicer.CoreServicer.ListPrimitives" title="Permalink to this definition">¶</a></dt>
-<dd><p>rpc ListPrimitives (ListPrimitivesRequest) returns (ListPrimitivesResponse) {}</p>
-<p>// List all primitives known to TA2, their IDs, versions, names, and digests. Using this
-// information a TA3 should know which primitives may be put into a pipeline template.
-// To narrow down potential primitives to use a TA3 can also ask a TA2 to do a solution
-// search and then observe which primitives the TA2 is using. If more metadata about primitives
-// is needed, then a TA3 can use the results of this call to map primitives to metadata
-// (from Python code or primitive annotations) on its own.
-message ListPrimitivesRequest {}</p>
-<dl class="simple">
-<dt>message ListPrimitivesResponse {</dt><dd><p>repeated Primitive primitives = 1;</p>
-</dd>
-</dl>
-<p>}</p>
-<p>// Description of the primitive.
-message Primitive {</p>
-<blockquote>
-<div><p>string id = 1;
-string version = 2;
-string python_path = 3;
-string name = 4;
-// Digest is optional, because some locally registered primitives might not have it.
-// But for all primitives published it is available and it should be provided here as well.
-string digest = 5;</p>
-</div></blockquote>
-<p>}</p>
-</dd></dl>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="ta2.ta3.core_servicer.CoreServicer.ProduceSolution">
 <code class="sig-name descname">ProduceSolution</code><span class="sig-paren">(</span><em class="sig-param">request</em>, <em class="sig-param">context</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ta2/ta3/core_servicer.html#CoreServicer.ProduceSolution"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ta2.ta3.core_servicer.CoreServicer.ProduceSolution" title="Permalink to this definition">¶</a></dt>
-<dd><p>rpc ProduceSolution (ProduceSolutionRequest) returns (ProduceSolutionResponse) {}</p>
-<p>// Produce (execute) the solution on given inputs. A solution has to have been fitted for this
-// to be possible (even if in cases where this is just created by transformations).
-message ProduceSolutionRequest {</p>
-<blockquote>
-<div><p>string fitted_solution_id = 1;
-repeated Value inputs = 2;
-// List of data references of step outputs which should be exposed to the TA3 system.
-// If you want to expose outputs of the whole pipeline (e.g., predictions themselves),
-// list them here as well. These can be recursive data references like
-// “steps.1.steps.4.produce” to point to an output inside a sub-pipeline.
-// Systems only have to support exposing final outputs and can return “ValueError” for
-// intermediate values.
-repeated string expose_outputs = 3;
-// Which value types should be used for exposing outputs. If not provided, the allowed
-// value types list from a hello call is used instead.
-// The order is important as the TA2 system will try value types in order until one works
-// out, or an error will be returned instead of the value. An error exposing a value does
-// not stop the overall process.
-repeated ValueType expose_value_types = 4;
-// Any users associated with this call itself. Optional.
-repeated SolutionRunUser users = 5;</p>
-</div></blockquote>
-<p>}</p>
-<dl class="simple">
-<dt>message ProduceSolutionResponse {</dt><dd><p>string request_id = 1;</p>
-</dd>
-</dl>
-<p>}</p>
-</dd></dl>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="ta2.ta3.core_servicer.CoreServicer.ScoreSolution">
 <code class="sig-name descname">ScoreSolution</code><span class="sig-paren">(</span><em class="sig-param">request</em>, <em class="sig-param">context</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ta2/ta3/core_servicer.html#CoreServicer.ScoreSolution"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ta2.ta3.core_servicer.CoreServicer.ScoreSolution" title="Permalink to this definition">¶</a></dt>
-<dd><p>rpc ScoreSolution (ScoreSolutionRequest) returns (ScoreSolutionResponse) {}</p>
-<p>// Request solution to be scored given inputs. Inputs have to be Dataset container values
-// and pipeline outputs have to be predictions. It can internally run multiple fit + produce
-// runs of the pipeline on permutations of inputs data (e.g., for cross-validation). This is
-// also why we cannot expose outputs here.
-message ScoreSolutionRequest {</p>
-<blockquote>
-<div><p>string solution_id = 1;
-repeated Value inputs = 2;
-repeated ProblemPerformanceMetric performance_metrics = 3;
-// Any users associated with this call itself. Optional.
-repeated SolutionRunUser users = 4;
-ScoringConfiguration configuration = 5;</p>
-</div></blockquote>
-<p>}</p>
-<dl class="simple">
-<dt>message ScoreSolutionResponse {</dt><dd><p>string request_id = 1;</p>
-</dd>
-</dl>
-<p>}</p>
-</dd></dl>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="ta2.ta3.core_servicer.CoreServicer.SearchSolutions">
 <code class="sig-name descname">SearchSolutions</code><span class="sig-paren">(</span><em class="sig-param">request</em>, <em class="sig-param">context</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ta2/ta3/core_servicer.html#CoreServicer.SearchSolutions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ta2.ta3.core_servicer.CoreServicer.SearchSolutions" title="Permalink to this definition">¶</a></dt>
-<dd><p>rpc SearchSolutions (SearchSolutionsRequest) returns (SearchSolutionsResponse) {}</p>
-<p>// Starts a new solution search. Found solutions have not necessary been fitted on the provided
-// inputs. Problem description and inputs are used only to help guide the search process.
-// Consider any found solutions to be just a static description of solutions at this stage.
-// Multiple parallel solution searches can happen at the same time.
-message SearchSolutionsRequest {</p>
-<blockquote>
-<div><p>// Some string identifying the name and version of the TA3 system.
-string user_agent = 1;
-// Shall be set to “protocol_version” above.
-string version = 2;
-// Desired upper limit of time for solution search, expressed in minutes.
-// Is suggestion, and TA2’s should attempt to obey, but TA3’s should realize may be
-// violated. Default value of 0 (and any negative number) signifies no time bound.
-double time_bound = 3;
-// Value stating the priority of the search. If multiple searches are queued then highest
-// priority (largest number) should be started next by TA2. Primarily used to sort any
-// queue, but no further guarantee that TA2 can give more resources to high priority
-// searches. If unspecified, by default search will have priority 0. Negative numbers have
-// still lower priority.
-double priority = 4;
-// Which value types can a TA2 system use to communicate values to a TA3 system?
-// The order is important as a TA2 system will try value types in order until one works out,
-// or an error will be returned instead of the value.
-repeated ValueType allowed_value_types = 5;
-// Problem description to use for the solution search.
-ProblemDescription problem = 6;
-// A pipeline template to use for search or to execute. If template is omitted, then a
-// regular solution search is done. If template consists only of one placeholder step,
-// then a regular solution search is done to replace that step. If there is no placeholder
-// step, but template describes a full pipeline with free hyper-parameters, then this
-// call becomes a hyper-paramater tuning call over free hyper-paramaters and found solutions
-// share the same pipeline, but different hyper-parameter configurations. If there is no
-// placeholder step and all hyper-parameters are fixed as part of the pipeline, then this
-// call only checks the given template and returns the solution with same pipeline back, to
-// be executed. This allows fixed computations to be done on data, for example, pipeline can
-// consist of only one primitive with fixed hyper-parameters to execute that one primitive.
-// Moreover, such fully specified pipelines with fixed hyper-parametres can have any
-// inputs and any outputs. Otherwise pipelines have to be from a Dataset container value
-// to predictions Pandas dataframe. While there are all these options possible, only a
-// subset has to be supported by all systems. See README for more details.
-PipelineDescription template = 7;
-// Pipeline inputs used during solution search. They have to point to Dataset container
-// values. Order matters as each input is mapped to a template’s input in order. Optional
-// for templates without a placeholder and with all hyper-parameters fixed.
-repeated Value inputs = 8;</p>
-</div></blockquote>
-<p>}</p>
-<p>// Call returns immediately with the ID. Use “GetFoundSolutions” call to get results.
-message SearchSolutionsResponse {</p>
-<blockquote>
-<div><p>// An ID identifying this solution search. This string should be at least 22 characters
-// long to ensure enough entropy to not be guessable.
-string search_id = 1;</p>
-</div></blockquote>
-<p>}</p>
-</dd></dl>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="ta2.ta3.core_servicer.CoreServicer.SolutionExport">
 <code class="sig-name descname">SolutionExport</code><span class="sig-paren">(</span><em class="sig-param">request</em>, <em class="sig-param">context</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ta2/ta3/core_servicer.html#CoreServicer.SolutionExport"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ta2.ta3.core_servicer.CoreServicer.SolutionExport" title="Permalink to this definition">¶</a></dt>
-<dd><p>rpc SolutionExport (SolutionExportRequest) returns (SolutionExportResponse) {}</p>
-<p>// Exports a solution for evaluation purposes based on NIST specifications.
-message SolutionExportRequest {</p>
-<blockquote>
-<div><p>// Found solution to export.
-DEPRECTAED: string fitted_solution_id = 1;
-string solution_id = 1;    # From 2019.2.27
-// Solution rank to be used for the exported solution. Lower numbers represent
-// better solutions. Presently NIST requirements are that ranks should be non-negative
-// and that each exported pipeline have a different rank. TA3 should make sure not to repeat ranks.
-// Filenames of exported files are left to be chosen by the TA2 system.
-double rank = 2;</p>
-</div></blockquote>
-<p>}</p>
-<p>message SolutionExportResponse {}</p>
-</dd></dl>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="ta2.ta3.core_servicer.CoreServicer.StopSearchSolutions">
 <code class="sig-name descname">StopSearchSolutions</code><span class="sig-paren">(</span><em class="sig-param">request</em>, <em class="sig-param">context</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ta2/ta3/core_servicer.html#CoreServicer.StopSearchSolutions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ta2.ta3.core_servicer.CoreServicer.StopSearchSolutions" title="Permalink to this definition">¶</a></dt>
-<dd><p>rpc StopSearchSolutions (StopSearchSolutionsRequest) returns (StopSearchSolutionsResponse) {}</p>
-<p>// Stops the search but leaves all currently found solutions available.
-// If the call is made in parallel with a running search and results are being streamed,
-// the “GetSearchSolutionsResults” stream is closed by the TA2 (as happens when the search
-// is concluded on its own). Search cannot be re-started after it has been stopped.
-message StopSearchSolutionsRequest {</p>
-<blockquote>
-<div><p>string search_id = 1;</p>
-</div></blockquote>
-<p>}</p>
-<p>message StopSearchSolutionsResponse {}</p>
-</dd></dl>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="ta2.ta3.core_servicer.CoreServicer.UpdateProblem">
 <code class="sig-name descname">UpdateProblem</code><span class="sig-paren">(</span><em class="sig-param">request</em>, <em class="sig-param">context</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ta2/ta3/core_servicer.html#CoreServicer.UpdateProblem"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ta2.ta3.core_servicer.CoreServicer.UpdateProblem" title="Permalink to this definition">¶</a></dt>
-<dd><p>rpc UpdateProblem (UpdateProblemRequest) returns (UpdateProblemResponse) {}</p>
-<p>// Updates problem with new description. This also updates the problem description for all
-// ongoing solution searches associated with this problem. Internal behavior of TA2
-// is unspecified: it can simply start a new search using new problem description, or
-// it can start modifying solutions it has already found to new problem description, or
-// it can use it to further help narrow down ongoing solution searches. In any case, after
-// this call returns, all reported solutions for searches associated with this problem
-// should be for the updated problem description.
-message UpdateProblemRequest {</p>
-<blockquote>
-<div><p>string search_id = 1;
-// New problem description. It has to be provided in full and it replaces existing
-// problem description.
-ProblemDescription problem = 2;</p>
-</div></blockquote>
-<p>}</p>
-<p>message UpdateProblemResponse {}</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="ta2.ta3.core_servicer.CoreServicer.dump_pipeline">
-<code class="sig-name descname">dump_pipeline</code><span class="sig-paren">(</span><em class="sig-param">pipeline</em>, <em class="sig-param">rank</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ta2/ta3/core_servicer.html#CoreServicer.dump_pipeline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ta2.ta3.core_servicer.CoreServicer.dump_pipeline" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="data">
 <dt id="ta2.ta3.core_servicer.VERSION">
-<code class="sig-prename descclassname">ta2.ta3.core_servicer.</code><code class="sig-name descname">VERSION</code><em class="property"> = '2019.4.11'</em><a class="headerlink" href="#ta2.ta3.core_servicer.VERSION" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">ta2.ta3.core_servicer.</code><code class="sig-name descname">VERSION</code><em class="property"> = '2019.6.11'</em><a class="headerlink" href="#ta2.ta3.core_servicer.VERSION" title="Permalink to this definition">¶</a></dt>
 <dd><dl>
 <dt>enum EvaluationMethod {</dt><dd><p>// Default value. Not to be used.
 EVALUATION_METHOD_UNDEFINED = 0;</p>
