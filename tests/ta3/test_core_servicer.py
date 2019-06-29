@@ -202,8 +202,8 @@ def test_core_servicer_get_search_soltuion_results(solutions_results_mock):
     instance = CoreServicer('/input-dir', '/output-dir', 0.5)
     instance._get_progress = MagicMock()
     solutions = {
-        1: {'id': 1, 'score': 1},
-        2: {'id': 2, 'score': 2}
+        1: {'id': 1, 'score': 1, 'rank': 1},
+        2: {'id': 2, 'score': 2, 'rank': 2}
     }
 
     # case 1: len(solutions) < returned

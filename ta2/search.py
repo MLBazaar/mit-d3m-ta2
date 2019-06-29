@@ -4,6 +4,7 @@ import json
 import logging
 import os
 import random
+import signal
 import warnings
 from collections import defaultdict
 from datetime import datetime, timedelta
@@ -14,7 +15,7 @@ from d3m.container.dataset import Dataset
 from d3m.metadata.base import ALL_ELEMENTS, ArgumentType, Context
 from d3m.metadata.pipeline import Pipeline, PrimitiveStep
 from d3m.metadata.problem import TaskType
-from d3m.runtime import evaluate
+from d3m.runtime import DEFAULT_SCORING_PIPELINE_PATH, evaluate
 
 from ta2.template import load_template
 from ta2.utils import dump_pipeline
@@ -28,10 +29,6 @@ TUNING_PARAMETER = 'https://metadata.datadrivendiscovery.org/types/TuningParamet
 LOGGER = logging.getLogger(__name__)
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
-
-
-class StopSearch(Exception):
-    pass
 
 
 def to_dicts(hyperparameters):
@@ -80,7 +77,7 @@ class PipelineSearcher:
             media_type = media_types[0]
             if media_type == 'text/plain':
                 return 'text'
-            elif media_type == 'image/jpeg':
+            elif media_type == 'image/jpeg' or media_type == 'image/png':
                 return 'image'
             elif media_type == 'text/csv':
                 return 'multi_table'
@@ -118,44 +115,42 @@ class PipelineSearcher:
         LOGGER.info("Loading pipeline for data modality %s and task type %s",
                     data_modality, task_type)
 
-        # if data_modality == 'single_table':
-        #     if task_type == TaskType.CLASSIFICATION.name:
-        #         return 'dfs_xgb_classification.hp.yml'
-        #     elif task_type == TaskType.REGRESSION.name:
-        #         return 'dfs_xgb_regression.hp.yml'
-        #     elif task_type == TaskType.COLLABORATIVE_FILTERING.name:
-        #         return 'dfs_xgb_regression.hp.yml'
-        # if data_modality == 'multi_table':
-        #     if task_type == TaskType.CLASSIFICATION.name:
-        #         return 'multi_table_lda_logreg_classification.yml'
-        #         # return 'multi_table_dfs_xgb_classification.all_hp.yml'
-        #     elif task_type == TaskType.REGRESSION.name:
-        #         return 'dfs_xgb_regression.hp.yml'
-        #         # return 'multi_table_lda_lars_regression.yml'
-        #         # return 'multi_table_dfs_xgb_regression.all_hp.yml'
-        # elif data_modality == 'text':
-        #     if task_type == TaskType.CLASSIFICATION.name:
-        #         return 'dfs_xgb_classification.hp.yml'
-        #     elif task_type == TaskType.REGRESSION.name:
-        #         return 'dfs_xgb_regression.hp.yml'
-
-        if task_type == TaskType.REGRESSION.name:
-            return 'dfs_xgb_regression.hp.yml'
-        elif task_type == TaskType.COLLABORATIVE_FILTERING.name:
-            return 'dfs_xgb_regression.hp.yml'
-
-        # Classification and others
+        if data_modality == 'single_table':
+            if task_type == TaskType.CLASSIFICATION.name:
+                # return 'xgb_classification.hp.yml'
+                return 'gradient_boosting_classification.hp.yml'
+            elif task_type == TaskType.REGRESSION.name:
+                # return 'xgb_regression.hp.yml'
+                return 'gradient_boosting_regression.hp.yml'
+            elif task_type == TaskType.COLLABORATIVE_FILTERING.name:
+                # return 'xgb_regression.hp.yml'
+                return 'gradient_boosting_regression.hp.yml'
         if data_modality == 'multi_table':
-            return 'multi_table_lda_logreg_classification.yml'
-        else:
-            return 'dfs_xgb_classification.hp.yml'
+            if task_type == TaskType.CLASSIFICATION.name:
+                return 'multi_table_dfs_xgb_classification.yml'
+            elif task_type == TaskType.REGRESSION.name:
+                return 'multi_table_dfs_xgb_regression.yml'
+        elif data_modality == 'text':
+            if task_type == TaskType.CLASSIFICATION.name:
+                # return 'xgb_classification.hp.yml'
+                return 'gradient_boosting_classification.hp.yml'
+            elif task_type == TaskType.REGRESSION.name:
+                # return 'xgb_regression.hp.yml'
+                return 'gradient_boosting_regression.hp.yml'
+        elif data_modality == 'image':
+            if task_type == TaskType.REGRESSION.name:
+                return 'image_rf_regression.yml'
+            else:
+                return 'image_classification.yml'
 
-        return 'dfs_xgb_classification.hp.yml'
+        # return 'dfs_xgb_classification.hp.yml'
+        raise ValueError('Unsupported problem')
 
-    def __init__(self, input_dir='input', output_dir='output', dump=False):
+    def __init__(self, input_dir='input', output_dir='output', dump=False, hard_timeout=False):
         self.input = input_dir
         self.output = output_dir
         self.dump = dump
+        self.hard_timeout = hard_timeout
 
         self.ranked_dir = os.path.join(self.output, 'pipelines_ranked')
         self.scored_dir = os.path.join(self.output, 'pipelines_scored')
@@ -166,7 +161,7 @@ class PipelineSearcher:
 
         self.datasets = self._find_datasets(input_dir)
         self.data_pipeline = self._load_pipeline('kfold_pipeline.yml')
-        self.scoring_pipeline = self._load_pipeline('scoring_pipeline.yml')
+        self.scoring_pipeline = self._load_pipeline(DEFAULT_SCORING_PIPELINE_PATH)
 
     def score_pipeline(self, dataset, problem, pipeline, metrics=None, random_seed=0,
                        folds=5, stratified=False, shuffle=False):
@@ -269,10 +264,13 @@ class PipelineSearcher:
         now = datetime.now()
 
         if (self._stop or (self.timeout and (now > self.max_end_time))):
-            raise StopSearch()
+            raise KeyboardInterrupt()
 
     def stop(self):
         self._stop = True
+
+    def _timeout(self, *args, **kwargs):
+        raise KeyboardInterrupt()
 
     def setup_search(self, timeout):
         self.solutions = list()
@@ -285,11 +283,14 @@ class PipelineSearcher:
         if self.timeout:
             self.max_end_time = self.start_time + timedelta(seconds=self.timeout)
 
-        LOGGER.info("Timeout: %s; Max end: %s", self.timeout, self.max_end_time)
+            if self.hard_timeout:
+                signal.signal(signal.SIGALRM, self._timeout)
+                signal.alarm(timeout)
 
-    def search(self, problem, timeout=None, budget=None):
+        LOGGER.info("Timeout: %s (Hard: %s); Max end: %s",
+                    self.timeout, self.hard_timeout, self.max_end_time)
 
-        self.setup_search(timeout)
+    def search(self, problem, timeout=None, budget=None, template_name=None):
 
         dataset_id = problem['inputs'][0]['dataset_id']
         dataset = Dataset.load(self.datasets[dataset_id])
@@ -299,7 +300,9 @@ class PipelineSearcher:
         task_type = problem['problem']['task_type'].name
 
         LOGGER.info("Loading the template and the tuner")
-        template_name = self._get_template(data_modality, task_type)
+        if template_name is None:
+            template_name = self._get_template(data_modality, task_type)
+
         template, tunables, defaults = load_template(template_name)
         tuner = GP(tunables, r_minimum=10)
 
@@ -312,6 +315,9 @@ class PipelineSearcher:
         else:
             iterator = itertools.count()   # infinite range
 
+        self.setup_search(timeout)
+
+        first = True
         try:
             proposal = defaults
             for iteration in iterator:
@@ -324,6 +330,9 @@ class PipelineSearcher:
                     self.score_pipeline(dataset, problem, pipeline)
                     pipeline.normalized_score = metric.normalize(pipeline.score)
                 except Exception:
+                    if first:
+                        raise
+
                     LOGGER.exception("Error scoring pipeline %s", pipeline.id)
                     pipeline.score = None
                     pipeline.normalized_score = 0.0
@@ -345,9 +354,13 @@ class PipelineSearcher:
                     best_normalized = pipeline.normalized_score
 
                 proposal = tuner.propose(1)
+                first = False
 
-        except StopSearch:
+        except KeyboardInterrupt:
             pass
+        finally:
+            if self.timeout and self.hard_timeout:
+                signal.alarm(0)
 
         self.done = True
         return {

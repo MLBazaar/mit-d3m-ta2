@@ -10,7 +10,6 @@ install_requires = [
     'tabulate>=0.8.3,<0.9',
     'numpy==1.15.4',
     'scikit-learn[alldeps]==0.20.3',
-    'python-prctl==1.7',
 ]
 
 

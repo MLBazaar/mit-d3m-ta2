@@ -1,6 +1,7 @@
 import argparse
 import logging
 import os
+import sys
 import traceback
 from datetime import datetime
 
@@ -10,7 +11,7 @@ from d3m.container.dataset import Dataset
 from d3m.metadata.base import Context
 from d3m.metadata.pipeline import Pipeline
 from d3m.metadata.problem import Problem
-from d3m.runtime import Runtime, score
+from d3m.runtime import DEFAULT_SCORING_PIPELINE_PATH, Runtime, score
 
 from ta2 import logging_setup
 from ta2.search import PipelineSearcher
@@ -22,7 +23,11 @@ from ta2.utils import ensure_downloaded
 def load_dataset(root_path, phase, inner_phase=None):
     inner_phase = inner_phase or phase
     path = os.path.join(root_path, phase, 'dataset_' + inner_phase, 'datasetDoc.json')
-    return Dataset.load(dataset_uri='file://' + os.path.abspath(path))
+    if os.path.exists(path):
+        return Dataset.load(dataset_uri='file://' + os.path.abspath(path))
+    else:
+        path = os.path.join(root_path, phase, 'dataset_' + phase, 'datasetDoc.json')
+        return Dataset.load(dataset_uri='file://' + os.path.abspath(path))
 
 
 def load_problem(root_path, phase):
@@ -40,9 +45,9 @@ def load_pipeline(pipeline_path):
 
 def search(dataset_root, problem, args):
 
-    pps = PipelineSearcher(args.input, args.output, dump=True)
+    pps = PipelineSearcher(args.input, args.output, dump=True, hard_timeout=True)
 
-    return pps.search(problem, timeout=args.timeout, budget=args.budget)
+    return pps.search(problem, args.timeout, args.budget, args.template)
 
 
 def score_pipeline(dataset_root, problem, pipeline_path):
@@ -70,7 +75,7 @@ def score_pipeline(dataset_root, problem, pipeline_path):
     metrics = problem['problem']['performance_metrics']
 
     print("Computing the score")
-    scoring_pipeline = load_pipeline('ta2/pipelines/scoring_pipeline.yml')
+    scoring_pipeline = load_pipeline(DEFAULT_SCORING_PIPELINE_PATH)
     scores, scoring_pipeline_run = score(
         scoring_pipeline, problem, predictions, [test_dataset], metrics,
         context=Context.TESTING, random_seed=0,
@@ -96,6 +101,7 @@ def process_dataset(dataset, args):
     print("Searching Pipeline for dataset {}".format(dataset))
     result = search(dataset_root, problem, args)
     result['elapsed_time'] = datetime.utcnow() - start_ts
+    result['dataset'] = dataset
 
     pipeline_id = result['pipeline']
     cv_score = result['cv_score']
@@ -125,6 +131,13 @@ REPORT_COLUMNS = [
 
 def _ta2_test(args):
     results = list()
+    if args.all:
+        print('Processing all datasets from input folder')
+        args.dataset = os.listdir(args.input)
+    elif not args.dataset:
+        print('ERROR: provide at least one dataset name or set --all')
+        sys.exit(1)
+
     for dataset in args.dataset:
         try:
             results.append(process_dataset(dataset, args))
@@ -135,6 +148,13 @@ def _ta2_test(args):
                 'dataset': dataset,
                 'error': str(ex)
             })
+
+        report_while_runing = pd.DataFrame(
+            results,
+            columns=REPORT_COLUMNS
+        )
+
+        report_while_runing.to_csv('live_report.csv', index=False)
 
     report = pd.DataFrame(
         results,
@@ -245,7 +265,9 @@ def parse_args(mode=None):
 
     # Datasets
     dataset_args = argparse.ArgumentParser(add_help=False)
-    dataset_args.add_argument('dataset', nargs='+', help='Name of the dataset to use for the test')
+    dataset_args.add_argument('-a', '--all', action='store_true',
+                              help='Process all the datasets found in the input folder')
+    dataset_args.add_argument('dataset', nargs='*', help='Name of the dataset to use for the test')
 
     # Search Configuration
     search_args = argparse.ArgumentParser(add_help=False)
@@ -268,6 +290,9 @@ def parse_args(mode=None):
         parser.add_argument(
             '-b', '--budget', type=int,
             help='Maximum number of tuning iterations to perform')
+        parser.add_argument(
+            '-T', '--template',
+            help='Name of the template to Use.')
 
     elif mode == 'ta3':
         parser = argparse.ArgumentParser(
@@ -310,3 +335,7 @@ def ta3_test():
 def ta2_server():
     args = parse_args('server')
     _server(args)
+
+
+if __name__ == '__main__':
+    ta2_test()

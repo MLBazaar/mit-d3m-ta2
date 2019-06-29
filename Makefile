@@ -71,15 +71,15 @@ clean: clean-build clean-pyc clean-test clean-coverage clean-docs ## remove all 
 
 .PHONY: install
 install: clean-build clean-pyc ## install the package to the active Python's site-packages
-	pip install . -r requirements.txt
+	pip install . && pip install -r requirements.txt
 
 .PHONY: install-test
 install-test: clean-build clean-pyc ## install the package and test dependencies
-	pip install .[test] -r requirements.txt
+	pip install .[test] && pip install -r requirements.txt
 
 .PHONY: install-develop
 install-develop: clean-build clean-pyc ## install the package in editable mode and dependencies for development
-	pip install -e .[dev] -r requirements.txt
+	pip install -e .[dev] && pip install -r requirements.txt
 
 
 # LINT TARGETS
@@ -230,3 +230,8 @@ submit-ci: login build ## push to TA2 submission registry
 share: login build ## push to TA2 sharing registry
 	docker tag mit-d3m-ta2:latest registry.datadrivendiscovery.org/jkanter/mit-fl-ta2:stable
 	docker push registry.datadrivendiscovery.org/jkanter/mit-fl-ta2:stable
+
+.PHONY: share
+docker-test: login build ## push to TA2 sharing registry
+	docker tag mit-d3m-ta2:latest registry.datadrivendiscovery.org/csala/mit-d3m-ta2:latest
+	docker push registry.datadrivendiscovery.org/csala/mit-d3m-ta2:latest
