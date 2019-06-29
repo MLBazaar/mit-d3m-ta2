@@ -8,6 +8,7 @@ import signal
 import warnings
 from collections import defaultdict
 from datetime import datetime, timedelta
+from enum import Enum
 
 import numpy as np
 from btb.tuning import GP
@@ -29,6 +30,17 @@ TUNING_PARAMETER = 'https://metadata.datadrivendiscovery.org/types/TuningParamet
 LOGGER = logging.getLogger(__name__)
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
+
+
+class Templates(Enum):
+    SINGLE_TABLE_CLASSIFICATION = 'gradient_boosting_classification.hp.yml'
+    # SINGLE_TABLE_CLASSIFICATION = 'xgb_classification.hp.yml'
+    SINGLE_TABLE_REGRESSION = 'gradient_boosting_regression.hp.yml'
+    # SINGLE_TABLE_REGRESSION = 'xgb_regression.hp.yml'
+    MULTI_TABLE_CLASSIFICATION = 'multi_table_dfs_xgb_classification.yml'
+    MULTI_TABLE_REGRESSION = 'gradient_boosting_regression.hp.yml'
+    IMAGE_REGRESSION = 'image_rf_regression.yml'
+    IMAGE_CLASSIFICATION = 'image_classification.yml'
 
 
 def to_dicts(hyperparameters):
@@ -117,33 +129,31 @@ class PipelineSearcher:
 
         if data_modality == 'single_table':
             if task_type == TaskType.CLASSIFICATION.name:
-                # return 'xgb_classification.hp.yml'
-                return 'gradient_boosting_classification.hp.yml'
+                template = Templates.SINGLE_TABLE_CLASSIFICATION
             elif task_type == TaskType.REGRESSION.name:
-                # return 'xgb_regression.hp.yml'
-                return 'gradient_boosting_regression.hp.yml'
+                template = Templates.SINGLE_TABLE_REGRESSION
             elif task_type == TaskType.COLLABORATIVE_FILTERING.name:
-                # return 'xgb_regression.hp.yml'
-                return 'gradient_boosting_regression.hp.yml'
+                template = Templates.SINGLE_TABLE_REGRESSION
         if data_modality == 'multi_table':
             if task_type == TaskType.CLASSIFICATION.name:
-                return 'multi_table_dfs_xgb_classification.yml'
+                template = 'multi_table_dfs_xgb_classification.yml'
             elif task_type == TaskType.REGRESSION.name:
-                return 'multi_table_dfs_xgb_regression.yml'
+                template = 'multi_table_dfs_xgb_regression.yml'
         elif data_modality == 'text':
             if task_type == TaskType.CLASSIFICATION.name:
-                # return 'xgb_classification.hp.yml'
-                return 'gradient_boosting_classification.hp.yml'
+                template = Templates.SINGLE_TABLE_CLASSIFICATION
             elif task_type == TaskType.REGRESSION.name:
-                # return 'xgb_regression.hp.yml'
-                return 'gradient_boosting_regression.hp.yml'
+                template = Templates.SINGLE_TABLE_REGRESSION
         elif data_modality == 'image':
-            if task_type == TaskType.REGRESSION.name:
-                return 'image_rf_regression.yml'
-            else:
-                return 'image_classification.yml'
+            if task_type == TaskType.CLASSIFICATION.name:
+                template = Templates.IMAGE_CLASSIFICATION
+            elif task_type == TaskType.REGRESSION.name:
+                template = Templates.IMAGE_REGRESSION
 
-        # return 'dfs_xgb_classification.hp.yml'
+        if template:
+            return template.value
+
+        # return Templates.SINGLE_TABLE_CLASSIFICATION.value
         raise ValueError('Unsupported problem')
 
     def __init__(self, input_dir='input', output_dir='output', dump=False, hard_timeout=False):
