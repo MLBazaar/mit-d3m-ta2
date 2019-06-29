@@ -111,7 +111,7 @@ datasets repostory](https://gitlab.datadrivendiscovery.org/d3m/datasets/tree/mas
 As specified in the `README` file form this repository, you will need [git-lfs](https://git-lfs.github.com/)
 in order to download all the included files.
 
-Note that the complete collection of seed datasets is around 54 GB big, so the recommended approach
+Note that the complete collection of seed datasets is around 60 GB big, so the recommended approach
 is to download only those parts of the repository that will be used following the instructions in
 the [Partial Downloading section](https://gitlab.datadrivendiscovery.org/d3m/datasets#partial-downloading)
 
@@ -148,13 +148,29 @@ Two scripts are included in the repository for local testing:
 The TA2 Standalone mode can be executed locally using the `ta2` command line interface.
 
 To use this, run the `ta2 standalone` command passing one or more dataset names as positional
-arguments, as well as any of the optional named arguments.
+arguments as well as either a budget. `-b`, or a timeout, `-t`.
+
+For example, in order to process the datasets `185_baseball` and `196_autoMpg` during 60 seconds
+each, the following command would be used:
 
 ```
-ta2 standalone -b10 -t60 -v 185_baseball
+ta2-test -t60 185_baseball 196_autoMpg
 ```
 
-For a full description of the script options, execute `ta2 standalone --help`.
+This will start searching and tuning the best pipeline possible for each dataset during a maximum
+of 60 seconds and, at the end, print a table with all the results on stdout.
+
+Additionally, the following options can be passed:
+
+* `-i INPUT_PATH`: Path to the folder where the datasets can be found. Defaults to `input`.
+* `-o OUTPUT_PATH`: Path to the folder where the output pipeliens will be saved. Defaults to `output`.
+* `-b BUDGET`: Maximum number of tuning iterations to perform.
+* `-t TIMEOUT`: Maximum allowed time for the tuning, in seconds.
+* `-a, --all`: Process all the datasets found in the input folder.
+* `-v, --verbose`: Set logs to INFO level. Use it twice to increase verbosity to DEBUG.
+* `-r CSV_PATH`: Store the results in the indicated CSV file instead of printing them on stdout.
+
+For a full description of the options, execute `ta2-test --help`.
 
 ### TA2-TA3 Server Mode
 
@@ -164,10 +180,10 @@ optional named arguments required.
 This will start a ta2 server in the background ready to serve requests from a ta3 client.
 
 ```
-ta2 server -v
+ta2-server
 ```
 
-For a full description of the script options, execute `ta2 server --help`.
+For a full description of the script options, execute `ta2-server --help`.
 
 ### TA2-TA3 Test
 
@@ -176,13 +192,22 @@ which allows testing one or more datasets by issuing a predefined sequence of ca
 TA2-TA3 Server.
 
 To use it, run the `ta3` command passing one or more dataset names as positional
-arguments, as well as any of the optional named arguments.
+arguments, as well as any of the optional arguments.
+
+For example, in order to process the datasets `185_baseball` and `196_autoMpg` during 60 seconds
+each, the following command would be used:
 
 ```
-ta3 -b10 -t60 -v 185_baseball
+ta3-test -t60 185_baseball 196_autoMpg
 ```
 
-For a full description of the script options, execute `ta3 --help`.
+**NOTE**: In order to be able to execute this command, a `ta2-server` process must be already
+running in the same machine.
+
+This will start sending requests to the `ta3-server` to search and tune the best pipeline
+possible for each dataset during a maximum of 60 seconds.
+
+For a full description of the script options, execute `ta3-test --help`.
 
 Also remember that a TA2-TA3 Server must be running when you execute this script!
 
