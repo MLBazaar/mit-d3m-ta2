@@ -166,7 +166,7 @@ def _ta2_test(args):
         report = pd.DataFrame(
             results,
             columns=REPORT_COLUMNS
-        )
+        ).sort_values('dataset')
 
         report.to_csv(report_name, index=False)
 
