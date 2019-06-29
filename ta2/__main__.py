@@ -1,6 +1,7 @@
 import argparse
 import logging
 import os
+import shutil
 import sys
 import traceback
 from datetime import datetime
@@ -13,11 +14,10 @@ from d3m.metadata.pipeline import Pipeline
 from d3m.metadata.problem import Problem
 from d3m.runtime import DEFAULT_SCORING_PIPELINE_PATH, Runtime, score
 
-from ta2 import logging_setup
 from ta2.search import PipelineSearcher
 from ta2.ta3.client import TA3APIClient
 from ta2.ta3.server import serve
-from ta2.utils import ensure_downloaded
+from ta2.utils import ensure_downloaded, logging_setup
 
 
 def load_dataset(root_path, phase, inner_phase=None):
@@ -125,11 +125,13 @@ REPORT_COLUMNS = [
     'elapsed_time',
     'tuning_iterations',
     'data_modality',
-    'task_type'
+    'task_type',
+    'error'
 ]
 
 
 def _ta2_test(args):
+
     results = list()
     if args.all:
         print('Processing all datasets from input folder')
@@ -137,6 +139,18 @@ def _ta2_test(args):
     elif not args.dataset:
         print('ERROR: provide at least one dataset name or set --all')
         sys.exit(1)
+
+    if args.report:
+        report_name = args.report
+    else:
+        report_name = [os.path.join(args.output, 'results')]
+        if args.budget:
+            report_name.append('_b{}'.format(args.budget))
+        if args.timeout:
+            report_name.append('_t{}'.format(args.timeout))
+
+        report_name.append('.csv')
+        report_name = ''.join(report_name)
 
     for dataset in args.dataset:
         try:
@@ -146,32 +160,23 @@ def _ta2_test(args):
             traceback.print_exc()
             results.append({
                 'dataset': dataset,
-                'error': str(ex)
+                'error': '{}: {}'.format(type(ex).__name__, ex)
             })
 
-        report_while_runing = pd.DataFrame(
+        report = pd.DataFrame(
             results,
             columns=REPORT_COLUMNS
         )
 
-        report_while_runing.to_csv('live_report.csv', index=False)
+        report.to_csv(report_name, index=False)
 
-    report = pd.DataFrame(
-        results,
-        columns=REPORT_COLUMNS
-    )
-
-    if args.report:
-        # dump to file
-        report.to_csv(args.report, index=False)
-    else:
-        # print to stdout
-        print(tabulate.tabulate(
-            report,
-            showindex=False,
-            tablefmt='github',
-            headers=REPORT_COLUMNS
-        ))
+    # print to stdout
+    print(tabulate.tabulate(
+        report,
+        showindex=False,
+        tablefmt='github',
+        headers=REPORT_COLUMNS
+    ))
 
 
 def _ta3_test_dataset(client, dataset, timeout):
@@ -254,7 +259,9 @@ def parse_args(mode=None):
     logging_args.add_argument('-v', '--verbose', action='count', default=0,
                               help='Be verbose. Use -vv for increased verbosity')
     logging_args.add_argument('-l', '--logfile', type=str, nargs='?',
-                              help='Path to the logging file. If not given, log to stdout')
+                              help='Path to the logging file.')
+    logging_args.add_argument('-q', '--quiet', action='store_false', dest='stdout',
+                              help='Be quiet. Do not log to stdout.')
 
     # IO Specification
     io_args = argparse.ArgumentParser(add_help=False)
@@ -316,7 +323,15 @@ def parse_args(mode=None):
             help='Start the server in sync mode. Needed for debugging.')
 
     args = parser.parse_args()
-    logging_setup(args.verbose, args.logfile)
+
+    # Cleanup output dir
+    shutil.rmtree(args.output)
+    os.makedirs(args.output, exist_ok=True)
+
+    if not args.logfile:
+        args.logfile = os.path.join(args.output, 'ta2.log')
+
+    logging_setup(args.verbose, args.logfile, stdout=args.stdout)
     logging.getLogger("d3m.metadata.pipeline_run").setLevel(logging.ERROR)
 
     return args

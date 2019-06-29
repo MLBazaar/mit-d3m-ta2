@@ -292,7 +292,8 @@ def test_pipelinesearcher_setup_search(logger_mock):
     assert not hasattr(instance, 'max_end_time')
 
     # without timeout
-    instance.setup_search(None)
+    instance.timeout = None
+    instance.setup_search()
 
     assert instance.solutions == []
     assert instance._stop is False
@@ -303,7 +304,8 @@ def test_pipelinesearcher_setup_search(logger_mock):
     assert logger_mock.call_count == 1
 
     # with timeout
-    instance.setup_search(0.5)
+    instance.timeout = 0.5
+    instance.setup_search()
 
     assert instance.timeout == 0.5
     assert instance.max_end_time == instance.start_time + timedelta(seconds=0.5)

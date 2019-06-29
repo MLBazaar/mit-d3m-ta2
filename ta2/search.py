@@ -272,53 +272,60 @@ class PipelineSearcher:
     def _timeout(self, *args, **kwargs):
         raise KeyboardInterrupt()
 
-    def setup_search(self, timeout):
+    def setup_search(self):
         self.solutions = list()
         self._stop = False
         self.done = False
 
         self.start_time = datetime.now()
-        self.timeout = timeout
         self.max_end_time = None
         if self.timeout:
             self.max_end_time = self.start_time + timedelta(seconds=self.timeout)
 
             if self.hard_timeout:
                 signal.signal(signal.SIGALRM, self._timeout)
-                signal.alarm(timeout)
+                signal.alarm(self.timeout)
 
         LOGGER.info("Timeout: %s (Hard: %s); Max end: %s",
                     self.timeout, self.hard_timeout, self.max_end_time)
 
     def search(self, problem, timeout=None, budget=None, template_name=None):
 
-        dataset_id = problem['inputs'][0]['dataset_id']
-        dataset = Dataset.load(self.datasets[dataset_id])
-        metric = problem['problem']['performance_metrics'][0]['metric']
-
-        data_modality = self._detect_data_modality(dataset)
-        task_type = problem['problem']['task_type'].name
-
-        LOGGER.info("Loading the template and the tuner")
-        if template_name is None:
-            template_name = self._get_template(data_modality, task_type)
-
-        template, tunables, defaults = load_template(template_name)
-        tuner = GP(tunables, r_minimum=10)
-
+        self.timeout = timeout
         best_pipeline = None
         best_score = None
         best_normalized = 0
+        template_name = None
+        data_modality = None
+        task_type = None
+        task_subtype = None
+        iteration = 0
+        error = None
 
-        if budget is not None:
-            iterator = range(budget)
-        else:
-            iterator = itertools.count()   # infinite range
-
-        self.setup_search(timeout)
-
-        first = True
         try:
+            dataset_id = problem['inputs'][0]['dataset_id']
+            dataset = Dataset.load(self.datasets[dataset_id])
+            metric = problem['problem']['performance_metrics'][0]['metric']
+
+            data_modality = self._detect_data_modality(dataset)
+            task_type = problem['problem']['task_type'].name
+            task_subtype = problem['problem']['task_subtype'].name.lower()
+
+            LOGGER.info("Loading the template and the tuner")
+            if template_name is None:
+                template_name = self._get_template(data_modality, task_type)
+
+            template, tunables, defaults = load_template(template_name)
+            tuner = GP(tunables, r_minimum=10)
+
+            if budget is not None:
+                iterator = range(budget)
+            else:
+                iterator = itertools.count()   # infinite range
+
+            self.setup_search()
+
+            first = True
             proposal = defaults
             for iteration in iterator:
                 self.check_stop()
@@ -331,6 +338,7 @@ class PipelineSearcher:
                     pipeline.normalized_score = metric.normalize(pipeline.score)
                 except Exception:
                     if first:
+                        # We want this to be reported
                         raise
 
                     LOGGER.exception("Error scoring pipeline %s", pipeline.id)
@@ -358,6 +366,10 @@ class PipelineSearcher:
 
         except KeyboardInterrupt:
             pass
+        except Exception as ex:
+            LOGGER.exception("Error processing dataset %s", dataset)
+            error = '{}: {}'.format(type(ex).__name__, ex)
+
         finally:
             if self.timeout and self.hard_timeout:
                 signal.alarm(0)
@@ -369,6 +381,7 @@ class PipelineSearcher:
             'template': template_name,
             'data_modality': data_modality,
             'task_type': task_type,
-            'task_subtype': problem['problem']['task_subtype'].name.lower(),
-            'tuning_iterations': iteration
+            'task_subtype': task_subtype,
+            'tuning_iterations': iteration,
+            'error': error
         }

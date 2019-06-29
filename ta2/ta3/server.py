@@ -7,8 +7,8 @@ from concurrent import futures
 import grpc
 from ta3ta2_api import core_pb2_grpc
 
-from ta2 import logging_setup
 from ta2.ta3 import core_servicer
+from ta2.utils import logging_setup
 
 _ONE_DAY_IN_SECONDS = 60 * 60 * 24
 
