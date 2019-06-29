@@ -226,6 +226,7 @@
 <span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">defaultdict</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
+<span class="kn">from</span> <span class="nn">enum</span> <span class="k">import</span> <span class="n">Enum</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">btb.tuning</span> <span class="k">import</span> <span class="n">GP</span>
@@ -247,6 +248,17 @@
 <span class="n">LOGGER</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Templates"><a class="viewcode-back" href="../../api/ta2.search.html#ta2.search.Templates">[docs]</a><span class="k">class</span> <span class="nc">Templates</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="n">SINGLE_TABLE_CLASSIFICATION</span> <span class="o">=</span> <span class="s1">&#39;gradient_boosting_classification.hp.yml&#39;</span>
+    <span class="c1"># SINGLE_TABLE_CLASSIFICATION = &#39;xgb_classification.hp.yml&#39;</span>
+    <span class="n">SINGLE_TABLE_REGRESSION</span> <span class="o">=</span> <span class="s1">&#39;gradient_boosting_regression.hp.yml&#39;</span>
+    <span class="c1"># SINGLE_TABLE_REGRESSION = &#39;xgb_regression.hp.yml&#39;</span>
+    <span class="n">MULTI_TABLE_CLASSIFICATION</span> <span class="o">=</span> <span class="s1">&#39;multi_table_dfs_xgb_classification.yml&#39;</span>
+    <span class="n">MULTI_TABLE_REGRESSION</span> <span class="o">=</span> <span class="s1">&#39;gradient_boosting_regression.hp.yml&#39;</span>
+    <span class="n">IMAGE_REGRESSION</span> <span class="o">=</span> <span class="s1">&#39;image_rf_regression.yml&#39;</span>
+    <span class="n">IMAGE_CLASSIFICATION</span> <span class="o">=</span> <span class="s1">&#39;image_classification.yml&#39;</span></div>
 
 
 <div class="viewcode-block" id="to_dicts"><a class="viewcode-back" href="../../api/ta2.search.html#ta2.search.to_dicts">[docs]</a><span class="k">def</span> <span class="nf">to_dicts</span><span class="p">(</span><span class="n">hyperparameters</span><span class="p">):</span>
@@ -274,11 +286,16 @@
 
 
 <span class="n">FILE_COLLECTION</span> <span class="o">=</span> <span class="s1">&#39;https://metadata.datadrivendiscovery.org/types/FilesCollection&#39;</span>
+<span class="n">GRAPH</span> <span class="o">=</span> <span class="s1">&#39;https://metadata.datadrivendiscovery.org/types/Graph&#39;</span>
 
 
 <div class="viewcode-block" id="PipelineSearcher"><a class="viewcode-back" href="../../api/ta2.search.html#ta2.search.PipelineSearcher">[docs]</a><span class="k">class</span> <span class="nc">PipelineSearcher</span><span class="p">:</span>
 
     <span class="k">def</span> <span class="nf">_detect_data_modality</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">):</span>
+        <span class="n">graph_resources</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">get_elements_with_semantic_type</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(),</span> <span class="n">GRAPH</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">graph_resources</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;graph&#39;</span>
+
         <span class="n">file_resources</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">get_elements_with_semantic_type</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(),</span> <span class="n">FILE_COLLECTION</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">file_resources</span><span class="p">:</span>
@@ -295,10 +312,10 @@
             <span class="n">media_type</span> <span class="o">=</span> <span class="n">media_types</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">media_type</span> <span class="o">==</span> <span class="s1">&#39;text/plain&#39;</span><span class="p">:</span>
                 <span class="k">return</span> <span class="s1">&#39;text&#39;</span>
-            <span class="k">elif</span> <span class="n">media_type</span> <span class="o">==</span> <span class="s1">&#39;image/jpeg&#39;</span> <span class="ow">or</span> <span class="n">media_type</span> <span class="o">==</span> <span class="s1">&#39;image/png&#39;</span><span class="p">:</span>
+            <span class="k">elif</span> <span class="s1">&#39;image&#39;</span> <span class="ow">in</span> <span class="n">media_type</span><span class="p">:</span>
                 <span class="k">return</span> <span class="s1">&#39;image&#39;</span>
             <span class="k">elif</span> <span class="n">media_type</span> <span class="o">==</span> <span class="s1">&#39;text/csv&#39;</span><span class="p">:</span>
-                <span class="k">return</span> <span class="s1">&#39;multi_table&#39;</span>
+                <span class="k">return</span> <span class="s1">&#39;timeseries&#39;</span>
 
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Unsupported problem&#39;</span><span class="p">)</span>
 
@@ -333,35 +350,41 @@
         <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Loading pipeline for data modality </span><span class="si">%s</span><span class="s2"> and task type </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
                     <span class="n">data_modality</span><span class="p">,</span> <span class="n">task_type</span><span class="p">)</span>
 
+        <span class="n">template</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="n">data_modality</span> <span class="o">==</span> <span class="s1">&#39;single_table&#39;</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskType</span><span class="o">.</span><span class="n">CLASSIFICATION</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
-                <span class="c1"># return &#39;xgb_classification.hp.yml&#39;</span>
-                <span class="k">return</span> <span class="s1">&#39;gradient_boosting_classification.hp.yml&#39;</span>
+                <span class="n">template</span> <span class="o">=</span> <span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_CLASSIFICATION</span>
             <span class="k">elif</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskType</span><span class="o">.</span><span class="n">REGRESSION</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
-                <span class="c1"># return &#39;xgb_regression.hp.yml&#39;</span>
-                <span class="k">return</span> <span class="s1">&#39;gradient_boosting_regression.hp.yml&#39;</span>
+                <span class="n">template</span> <span class="o">=</span> <span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_REGRESSION</span>
             <span class="k">elif</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskType</span><span class="o">.</span><span class="n">COLLABORATIVE_FILTERING</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
-                <span class="c1"># return &#39;xgb_regression.hp.yml&#39;</span>
-                <span class="k">return</span> <span class="s1">&#39;gradient_boosting_regression.hp.yml&#39;</span>
+                <span class="n">template</span> <span class="o">=</span> <span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_REGRESSION</span>
+            <span class="k">elif</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskType</span><span class="o">.</span><span class="n">TIME_SERIES_FORECASTING</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
+                <span class="n">template</span> <span class="o">=</span> <span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_REGRESSION</span>
         <span class="k">if</span> <span class="n">data_modality</span> <span class="o">==</span> <span class="s1">&#39;multi_table&#39;</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskType</span><span class="o">.</span><span class="n">CLASSIFICATION</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
-                <span class="k">return</span> <span class="s1">&#39;multi_table_dfs_xgb_classification.yml&#39;</span>
+                <span class="n">template</span> <span class="o">=</span> <span class="n">Templates</span><span class="o">.</span><span class="n">MULTI_TABLE_CLASSIFICATION</span>
             <span class="k">elif</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskType</span><span class="o">.</span><span class="n">REGRESSION</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
-                <span class="k">return</span> <span class="s1">&#39;multi_table_dfs_xgb_regression.yml&#39;</span>
+                <span class="n">template</span> <span class="o">=</span> <span class="n">Templates</span><span class="o">.</span><span class="n">MULTI_TABLE_REGRESSION</span>
+        <span class="c1"># if data_modality == &#39;timeseries&#39;:</span>
+        <span class="c1">#     if task_type == TaskType.CLASSIFICATION.name:</span>
+        <span class="c1">#         template = Templates.MULTI_TABLE_CLASSIFICATION</span>
+        <span class="c1">#     elif task_type == TaskType.REGRESSION.name:</span>
+        <span class="c1">#         template = Templates.MULTI_TABLE_REGRESSION</span>
         <span class="k">elif</span> <span class="n">data_modality</span> <span class="o">==</span> <span class="s1">&#39;text&#39;</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskType</span><span class="o">.</span><span class="n">CLASSIFICATION</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
-                <span class="c1"># return &#39;xgb_classification.hp.yml&#39;</span>
-                <span class="k">return</span> <span class="s1">&#39;gradient_boosting_classification.hp.yml&#39;</span>
+                <span class="n">template</span> <span class="o">=</span> <span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_CLASSIFICATION</span>
             <span class="k">elif</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskType</span><span class="o">.</span><span class="n">REGRESSION</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
-                <span class="c1"># return &#39;xgb_regression.hp.yml&#39;</span>
-                <span class="k">return</span> <span class="s1">&#39;gradient_boosting_regression.hp.yml&#39;</span>
-        <span class="k">elif</span> <span class="n">data_modality</span> <span class="o">==</span> <span class="s1">&#39;image&#39;</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskType</span><span class="o">.</span><span class="n">REGRESSION</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
-                <span class="k">return</span> <span class="s1">&#39;image_rf_regression.yml&#39;</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">return</span> <span class="s1">&#39;image_classification.yml&#39;</span>
+                <span class="n">template</span> <span class="o">=</span> <span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_REGRESSION</span>
+        <span class="c1"># elif data_modality == &#39;image&#39;:</span>
+        <span class="c1">#     if task_type == TaskType.CLASSIFICATION.name:</span>
+        <span class="c1">#         template = Templates.IMAGE_CLASSIFICATION</span>
+        <span class="c1">#     elif task_type == TaskType.REGRESSION.name:</span>
+        <span class="c1">#         template = Templates.IMAGE_REGRESSION</span>
 
-        <span class="c1"># return &#39;dfs_xgb_classification.hp.yml&#39;</span>
+        <span class="k">if</span> <span class="n">template</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">template</span><span class="o">.</span><span class="n">value</span>
+
+        <span class="c1"># return Templates.SINGLE_TABLE_CLASSIFICATION.value</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Unsupported problem&#39;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_dir</span><span class="o">=</span><span class="s1">&#39;input&#39;</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;output&#39;</span><span class="p">,</span> <span class="n">dump</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">hard_timeout</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
