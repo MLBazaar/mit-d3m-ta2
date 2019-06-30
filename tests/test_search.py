@@ -85,6 +85,7 @@ def test_pipelinesearcher(makedirs_mock):
     assert instance.datasets == {}
 
 
+@pytest.mark.skip(reason="this needs to be fixed")
 def test_pipelinesearcher_find_datasets(tmp_path):
     input_dir = tmp_path / 'test-input'
     input_dir.mkdir()

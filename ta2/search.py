@@ -115,7 +115,7 @@ class PipelineSearcher:
 
             dataset_id = dataset_doc['about']['datasetID']
             dataset_name = os.path.basename(
-                os.path.realpath(os.path.join(dataset_doc_path, *[os.pardir]*3))
+                os.path.realpath(os.path.join(dataset_doc_path, *[os.pardir] * 3))
             )
             datasets[dataset_id] = dataset_name, 'file://' + os.path.abspath(dataset_doc_path)
 
