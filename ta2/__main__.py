@@ -19,6 +19,8 @@ from ta2.ta3.client import TA3APIClient
 from ta2.ta3.server import serve
 from ta2.utils import ensure_downloaded, logging_setup
 
+LOGGER = logging.getLogger(__name__)
+
 
 def load_dataset(root_path, phase, inner_phase=None):
     inner_phase = inner_phase or phase
@@ -62,19 +64,19 @@ def score_pipeline(dataset_root, problem, pipeline_path):
         context=Context.TESTING
     )
 
-    print("Fitting the pipeline")
+    LOGGER.info("Fitting the pipeline")
     fit_results = runtime.fit(inputs=[train_dataset])
     fit_results.check_success()
 
     # Producing results using the fitted pipeline.
-    print("Producing predictions")
+    LOGGER.info("Producing predictions")
     produce_results = runtime.produce(inputs=[test_dataset])
     produce_results.check_success()
 
     predictions = produce_results.values['outputs.0']
     metrics = problem['problem']['performance_metrics']
 
-    print("Computing the score")
+    LOGGER.info("Computing the score")
     scoring_pipeline = load_pipeline(DEFAULT_SCORING_PIPELINE_PATH)
     scores, scoring_pipeline_run = score(
         scoring_pipeline, problem, predictions, [test_dataset], metrics,
@@ -88,6 +90,7 @@ def box_print(message, strong=False):
     print(char * len(message))
     print(message)
     print(char * len(message))
+    LOGGER.info(message)
 
 
 def process_dataset(dataset, args):
@@ -98,7 +101,7 @@ def process_dataset(dataset, args):
     dataset_root = os.path.join(args.input, dataset)
     problem = load_problem(dataset_root, 'TRAIN')
 
-    print("Searching Pipeline for dataset {}".format(dataset))
+    LOGGER.info("Searching Pipeline for dataset {}".format(dataset))
     result = search(dataset_root, problem, args)
     result['elapsed_time'] = datetime.utcnow() - start_ts
     result['dataset'] = dataset
