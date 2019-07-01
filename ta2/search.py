@@ -39,6 +39,8 @@ class Templates(Enum):
     SINGLE_TABLE_REGRESSION = 'xgb_regression.hp.yml'
     MULTI_TABLE_CLASSIFICATION = 'multi_table_dfs_xgb_classification.yml'
     MULTI_TABLE_REGRESSION = 'multi_table_dfs_xgb_regression.yml'
+    # TIMESERIES_CLASSIFICATION = 'time_series_xgb_classification.yml'
+    TIMESERIES_CLASSIFICATION = 'time_series_k_neighbors.yml'
     # IMAGE_REGRESSION = 'image_rf_regression.yml'
     # IMAGE_CLASSIFICATION = 'image_classification.yml'
 
@@ -146,7 +148,8 @@ class PipelineSearcher:
             elif task_type == TaskType.COLLABORATIVE_FILTERING.name:
                 template = Templates.SINGLE_TABLE_REGRESSION
             elif task_type == TaskType.TIME_SERIES_FORECASTING.name:
-                template = Templates.SINGLE_TABLE_REGRESSION
+                # template = Templates.TIMESERIES_FORECASTING
+                template = Templates.TIMESERIES_CLASSIFICATION
         if data_modality == 'multi_table':
             if task_type == TaskType.CLASSIFICATION.name:
                 template = Templates.MULTI_TABLE_CLASSIFICATION
@@ -159,9 +162,10 @@ class PipelineSearcher:
                 template = Templates.SINGLE_TABLE_REGRESSION
         if data_modality == 'timeseries':
             if task_type == TaskType.CLASSIFICATION.name:
-                template = Templates.MULTI_TABLE_CLASSIFICATION
+                template = Templates.TIMESERIES_CLASSIFICATION
             elif task_type == TaskType.REGRESSION.name:
-                template = Templates.MULTI_TABLE_REGRESSION
+                template = Templates.TIMESERIES_CLASSIFICATION
+                # template = Templates.TIMESERIES_FORECASTING
         # elif data_modality == 'image':
         #     if task_type == TaskType.CLASSIFICATION.name:
         #         template = Templates.IMAGE_CLASSIFICATION
