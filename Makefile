@@ -79,7 +79,7 @@ install-test: clean-build clean-pyc ## install the package and test dependencies
 
 .PHONY: install-develop
 install-develop: clean-build clean-pyc ## install the package in editable mode and dependencies for development
-	pip install -e .[dev] && pip install -r requirements.txt && pip install -r devel_requirements.txt
+	pip install -e .[dev] && pip install -r requirements.txt
 
 
 # LINT TARGETS

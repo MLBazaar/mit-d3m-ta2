@@ -90,8 +90,28 @@ make install-develop
 
 Make sure to use them regularly while developing by running the commands `make lint` and `make test`.
 
-**NOTE**: If the project is installed in development mode, the CLI commands specified below need
-to be run as `python -m ta2` instead of plain `ta2`.
+### Additional Dependencies
+
+Additional dependencies required to execute some of the TA1 primitives have been left out from
+the command above in order to keep maximum compatibility with the different types of systems
+and avoid dependency conflicts.
+
+Because of this, some datasets, including timeseries and image data modalities, might not work
+properly.
+
+In order to make them work, install the additional dependencies with this command:
+
+```bash
+pip install -r devel_requirements.txt
+```
+
+And keep in mind the following considerations:
+
+* The command line script `ta2` explained in the usage section below will stop working and will
+  need to be replaced with `python -m ta2` in all the examples.
+* Some red warnings might show in the command line indicating that incompatible versions have been
+  install. These warnings can be safely ignored, as their only consequence is the previous point.
+
 
 # Data Format
 
