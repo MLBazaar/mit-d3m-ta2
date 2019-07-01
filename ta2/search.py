@@ -45,36 +45,6 @@ class Templates(Enum):
     # IMAGE_CLASSIFICATION = 'image_classification.yml'
 
 
-def detect_data_modality_old(dataset):
-    graph = dataset.metadata.get_elements_with_semantic_type(tuple(), GRAPH)
-    edge_list = dataset.metadata.get_elements_with_semantic_type(tuple(), EDGE_LIST)
-    if graph or edge_list:
-        return 'graph'
-
-    collections = dataset.metadata.get_elements_with_semantic_type(tuple(), FILE_COLLECTION)
-
-    if not collections:
-        if len(dataset.keys()) == 1:
-            return 'single_table'
-        else:
-            return 'multi_table'
-
-    for resource in collections:
-        media_types = dataset.metadata.query((resource, ALL_ELEMENTS, 0))['media_types']
-        if len(media_types) > 1:
-            raise ValueError('Unsupported problem: More than one file collection found')
-
-        media_type = media_types[0]
-        if media_type == 'text/plain':
-            return 'text'
-        elif 'image' in media_type:
-            return 'image'
-        elif media_type == 'text/csv':
-            return 'timeseries'
-
-    raise ValueError('Unsupported problem')
-
-
 def detect_data_modality(dataset_doc_path):
     with open(dataset_doc_path) as f:
         dataset_doc = json.load(f)
@@ -209,8 +179,8 @@ class PipelineSearcher:
         if template:
             return template.value
 
-        # return Templates.SINGLE_TABLE_CLASSIFICATION.value
-        raise ValueError('Unsupported problem')
+        return Templates.SINGLE_TABLE_CLASSIFICATION.value
+        # raise ValueError('Unsupported problem')
 
     def __init__(self, input_dir='input', output_dir='output', dump=False, hard_timeout=False):
         self.input = input_dir
@@ -225,6 +195,7 @@ class PipelineSearcher:
         os.makedirs(self.scored_dir, exist_ok=True)
         os.makedirs(self.searched_dir, exist_ok=True)
 
+        self.solutions = list()
         self.datasets = self._find_datasets(input_dir)
         self.data_pipeline = self._load_pipeline('kfold_pipeline.yml')
         self.scoring_pipeline = self._load_pipeline(DEFAULT_SCORING_PIPELINE_PATH)
