@@ -153,6 +153,12 @@ REPORT_COLUMNS = [
 
 def _ta2_test(args):
 
+    # Cleanup output dir
+    shutil.rmtree(os.path.join(args.output, 'pipelines_ranked'), ignore_errors=True)
+    shutil.rmtree(os.path.join(args.output, 'pipelines_scored'), ignore_errors=True)
+    shutil.rmtree(os.path.join(args.output, 'pipelines_searched'), ignore_errors=True)
+    shutil.rmtree(os.path.join(args.output, 'predictions'), ignore_errors=True)
+
     results = list()
     if args.all:
         args.dataset = os.listdir(args.input)
@@ -365,12 +371,12 @@ def parse_args():
 
     args = parser.parse_args()
 
-    # Cleanup output dir
-    shutil.rmtree(args.output)
     os.makedirs(args.output, exist_ok=True)
 
-    if not args.logfile:
+    if args.mode is _ta2_test and not args.logfile:
         args.logfile = os.path.join(args.output, 'ta2.log')
+        if os.path.exists(args.logfile):
+            os.remove(args.logfile)
 
     logging_setup(args.verbose, args.logfile, stdout=args.stdout)
     logging.getLogger("d3m.metadata.pipeline_run").setLevel(logging.ERROR)

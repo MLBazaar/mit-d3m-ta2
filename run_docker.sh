@@ -2,6 +2,7 @@
 
 # docker build -t mit-d3m-ta2 .
 
+rm -r output
 mkdir -p output
 chown $USER output
 
