@@ -10,9 +10,6 @@ RUN mkdir -p /user_dev && \
     mkdir -p /output && \
     mkdir -p /input
 
-# COPY requirements.txt /user_dev/
-# RUN pip3 install -r /user_dev/requirements.txt
-
 # Install project
 COPY setup.py docker_requirements.txt /user_dev/
 RUN pip3 install -e /user_dev -r /user_dev/docker_requirements.txt
