@@ -67,9 +67,7 @@ setup(
     description='MIT-Featuretools TA2 submission for the D3M program.',
     entry_points={
         'console_scripts': [
-            'ta2-server=ta2.__main__:ta2_server',
-            'ta2-test=ta2.__main__:ta2_test',
-            'ta3-test=ta2.__main__:ta3_test',
+            'ta2=ta2.__main__:main',
         ]
     },
     extras_require={

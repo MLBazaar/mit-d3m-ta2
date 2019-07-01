@@ -90,6 +90,9 @@ make install-develop
 
 Make sure to use them regularly while developing by running the commands `make lint` and `make test`.
 
+**NOTE**: If the project is installed in development mode, the CLI commands specified below need
+to be run as `python -m ta2` instead of plain `ta2`.
+
 # Data Format
 
 **mit-d3m-ta2** runs on datasets in the [D3M Format](https://github.com/mitll/d3m-schema)
@@ -147,14 +150,14 @@ Two scripts are included in the repository for local testing:
 
 The TA2 Standalone mode can be executed locally using the `ta2` command line interface.
 
-To use this, run the `ta2 standalone` command passing one or more dataset names as positional
+To use this, run the `ta2 test` command passing one or more dataset names as positional
 arguments as well as either a budget. `-b`, or a timeout, `-t`.
 
 For example, in order to process the datasets `185_baseball` and `196_autoMpg` during 60 seconds
 each, the following command would be used:
 
 ```
-ta2-test -t60 185_baseball 196_autoMpg
+ta2 test -t60 185_baseball 196_autoMpg
 ```
 
 This will start searching and tuning the best pipeline possible for each dataset during a maximum
@@ -170,7 +173,7 @@ Additionally, the following options can be passed:
 * `-v, --verbose`: Set logs to INFO level. Use it twice to increase verbosity to DEBUG.
 * `-r CSV_PATH`: Store the results in the indicated CSV file instead of printing them on stdout.
 
-For a full description of the options, execute `ta2-test --help`.
+For a full description of the options, execute `ta2 test --help`.
 
 ### TA2-TA3 Server Mode
 
@@ -180,10 +183,10 @@ optional named arguments required.
 This will start a ta2 server in the background ready to serve requests from a ta3 client.
 
 ```
-ta2-server
+ta2 server
 ```
 
-For a full description of the script options, execute `ta2-server --help`.
+For a full description of the script options, execute `ta2 server --help`.
 
 ### TA2-TA3 Test
 
@@ -191,23 +194,23 @@ In order to test the TA2-TA3 Server, a convenience `ta3` command line interface 
 which allows testing one or more datasets by issuing a predefined sequence of calls to the
 TA2-TA3 Server.
 
-To use it, run the `ta3` command passing one or more dataset names as positional
+To use it, run the `python -m ta2 ta3` command passing one or more dataset names as positional
 arguments, as well as any of the optional arguments.
 
 For example, in order to process the datasets `185_baseball` and `196_autoMpg` during 60 seconds
 each, the following command would be used:
 
 ```
-ta3-test -t60 185_baseball 196_autoMpg
+ta2 ta3 -t60 185_baseball 196_autoMpg
 ```
 
-**NOTE**: In order to be able to execute this command, a `ta2-server` process must be already
+**NOTE**: In order to be able to execute this command, a `ta2 server` process must be already
 running in the same machine.
 
 This will start sending requests to the `ta3-server` to search and tune the best pipeline
 possible for each dataset during a maximum of 60 seconds.
 
-For a full description of the script options, execute `ta3-test --help`.
+For a full description of the script options, execute `ta2 ta3 --help`.
 
 Also remember that a TA2-TA3 Server must be running when you execute this script!
 
@@ -226,7 +229,7 @@ make build
 And, in a different terminal:
 
 ```
-ta3 -v -t2 --docker
+python -m ta2 ta3 --docker <OPTIONS>
 ```
 
 # Submission

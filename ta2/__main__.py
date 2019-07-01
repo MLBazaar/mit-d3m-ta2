@@ -277,7 +277,7 @@ def _server(args):
     serve(args.port, input_dir, output_dir, timeout, args.debug)
 
 
-def parse_args(mode=None):
+def parse_args():
 
     # Logging
     logging_args = argparse.ArgumentParser(add_help=False)
@@ -317,41 +317,51 @@ def parse_args(mode=None):
     ta3_args.add_argument('--port', type=int, default=45042,
                           help='Port to use, both for client and server.')
 
-    if mode == 'ta2':
-        parser = argparse.ArgumentParser(
-            description='TA2 in Standalone Mode',
-            parents=[logging_args, io_args, search_args, dataset_args],
-        )
-        parser.add_argument(
-            '-r', '--report',
-            help='Path to the CSV file where scores will be dumped.')
-        parser.add_argument(
-            '-b', '--budget', type=int,
-            help='Maximum number of tuning iterations to perform')
-        parser.add_argument(
-            '-e', '--template',
-            help='Name of the template to Use.')
+    parser = argparse.ArgumentParser(
+        description='TA2 Command Line Interface',
+        parents=[logging_args, io_args, search_args],
+    )
 
-    elif mode == 'ta3':
-        parser = argparse.ArgumentParser(
-            description='TA3-TA2 API Test',
-            parents=[logging_args, io_args, search_args, ta3_args, dataset_args],
-        )
-        parser.add_argument('--server', action='store_true', help=(
-            'Start a server instance in background.'
-        ))
-        parser.add_argument('--docker', action='store_true', help=(
-            'Adapt input paths to work with a dockerized TA2.'
-        ))
-    elif mode == 'server':
-        parser = argparse.ArgumentParser(
-            description='TA3-TA2 Server',
-            parents=[logging_args, io_args, ta3_args, search_args],
-        )
-        parser.set_defaults(command=_server)
-        parser.add_argument(
-            '--debug', action='store_true',
-            help='Start the server in sync mode. Needed for debugging.')
+    subparsers = parser.add_subparsers(title='mode', dest='mode', help='Mode of operation.')
+    subparsers.required = True
+    parser.set_defaults(mode=None)
+
+    # TA2 Mode
+    ta2_parents = [logging_args, io_args, search_args, dataset_args]
+    ta2_parser = subparsers.add_parser('test', parents=ta2_parents,
+                                       help='Run TA2 in Standalone Mode.')
+    ta2_parser.set_defaults(mode=_ta2_test)
+    ta2_parser.add_argument(
+        '-r', '--report',
+        help='Path to the CSV file where scores will be dumped.')
+    ta2_parser.add_argument(
+        '-b', '--budget', type=int,
+        help='Maximum number of tuning iterations to perform')
+    ta2_parser.add_argument(
+        '-e', '--template',
+        help='Name of the template to Use.')
+
+    # TA3 Mode
+    ta3_parents = [logging_args, io_args, search_args, ta3_args, dataset_args]
+    ta3_parser = subparsers.add_parser('ta3', parents=ta3_parents,
+                                       help='Run TA3-TA2 API Test.')
+    ta3_parser.set_defaults(mode=_ta3_test)
+    ta3_parser.add_argument('--server', action='store_true', help=(
+        'Start a server instance in background.'
+    ))
+    ta3_parser.add_argument('--docker', action='store_true', help=(
+        'Adapt input paths to work with a dockerized TA2.'
+    ))
+
+    # Server Mode
+    server_parents = [logging_args, io_args, ta3_args, search_args]
+    server_parser = subparsers.add_parser('server', parents=server_parents,
+                                          help='Start a TA3-TA2 server.')
+    server_parser.set_defaults(mode=_server)
+    server_parser.add_argument(
+        '--debug', action='store_true',
+        help='Start the server in sync mode. Needed for debugging.'
+    )
 
     args = parser.parse_args()
 
@@ -383,5 +393,10 @@ def ta2_server():
     _server(args)
 
 
+def main():
+    args = parse_args()
+    args.mode(args)
+
+
 if __name__ == '__main__':
-    ta2_test()
+    main()
