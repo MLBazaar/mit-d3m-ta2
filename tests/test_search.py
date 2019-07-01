@@ -154,25 +154,22 @@ def test_pipelinesearcher_load_pipeline(json_loader_mock, yaml_loader_mock):
     assert json_loader_mock.call_count == 2
 
 
-@patch('ta2.search.LOGGER.info')
-def test_pipelinesearcher_get_template(logger_mock):
+def test_pipelinesearcher_get_template():
     instance = PipelineSearcher()
 
     # classification
-    instance._get_template('single_table', 'CLASSIFICATION')
+    instance._get_template('single_table', 'classification')
 
-    assert logger_mock.call_count == 1
     # assert result == 'xgb_classification.all_hp.yml'
 
     # regression
-    instance._get_template('single_table', 'REGRESSION')
+    instance._get_template('single_table', 'regression')
 
-    assert logger_mock.call_count == 2
     # assert result == 'xgb_regression.all_hp.yml'
 
     # not supported
     with pytest.raises(ValueError):
-        instance._get_template(None, 'FAKE')  # dataset (None) is not used
+        instance._get_template(None, 'fake')  # dataset (None) is not used
 
 
 @patch('ta2.search.evaluate')

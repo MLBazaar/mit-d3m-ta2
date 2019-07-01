@@ -14,7 +14,7 @@ from d3m.metadata.pipeline import Pipeline
 from d3m.metadata.problem import Problem
 from d3m.runtime import DEFAULT_SCORING_PIPELINE_PATH, Runtime, score
 
-from ta2.search import PipelineSearcher
+from ta2.search import PipelineSearcher, get_dataset_details
 from ta2.ta3.client import TA3APIClient
 from ta2.ta3.server import serve
 from ta2.utils import ensure_downloaded, logging_setup
@@ -93,18 +93,36 @@ def box_print(message, strong=False):
     LOGGER.info(message)
 
 
-def process_dataset(dataset, args):
+def get_datasets(args):
+    for dataset_name in args.dataset:
+        ensure_downloaded(dataset_name, args.input)
+        dataset_root = os.path.join(args.input, dataset_name)
+        dataset_path = os.path.join(dataset_root, 'TRAIN', 'dataset_TRAIN', 'datasetDoc.json')
+
+        try:
+            problem = load_problem(dataset_root, 'TRAIN')
+        except Exception:
+            continue
+
+        data_modality, task_type, task_subtype = get_dataset_details(dataset_path, problem)
+        if args.data_modality and not args.data_modality == data_modality:
+            continue
+        if args.task_type and not args.task_type == task_type:
+            continue
+        if args.task_subtype and not args.task_subtype == task_subtype:
+            continue
+
+        yield dataset_name, dataset_root, problem
+
+
+def process_dataset(dataset_name, dataset_root, problem, args):
     start_ts = datetime.utcnow()
+    box_print("Processing dataset {}".format(dataset_name), True)
 
-    box_print("Processing dataset {}".format(dataset), True)
-    ensure_downloaded(dataset, args.input)
-    dataset_root = os.path.join(args.input, dataset)
-    problem = load_problem(dataset_root, 'TRAIN')
-
-    LOGGER.info("Searching Pipeline for dataset {}".format(dataset))
+    LOGGER.info("Searching Pipeline for dataset {}".format(dataset_name))
     result = search(dataset_root, problem, args)
     result['elapsed_time'] = datetime.utcnow() - start_ts
-    result['dataset'] = dataset
+    result['dataset'] = dataset_name
 
     pipeline_id = result['pipeline']
     cv_score = result['cv_score']
@@ -137,7 +155,6 @@ def _ta2_test(args):
 
     results = list()
     if args.all:
-        print('Processing all datasets from input folder')
         args.dataset = os.listdir(args.input)
     elif not args.dataset:
         print('ERROR: provide at least one dataset name or set --all')
@@ -155,14 +172,15 @@ def _ta2_test(args):
         report_name.append('.csv')
         report_name = ''.join(report_name)
 
-    for dataset in args.dataset:
+    report = None
+    for dataset_name, dataset_root, problem in get_datasets(args):
         try:
-            results.append(process_dataset(dataset, args))
+            results.append(process_dataset(dataset_name, dataset_root, problem, args))
         except Exception as ex:
-            box_print("Error processing dataset {}".format(dataset), True)
+            box_print("Error processing dataset {}".format(dataset_name), True)
             traceback.print_exc()
             results.append({
-                'dataset': dataset,
+                'dataset': dataset_name,
                 'error': '{}: {}'.format(type(ex).__name__, ex)
             })
 
@@ -172,6 +190,10 @@ def _ta2_test(args):
         ).sort_values('dataset')
 
         report.to_csv(report_name, index=False)
+
+    if report is None:
+        print("No matiching datasets found")
+        sys.exit(1)
 
     # print to stdout
     print(tabulate.tabulate(
@@ -277,6 +299,12 @@ def parse_args(mode=None):
     dataset_args = argparse.ArgumentParser(add_help=False)
     dataset_args.add_argument('-a', '--all', action='store_true',
                               help='Process all the datasets found in the input folder')
+    dataset_args.add_argument('-M', '--data_modality',
+                              help='Filter datasets by data modality.')
+    dataset_args.add_argument('-T', '--task_type',
+                              help='Filter datasets by task type.')
+    dataset_args.add_argument('-S', '--task_subtype',
+                              help='Filter datasets by task subtype.')
     dataset_args.add_argument('dataset', nargs='*', help='Name of the dataset to use for the test')
 
     # Search Configuration
@@ -301,7 +329,7 @@ def parse_args(mode=None):
             '-b', '--budget', type=int,
             help='Maximum number of tuning iterations to perform')
         parser.add_argument(
-            '-T', '--template',
+            '-e', '--template',
             help='Name of the template to Use.')
 
     elif mode == 'ta3':

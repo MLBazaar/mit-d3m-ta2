@@ -45,6 +45,64 @@ class Templates(Enum):
     # IMAGE_CLASSIFICATION = 'image_classification.yml'
 
 
+def detect_data_modality_old(dataset):
+    graph = dataset.metadata.get_elements_with_semantic_type(tuple(), GRAPH)
+    edge_list = dataset.metadata.get_elements_with_semantic_type(tuple(), EDGE_LIST)
+    if graph or edge_list:
+        return 'graph'
+
+    collections = dataset.metadata.get_elements_with_semantic_type(tuple(), FILE_COLLECTION)
+
+    if not collections:
+        if len(dataset.keys()) == 1:
+            return 'single_table'
+        else:
+            return 'multi_table'
+
+    for resource in collections:
+        media_types = dataset.metadata.query((resource, ALL_ELEMENTS, 0))['media_types']
+        if len(media_types) > 1:
+            raise ValueError('Unsupported problem: More than one file collection found')
+
+        media_type = media_types[0]
+        if media_type == 'text/plain':
+            return 'text'
+        elif 'image' in media_type:
+            return 'image'
+        elif media_type == 'text/csv':
+            return 'timeseries'
+
+    raise ValueError('Unsupported problem')
+
+
+def detect_data_modality(dataset_doc_path):
+    with open(dataset_doc_path) as f:
+        dataset_doc = json.load(f)
+
+    resources = list()
+    for resource in dataset_doc['dataResources']:
+        resources.append(resource['resType'])
+
+    if len(resources) == 1:
+        return 'single_table'
+    else:
+        for resource in resources:
+            if resource == 'edgeList':
+                return 'graph'
+            elif resource not in ('table', 'raw'):
+                return resource
+
+    return 'multi_table'
+
+
+def get_dataset_details(dataset, problem):
+    data_modality = detect_data_modality(dataset)
+    task_type = problem['problem']['task_type'].name.lower()
+    task_subtype = problem['problem']['task_subtype'].name.lower()
+
+    return data_modality, task_type, task_subtype
+
+
 def to_dicts(hyperparameters):
 
     params_tree = defaultdict(dict)
@@ -75,35 +133,6 @@ EDGE_LIST = 'https://metadata.datadrivendiscovery.org/types/EdgeList'
 
 
 class PipelineSearcher:
-
-    def _detect_data_modality(self, dataset):
-        graph = dataset.metadata.get_elements_with_semantic_type(tuple(), GRAPH)
-        edge_list = dataset.metadata.get_elements_with_semantic_type(tuple(), EDGE_LIST)
-        if graph or edge_list:
-            return 'graph'
-
-        collections = dataset.metadata.get_elements_with_semantic_type(tuple(), FILE_COLLECTION)
-
-        if not collections:
-            if len(dataset.keys()) == 1:
-                return 'single_table'
-            else:
-                return 'multi_table'
-
-        for resource in collections:
-            media_types = dataset.metadata.query((resource, ALL_ELEMENTS, 0))['media_types']
-            if len(media_types) > 1:
-                raise ValueError('Unsupported problem: More than one file collection found')
-
-            media_type = media_types[0]
-            if media_type == 'text/plain':
-                return 'text'
-            elif 'image' in media_type:
-                return 'image'
-            elif media_type == 'text/csv':
-                return 'timeseries'
-
-        raise ValueError('Unsupported problem')
 
     @staticmethod
     def _find_datasets(input_dir):
@@ -141,40 +170,40 @@ class PipelineSearcher:
 
         template = None
         if data_modality == 'single_table':
-            if task_type == TaskType.CLASSIFICATION.name:
+            if task_type == TaskType.CLASSIFICATION.name.lower():
                 template = Templates.SINGLE_TABLE_CLASSIFICATION
-            elif task_type == TaskType.REGRESSION.name:
+            elif task_type == TaskType.REGRESSION.name.lower():
                 template = Templates.SINGLE_TABLE_REGRESSION
-            elif task_type == TaskType.COLLABORATIVE_FILTERING.name:
+            elif task_type == TaskType.COLLABORATIVE_FILTERING.name.lower():
                 template = Templates.SINGLE_TABLE_REGRESSION
-            elif task_type == TaskType.TIME_SERIES_FORECASTING.name:
+            elif task_type == TaskType.TIME_SERIES_FORECASTING.name.lower():
                 # template = Templates.TIMESERIES_FORECASTING
                 template = Templates.TIMESERIES_CLASSIFICATION
         if data_modality == 'multi_table':
-            if task_type == TaskType.CLASSIFICATION.name:
+            if task_type == TaskType.CLASSIFICATION.name.lower():
                 template = Templates.MULTI_TABLE_CLASSIFICATION
-            elif task_type == TaskType.REGRESSION.name:
+            elif task_type == TaskType.REGRESSION.name.lower():
                 template = Templates.MULTI_TABLE_REGRESSION
         elif data_modality == 'text':
-            if task_type == TaskType.CLASSIFICATION.name:
+            if task_type == TaskType.CLASSIFICATION.name.lower():
                 template = Templates.SINGLE_TABLE_CLASSIFICATION
-            elif task_type == TaskType.REGRESSION.name:
+            elif task_type == TaskType.REGRESSION.name.lower():
                 template = Templates.SINGLE_TABLE_REGRESSION
         if data_modality == 'timeseries':
-            if task_type == TaskType.CLASSIFICATION.name:
+            if task_type == TaskType.CLASSIFICATION.name.lower():
                 template = Templates.TIMESERIES_CLASSIFICATION
-            elif task_type == TaskType.REGRESSION.name:
+            elif task_type == TaskType.REGRESSION.name.lower():
                 template = Templates.TIMESERIES_CLASSIFICATION
                 # template = Templates.TIMESERIES_FORECASTING
         # elif data_modality == 'image':
-        #     if task_type == TaskType.CLASSIFICATION.name:
+        #     if task_type == TaskType.CLASSIFICATION.name.lower():
         #         template = Templates.IMAGE_CLASSIFICATION
-        #     elif task_type == TaskType.REGRESSION.name:
+        #     elif task_type == TaskType.REGRESSION.name.lower():
         #         template = Templates.IMAGE_REGRESSION
         # if data_modality == 'graph':
-        #     if task_type == TaskType.CLASSIFICATION.name:
+        #     if task_type == TaskType.CLASSIFICATION.name.lower():
         #         template = Templates.MULTI_TABLE_CLASSIFICATION
-        #     elif task_type == TaskType.REGRESSION.name:
+        #     elif task_type == TaskType.REGRESSION.name.lower():
         #         template = Templates.MULTI_TABLE_REGRESSION
 
         if template:
@@ -345,8 +374,8 @@ class PipelineSearcher:
             dataset = Dataset.load(dataset_path)
             metric = problem['problem']['performance_metrics'][0]['metric']
 
-            data_modality = self._detect_data_modality(dataset)
-            task_type = problem['problem']['task_type'].name
+            data_modality = detect_data_modality(dataset_path[7:])
+            task_type = problem['problem']['task_type'].name.lower()
             task_subtype = problem['problem']['task_subtype'].name.lower()
 
             LOGGER.info("Searching dataset %s: %s/%s/%s",
