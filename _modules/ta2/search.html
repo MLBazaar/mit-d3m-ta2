@@ -256,7 +256,9 @@
     <span class="c1"># SINGLE_TABLE_REGRESSION = &#39;gradient_boosting_regression.hp.yml&#39;</span>
     <span class="n">SINGLE_TABLE_REGRESSION</span> <span class="o">=</span> <span class="s1">&#39;xgb_regression.hp.yml&#39;</span>
     <span class="n">MULTI_TABLE_CLASSIFICATION</span> <span class="o">=</span> <span class="s1">&#39;multi_table_dfs_xgb_classification.yml&#39;</span>
-    <span class="n">MULTI_TABLE_REGRESSION</span> <span class="o">=</span> <span class="s1">&#39;multi_table_dfs_xgb_regression.yml&#39;</span></div>
+    <span class="n">MULTI_TABLE_REGRESSION</span> <span class="o">=</span> <span class="s1">&#39;multi_table_dfs_xgb_regression.yml&#39;</span>
+    <span class="c1"># TIMESERIES_CLASSIFICATION = &#39;time_series_xgb_classification.yml&#39;</span>
+    <span class="n">TIMESERIES_CLASSIFICATION</span> <span class="o">=</span> <span class="s1">&#39;time_series_k_neighbors.yml&#39;</span></div>
     <span class="c1"># IMAGE_REGRESSION = &#39;image_rf_regression.yml&#39;</span>
     <span class="c1"># IMAGE_CLASSIFICATION = &#39;image_classification.yml&#39;</span>
 
@@ -364,7 +366,8 @@
             <span class="k">elif</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskType</span><span class="o">.</span><span class="n">COLLABORATIVE_FILTERING</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
                 <span class="n">template</span> <span class="o">=</span> <span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_REGRESSION</span>
             <span class="k">elif</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskType</span><span class="o">.</span><span class="n">TIME_SERIES_FORECASTING</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
-                <span class="n">template</span> <span class="o">=</span> <span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_REGRESSION</span>
+                <span class="c1"># template = Templates.TIMESERIES_FORECASTING</span>
+                <span class="n">template</span> <span class="o">=</span> <span class="n">Templates</span><span class="o">.</span><span class="n">TIMESERIES_CLASSIFICATION</span>
         <span class="k">if</span> <span class="n">data_modality</span> <span class="o">==</span> <span class="s1">&#39;multi_table&#39;</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskType</span><span class="o">.</span><span class="n">CLASSIFICATION</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
                 <span class="n">template</span> <span class="o">=</span> <span class="n">Templates</span><span class="o">.</span><span class="n">MULTI_TABLE_CLASSIFICATION</span>
@@ -377,9 +380,10 @@
                 <span class="n">template</span> <span class="o">=</span> <span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_REGRESSION</span>
         <span class="k">if</span> <span class="n">data_modality</span> <span class="o">==</span> <span class="s1">&#39;timeseries&#39;</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskType</span><span class="o">.</span><span class="n">CLASSIFICATION</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
-                <span class="n">template</span> <span class="o">=</span> <span class="n">Templates</span><span class="o">.</span><span class="n">MULTI_TABLE_CLASSIFICATION</span>
+                <span class="n">template</span> <span class="o">=</span> <span class="n">Templates</span><span class="o">.</span><span class="n">TIMESERIES_CLASSIFICATION</span>
             <span class="k">elif</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskType</span><span class="o">.</span><span class="n">REGRESSION</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
-                <span class="n">template</span> <span class="o">=</span> <span class="n">Templates</span><span class="o">.</span><span class="n">MULTI_TABLE_REGRESSION</span>
+                <span class="n">template</span> <span class="o">=</span> <span class="n">Templates</span><span class="o">.</span><span class="n">TIMESERIES_CLASSIFICATION</span>
+                <span class="c1"># template = Templates.TIMESERIES_FORECASTING</span>
         <span class="c1"># elif data_modality == &#39;image&#39;:</span>
         <span class="c1">#     if task_type == TaskType.CLASSIFICATION.name:</span>
         <span class="c1">#         template = Templates.IMAGE_CLASSIFICATION</span>
