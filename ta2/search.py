@@ -13,7 +13,7 @@ from enum import Enum
 import numpy as np
 from btb.tuning import GP
 from d3m.container.dataset import Dataset
-from d3m.metadata.base import ALL_ELEMENTS, ArgumentType, Context
+from d3m.metadata.base import ArgumentType, Context
 from d3m.metadata.pipeline import Pipeline, PrimitiveStep
 from d3m.metadata.problem import TaskType
 from d3m.runtime import DEFAULT_SCORING_PIPELINE_PATH, evaluate
@@ -41,8 +41,8 @@ class Templates(Enum):
     MULTI_TABLE_REGRESSION = 'multi_table_dfs_xgb_regression.yml'
     # TIMESERIES_CLASSIFICATION = 'time_series_xgb_classification.yml'
     TIMESERIES_CLASSIFICATION = 'time_series_k_neighbors.yml'
-    # IMAGE_REGRESSION = 'image_rf_regression.yml'
-    # IMAGE_CLASSIFICATION = 'image_classification.yml'
+    IMAGE_REGRESSION = 'image_resnet50_regression.yml'
+    IMAGE_CLASSIFICATION = 'image_classification.yml'
 
 
 def detect_data_modality(dataset_doc_path):
@@ -165,11 +165,11 @@ class PipelineSearcher:
             elif task_type == TaskType.REGRESSION.name.lower():
                 template = Templates.TIMESERIES_CLASSIFICATION
                 # template = Templates.TIMESERIES_FORECASTING
-        # elif data_modality == 'image':
-        #     if task_type == TaskType.CLASSIFICATION.name.lower():
-        #         template = Templates.IMAGE_CLASSIFICATION
-        #     elif task_type == TaskType.REGRESSION.name.lower():
-        #         template = Templates.IMAGE_REGRESSION
+        elif data_modality == 'image':
+            if task_type == TaskType.CLASSIFICATION.name.lower():
+                template = Templates.IMAGE_CLASSIFICATION
+            elif task_type == TaskType.REGRESSION.name.lower():
+                template = Templates.IMAGE_REGRESSION
         # if data_modality == 'graph':
         #     if task_type == TaskType.CLASSIFICATION.name.lower():
         #         template = Templates.MULTI_TABLE_CLASSIFICATION
@@ -182,9 +182,12 @@ class PipelineSearcher:
         return Templates.SINGLE_TABLE_CLASSIFICATION.value
         # raise ValueError('Unsupported problem')
 
-    def __init__(self, input_dir='input', output_dir='output', dump=False, hard_timeout=False):
+    def __init__(self, input_dir='input', output_dir='output', volumes_dir='static',
+                 scratch_dir='scratch', dump=False, hard_timeout=False):
         self.input = input_dir
         self.output = output_dir
+        self.volumes_dir = volumes_dir
+        self.scratch_dir = scratch_dir
         self.dump = dump
         self.hard_timeout = hard_timeout
 
@@ -221,6 +224,8 @@ class PipelineSearcher:
             random_seed=random_seed,
             data_random_seed=random_seed,
             scoring_random_seed=random_seed,
+            volumes_dir=self.volumes_dir,
+            scratch_dir=self.scratch_dir
         )
 
         if not all_scores:
