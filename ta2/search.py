@@ -46,6 +46,7 @@ class Templates(Enum):
     # IMAGE_CLASSIFICATION = 'image_classification.yml'
     TEXT_CLASSIFICATION = 'text_xgb_classification.hp.yml'
     TEXT_REGRESSION = 'text_xgb_regression.hp.yml'
+    GRAPH_COMMUNITY_DETECTION = 'graph_community_detection.yml'
 
 
 def detect_data_modality(dataset_doc_path):
@@ -138,7 +139,7 @@ class PipelineSearcher:
             return loader(string_or_file=pipeline_file)
 
     def _get_template(self, data_modality, task_type):
-        LOGGER.info("Loading pipeline for data modality %s and task type %s",
+        LOGGER.info("Loading template for data modality %s and task type %s",
                     data_modality, task_type)
 
         template = None
@@ -172,11 +173,9 @@ class PipelineSearcher:
         #         template = Templates.IMAGE_CLASSIFICATION
         #     elif task_type == TaskType.REGRESSION.name.lower():
         #         template = Templates.IMAGE_REGRESSION
-        # if data_modality == 'graph':
-        #     if task_type == TaskType.CLASSIFICATION.name.lower():
-        #         template = Templates.MULTI_TABLE_CLASSIFICATION
-        #     elif task_type == TaskType.REGRESSION.name.lower():
-        #         template = Templates.MULTI_TABLE_REGRESSION
+        if data_modality == 'graph':
+            if task_type == TaskType.COMMUNITY_DETECTION.name.lower():
+                template = Templates.GRAPH_COMMUNITY_DETECTION
 
         if template:
             return template.value
@@ -334,7 +333,6 @@ class PipelineSearcher:
         best_pipeline = None
         best_score = None
         best_normalized = 0
-        template_name = None
         data_modality = None
         task_type = None
         task_subtype = None
