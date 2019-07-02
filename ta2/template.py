@@ -165,7 +165,10 @@ def load_template(template_name):
                 data=data
             )
 
-        step.add_output('produce')
+        outputs = primitive_config.get('outputs', ('produce',))
+        for output in outputs:
+            step.add_output(output)
+
         pipeline.add_step(step)
 
     data_reference = 'steps.{}.produce'.format(len(steps) - 1)
