@@ -47,6 +47,7 @@ class Templates(Enum):
     TEXT_CLASSIFICATION = 'text_xgb_classification.hp.yml'
     TEXT_REGRESSION = 'text_xgb_regression.hp.yml'
     GRAPH_COMMUNITY_DETECTION = 'graph_community_detection.yml'
+    GRAPH_LINK_PREDICTION = 'graph_link_prediction.yml'
 
 
 def detect_data_modality(dataset_doc_path):
@@ -176,6 +177,8 @@ class PipelineSearcher:
         if data_modality == 'graph':
             if task_type == TaskType.COMMUNITY_DETECTION.name.lower():
                 template = Templates.GRAPH_COMMUNITY_DETECTION
+            elif task_type == TaskType.LINK_PREDICTION.name.lower():
+                template = Templates.GRAPH_LINK_PREDICTION
 
         if template:
             return template.value

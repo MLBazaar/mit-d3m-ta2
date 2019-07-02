@@ -1,0 +1,12 @@
+steps:
+- primitive: d3m.primitives.data_transformation.load_single_graph.DistilSingleGraphLoader
+  outputs:
+  - produce
+  - produce_target
+- primitive: d3m.primitives.data_transformation.link_prediction.DistilLinkPrediction
+  arguments:
+    outputs:
+      data: steps.0.produce_target
+  hyperparams:
+    metric:
+      data: accuracy
