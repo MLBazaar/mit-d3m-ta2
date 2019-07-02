@@ -160,17 +160,8 @@ def test_pipelinesearcher_get_template():
     # classification
     instance._get_template('single_table', 'classification')
 
-    # assert result == 'xgb_classification.all_hp.yml'
-
     # regression
     instance._get_template('single_table', 'regression')
-
-    # assert result == 'xgb_regression.all_hp.yml'
-
-    # not supported
-    with pytest.raises(ValueError):
-        instance._get_template(None, 'fake')  # dataset (None) is not used
-
 
 @patch('ta2.search.evaluate')
 def test_pipelinesearcher_score_pipeline(evaluate_mock):
@@ -282,7 +273,7 @@ def test_pipelinesearcher_stop():
 def test_pipelinesearcher_setup_search(logger_mock):
     instance = PipelineSearcher()
 
-    assert not hasattr(instance, 'solutions')
+    assert hasattr(instance, 'solutions')
     assert not hasattr(instance, '_stop')
     assert not hasattr(instance, 'done')
     assert not hasattr(instance, 'start_time')

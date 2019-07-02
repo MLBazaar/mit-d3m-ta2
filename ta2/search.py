@@ -13,7 +13,7 @@ from enum import Enum
 import numpy as np
 from btb.tuning import GP
 from d3m.container.dataset import Dataset
-from d3m.metadata.base import ALL_ELEMENTS, ArgumentType, Context
+from d3m.metadata.base import ArgumentType, Context
 from d3m.metadata.pipeline import Pipeline, PrimitiveStep
 from d3m.metadata.problem import TaskType
 from d3m.runtime import DEFAULT_SCORING_PIPELINE_PATH, evaluate
