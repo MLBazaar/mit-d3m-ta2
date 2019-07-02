@@ -1,0 +1,9 @@
+steps:
+- primitive: d3m.primitives.data_preprocessing.largest_connected_component.JHU
+- primitive: d3m.primitives.data_transformation.adjacency_spectral_embedding.JHU
+  hyperparams:
+    max_dimension:
+      data: 5
+    use_attributes:
+      data: true
+- primitive: d3m.primitives.classification.gaussian_classification.JHU
