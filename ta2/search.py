@@ -48,6 +48,7 @@ class Templates(Enum):
     TEXT_REGRESSION = 'text_xgb_regression.hp.yml'
     GRAPH_COMMUNITY_DETECTION = 'graph_community_detection.yml'
     GRAPH_LINK_PREDICTION = 'graph_link_prediction.yml'
+    GRAPH_MATCHING = 'graph_matching_jhu.yml'
 
 
 def detect_data_modality(dataset_doc_path):
@@ -179,6 +180,8 @@ class PipelineSearcher:
                 template = Templates.GRAPH_COMMUNITY_DETECTION
             elif task_type == TaskType.LINK_PREDICTION.name.lower():
                 template = Templates.GRAPH_LINK_PREDICTION
+            elif task_type == TaskType.GRAPH_MATCHING.name.lower():
+                template = Templates.GRAPH_MATCHING
 
         if template:
             return template.value
