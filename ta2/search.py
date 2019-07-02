@@ -34,15 +34,18 @@ warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 class Templates(Enum):
     # SINGLE_TABLE_CLASSIFICATION = 'gradient_boosting_classification.hp.yml'
-    SINGLE_TABLE_CLASSIFICATION = 'xgb_classification.hp.yml'
+    # SINGLE_TABLE_CLASSIFICATION = 'xgb_classification.hp.yml'
+    SINGLE_TABLE_CLASSIFICATION = 'encoding_xgb_classification.hp.yml'
     # SINGLE_TABLE_REGRESSION = 'gradient_boosting_regression.hp.yml'
     SINGLE_TABLE_REGRESSION = 'xgb_regression.hp.yml'
     MULTI_TABLE_CLASSIFICATION = 'multi_table_dfs_xgb_classification.yml'
     MULTI_TABLE_REGRESSION = 'multi_table_dfs_xgb_regression.yml'
     # TIMESERIES_CLASSIFICATION = 'time_series_xgb_classification.yml'
-    TIMESERIES_CLASSIFICATION = 'time_series_k_neighbors.yml'
+    TIMESERIES = 'time_series_k_neighbors.yml'
     IMAGE_REGRESSION = 'image_resnet50_regression.yml'
-    IMAGE_CLASSIFICATION = 'image_classification.yml'
+    # IMAGE_CLASSIFICATION = 'image_classification.yml'
+    TEXT_CLASSIFICATION = 'text_xgb_classification.hp.yml'
+    TEXT_REGRESSION = 'text_xgb_regression.hp.yml'
 
 
 def detect_data_modality(dataset_doc_path):
@@ -147,8 +150,7 @@ class PipelineSearcher:
             elif task_type == TaskType.COLLABORATIVE_FILTERING.name.lower():
                 template = Templates.SINGLE_TABLE_REGRESSION
             elif task_type == TaskType.TIME_SERIES_FORECASTING.name.lower():
-                # template = Templates.TIMESERIES_FORECASTING
-                template = Templates.TIMESERIES_CLASSIFICATION
+                template = Templates.SINGLE_TABLE_REGRESSION
         if data_modality == 'multi_table':
             if task_type == TaskType.CLASSIFICATION.name.lower():
                 template = Templates.MULTI_TABLE_CLASSIFICATION
@@ -156,10 +158,11 @@ class PipelineSearcher:
                 template = Templates.MULTI_TABLE_REGRESSION
         elif data_modality == 'text':
             if task_type == TaskType.CLASSIFICATION.name.lower():
-                template = Templates.SINGLE_TABLE_CLASSIFICATION
+                template = Templates.TEXT_CLASSIFICATION
             elif task_type == TaskType.REGRESSION.name.lower():
-                template = Templates.SINGLE_TABLE_REGRESSION
+                template = Templates.TEXT_REGRESSION
         if data_modality == 'timeseries':
+<<<<<<< HEAD
             if task_type == TaskType.CLASSIFICATION.name.lower():
                 template = Templates.TIMESERIES_CLASSIFICATION
             elif task_type == TaskType.REGRESSION.name.lower():
@@ -170,6 +173,18 @@ class PipelineSearcher:
                 template = Templates.IMAGE_CLASSIFICATION
             elif task_type == TaskType.REGRESSION.name.lower():
                 template = Templates.IMAGE_REGRESSION
+=======
+            template = Templates.TIMESERIES
+            # if task_type == TaskType.CLASSIFICATION.name.lower():
+            #     template = Templates.TIMESERIES_CLASSIFICATION
+            # elif task_type == TaskType.REGRESSION.name.lower():
+            #     template = Templates.TIMESERIES_REGRESSION
+        # elif data_modality == 'image':
+        #     if task_type == TaskType.CLASSIFICATION.name.lower():
+        #         template = Templates.IMAGE_CLASSIFICATION
+        #     elif task_type == TaskType.REGRESSION.name.lower():
+        #         template = Templates.IMAGE_REGRESSION
+>>>>>>> master
         # if data_modality == 'graph':
         #     if task_type == TaskType.CLASSIFICATION.name.lower():
         #         template = Templates.MULTI_TABLE_CLASSIFICATION
@@ -232,7 +247,7 @@ class PipelineSearcher:
             failed_result = all_results[-1]
             message = failed_result.pipeline_run.status['message']
             LOGGER.error(message)
-            raise Exception(failed_result.error)
+            raise failed_result.error.__cause__
 
         pipeline.cv_scores = [score.value[0] for score in all_scores]
         pipeline.score = np.mean(pipeline.cv_scores)
