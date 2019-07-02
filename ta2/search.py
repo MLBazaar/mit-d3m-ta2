@@ -162,18 +162,6 @@ class PipelineSearcher:
             elif task_type == TaskType.REGRESSION.name.lower():
                 template = Templates.TEXT_REGRESSION
         if data_modality == 'timeseries':
-<<<<<<< HEAD
-            if task_type == TaskType.CLASSIFICATION.name.lower():
-                template = Templates.TIMESERIES_CLASSIFICATION
-            elif task_type == TaskType.REGRESSION.name.lower():
-                template = Templates.TIMESERIES_CLASSIFICATION
-                # template = Templates.TIMESERIES_FORECASTING
-        elif data_modality == 'image':
-            if task_type == TaskType.CLASSIFICATION.name.lower():
-                template = Templates.IMAGE_CLASSIFICATION
-            elif task_type == TaskType.REGRESSION.name.lower():
-                template = Templates.IMAGE_REGRESSION
-=======
             template = Templates.TIMESERIES
             # if task_type == TaskType.CLASSIFICATION.name.lower():
             #     template = Templates.TIMESERIES_CLASSIFICATION
@@ -184,7 +172,6 @@ class PipelineSearcher:
         #         template = Templates.IMAGE_CLASSIFICATION
         #     elif task_type == TaskType.REGRESSION.name.lower():
         #         template = Templates.IMAGE_REGRESSION
->>>>>>> master
         # if data_modality == 'graph':
         #     if task_type == TaskType.CLASSIFICATION.name.lower():
         #         template = Templates.MULTI_TABLE_CLASSIFICATION

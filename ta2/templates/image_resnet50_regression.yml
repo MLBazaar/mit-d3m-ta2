@@ -1,0 +1,28 @@
+steps:
+    - primitive: d3m.primitives.data_transformation.denormalize.Common
+    - primitive: d3m.primitives.data_transformation.dataset_to_dataframe.Common
+    - primitive: d3m.primitives.data_transformation.extract_columns_by_semantic_types.DataFrameCommon
+    - primitive: d3m.primitives.data_transformation.to_numeric.DSBOX
+      hyperparams:
+          drop_non_numeric_columns:
+              data: false
+    - primitive: d3m.primitives.data_preprocessing.dataframe_to_tensor.DSBOX
+      arguments:
+          inputs:
+              data: steps.1.produce
+    - primitive: d3m.primitives.feature_extraction.resnet50_image_feature.DSBOX
+      hyperparams:
+          generate_metadata:
+              data: true
+    - primitive: d3m.primitives.regression.random_forest.SKlearn
+      hyperparams:
+          use_semantic_types:
+              data: true
+      arguments:
+          outputs:
+              data: steps.1.produce
+    - primitive: d3m.primitives.data_transformation.construct_predictions.DataFrameCommon
+      arguments:
+          reference:
+              data: steps.1.produce
+
