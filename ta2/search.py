@@ -182,6 +182,8 @@ class PipelineSearcher:
                 template = Templates.GRAPH_LINK_PREDICTION
             elif task_type == TaskType.GRAPH_MATCHING.name.lower():
                 template = Templates.GRAPH_MATCHING
+            elif task_type == TaskType.VERTEX_CLASSIFICATION.name.lower():
+                template = Templates.SINGLE_TABLE_CLASSIFICATION
 
         if template:
             return template.value

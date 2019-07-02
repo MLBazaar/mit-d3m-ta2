@@ -1,0 +1,2 @@
+steps:
+- primitive: d3m.primitives.vertex_nomination.spectral_graph_clustering.JHU
