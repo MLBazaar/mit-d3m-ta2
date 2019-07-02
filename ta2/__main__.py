@@ -1,4 +1,5 @@
 import argparse
+import gc
 import logging
 import os
 import shutil
@@ -182,6 +183,7 @@ def _ta2_test(args):
     for dataset_name, dataset_root, problem in get_datasets(args):
         try:
             results.append(process_dataset(dataset_name, dataset_root, problem, args))
+            gc.collect()
         except Exception as ex:
             box_print("Error processing dataset {}".format(dataset_name), True)
             traceback.print_exc()
