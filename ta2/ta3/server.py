@@ -15,12 +15,11 @@ _ONE_DAY_IN_SECONDS = 60 * 60 * 24
 LOGGER = logging.getLogger(__name__)
 
 
-def serve(port, input_dir, output_dir, volumes_dir, scratch_dir, timeout, debug, daemon=False):
+def serve(port, input_dir, output_dir, volumes_dir, timeout, debug, daemon=False):
     cs = core_servicer.CoreServicer(
         input_dir,
         output_dir,
         volumes_dir,
-        scratch_dir,
         timeout,
         debug
     )
@@ -49,7 +48,6 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='TA3 API Server')
     parser.add_argument('--port', type=int, default=45042)
     parser.add_argument('--volumes_dir', type=str)
-    parser.add_argument('--scratch_dir', type=str)
     parser.add_argument('-v', '--verbose', action='count', default=0)
     parser.add_argument('-d', '--input', nargs='?')
     parser.add_argument('-o', '--output', nargs='?')
@@ -62,7 +60,6 @@ if __name__ == '__main__':
     input_dir = args.input or os.getenv('D3MINPUTDIR', 'input')
     output_dir = args.output or os.getenv('D3MOUTPUTDIR', 'output')
     volumes_dir = args.volumes_dir or os.getenv('D3MSTATIC', 'static')
-    scratch_dir = args.output or os.getenv('D3MSCRATCH', 'scratch')
 
     timeout = args.timeout or os.getenv('D3MTIMEOUT', 600)
     debug = args.debug
@@ -76,4 +73,4 @@ if __name__ == '__main__':
     logging_setup(args.verbose, args.logfile)
     logging.getLogger("d3m.metadata.pipeline_run").setLevel(logging.ERROR)
 
-    serve(args.port, input_dir, output_dir, volumes_dir, scratch_dir, timeout, debug)
+    serve(args.port, input_dir, output_dir, volumes_dir, timeout, debug)

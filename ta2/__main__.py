@@ -48,12 +48,10 @@ def load_pipeline(pipeline_path):
 
 def search(dataset_root, problem, args):
     volumes_dir = os.path.abspath(args.volumes_dir)
-    scratch_dir = os.path.abspath(args.scratch_dir)
     pps = PipelineSearcher(
         args.input,
         args.output,
         volumes_dir,
-        scratch_dir,
         dump=True,
         hard_timeout=True,
     )
@@ -61,7 +59,7 @@ def search(dataset_root, problem, args):
     return pps.search(problem, args.timeout, args.budget, args.template)
 
 
-def score_pipeline(dataset_root, problem, pipeline_path, volumes_dir=None, scratch_dir=None):
+def score_pipeline(dataset_root, problem, pipeline_path, volumes_dir=None):
     train_dataset = load_dataset(dataset_root, 'TRAIN')
     test_dataset = load_dataset(dataset_root, 'SCORE', 'TEST')
     pipeline = load_pipeline(pipeline_path)
@@ -72,7 +70,6 @@ def score_pipeline(dataset_root, problem, pipeline_path, volumes_dir=None, scrat
         problem_description=problem,
         context=Context.TESTING,
         volumes_dir=volumes_dir,
-        scratch_dir=scratch_dir
     )
 
     LOGGER.info("Fitting the pipeline")
@@ -129,7 +126,6 @@ def get_datasets(args):
 def process_dataset(dataset_name, dataset_root, problem, args):
     start_ts = datetime.utcnow()
     volumes_dir = os.path.abspath(args.volumes_dir)
-    scratch_dir = os.path.abspath(args.scratch_dir)
     box_print("Processing dataset {}".format(dataset_name), True)
 
     LOGGER.info("Searching Pipeline for dataset {}".format(dataset_name))
@@ -143,7 +139,7 @@ def process_dataset(dataset_name, dataset_root, problem, args):
         box_print("Best Pipeline: {} - CV Score: {}".format(pipeline_id, cv_score))
 
         pipeline_path = os.path.join(args.output, 'pipelines_ranked', pipeline_id + '.json')
-        test_score = score_pipeline(dataset_root, problem, pipeline_path, volumes_dir, scratch_dir)
+        test_score = score_pipeline(dataset_root, problem, pipeline_path, volumes_dir)
         box_print("Test Score for pipeline {}: {}".format(pipeline_id, test_score))
 
         result['test_score'] = test_score
@@ -334,10 +330,6 @@ def parse_args():
     search_args.add_argument('-t', '--timeout', type=int,
                              help='Maximum time allowed for the tuning, in number of seconds')
 
-    search_args.add_argument(
-        '--scratch_dir', default='scratch', type=str,
-        help='Path to a directory to store any temporary files needed during execution'
-    )
     # TA3-TA2 Common Args
     ta3_args = argparse.ArgumentParser(add_help=False)
     ta3_args.add_argument('--port', type=int, default=45042,
