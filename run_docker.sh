@@ -11,7 +11,9 @@ docker run -i -t --rm \
     -e D3MTIMEOUT=60 \
     -e D3MINPUTDIR=/input \
     -e D3MOUTPUTDIR=/output \
+    -e D3MSTATICDIR=/static \
     -v $(pwd)/input:/input \
     -v $(pwd)/output:/output \
+    -v $(pwd)/static:/static \
     -u $UID \
     mit-d3m-ta2

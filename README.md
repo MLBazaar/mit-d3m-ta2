@@ -99,23 +99,14 @@ and avoid dependency conflicts.
 Because of this, some datasets, including timeseries and image data modalities, might not work
 properly.
 
-In order to make them work, install the additional dependencies with this command:
+In order to make them work, install the additional dependencies and download additional files
+with the following commands:
 
 ```bash
+sudo apt-get install $(cat system_requirements.txt)
 pip install -r devel_requirements.txt
-```
-
-And also download the additional files that the primitives require, to do so, create a folder where
-you would like to store this files:
-
-```
-mkdir my_static_path
-```
-
-And then execute the following command:
-
-```
-python -m d3m.index download -o my_static_path/
+mkdir -p static
+python -m d3m.index download -o static
 ```
 
 And keep in mind the following considerations:
@@ -205,7 +196,7 @@ Additionally, the following options can be passed:
 * `-a, --all`: Process all the datasets found in the input folder.
 * `-v, --verbose`: Set logs to INFO level. Use it twice to increase verbosity to DEBUG.
 * `-r CSV_PATH`: Store the results in the indicated CSV file instead of printing them on stdout.
-* `-s STATIC_PATH`: Path to a directory with static files required by primitives.
+* `-s STATIC_PATH`: Path to a directory with static files required by primitives. Defaults to `static`.
 
 For a full description of the options, execute `ta2 test --help`.
 
@@ -228,7 +219,7 @@ In order to test the TA2-TA3 Server, a convenience `ta3` command line interface 
 which allows testing one or more datasets by issuing a predefined sequence of calls to the
 TA2-TA3 Server.
 
-To use it, run the `python -m ta2 ta3` command passing one or more dataset names as positional
+To use it, run the `ta2 ta3` command passing one or more dataset names as positional
 arguments, as well as any of the optional arguments.
 
 For example, in order to process the datasets `185_baseball` and `196_autoMpg` during 60 seconds
@@ -263,7 +254,7 @@ make build
 And, in a different terminal:
 
 ```
-python -m ta2 ta3 --docker <OPTIONS>
+ta2 ta3 --docker <OPTIONS>
 ```
 
 # Submission

@@ -59,7 +59,7 @@ if __name__ == '__main__':
 
     input_dir = args.input or os.getenv('D3MINPUTDIR', 'input')
     output_dir = args.output or os.getenv('D3MOUTPUTDIR', 'output')
-    static = args.static or os.getenv('D3MSTATIC', 'static')
+    static = args.static or os.getenv('D3MSTATICDIR', 'static')
 
     timeout = args.timeout or os.getenv('D3MTIMEOUT', 600)
     debug = args.debug
