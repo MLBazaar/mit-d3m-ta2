@@ -15,8 +15,14 @@ _ONE_DAY_IN_SECONDS = 60 * 60 * 24
 LOGGER = logging.getLogger(__name__)
 
 
-def serve(port, input_dir, output_dir, timeout, debug, daemon=False):
-    cs = core_servicer.CoreServicer(input_dir, output_dir, timeout, debug)
+def serve(port, input_dir, output_dir, static_dir, timeout, debug, daemon=False):
+    cs = core_servicer.CoreServicer(
+        input_dir,
+        output_dir,
+        static_dir,
+        timeout,
+        debug
+    )
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
 
     core_pb2_grpc.add_CoreServicer_to_server(cs, server)
@@ -41,6 +47,7 @@ def serve(port, input_dir, output_dir, timeout, debug, daemon=False):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='TA3 API Server')
     parser.add_argument('--port', type=int, default=45042)
+    parser.add_argument('-s', '--static', type=str)
     parser.add_argument('-v', '--verbose', action='count', default=0)
     parser.add_argument('-d', '--input', nargs='?')
     parser.add_argument('-o', '--output', nargs='?')
@@ -52,6 +59,8 @@ if __name__ == '__main__':
 
     input_dir = args.input or os.getenv('D3MINPUTDIR', 'input')
     output_dir = args.output or os.getenv('D3MOUTPUTDIR', 'output')
+    static_dir = args.static or os.getenv('D3MSTATICDIR', 'static')
+
     timeout = args.timeout or os.getenv('D3MTIMEOUT', 600)
     debug = args.debug
 
@@ -64,4 +73,4 @@ if __name__ == '__main__':
     logging_setup(args.verbose, args.logfile)
     logging.getLogger("d3m.metadata.pipeline_run").setLevel(logging.ERROR)
 
-    serve(args.port, input_dir, output_dir, timeout, debug)
+    serve(args.port, input_dir, output_dir, static_dir, timeout, debug)

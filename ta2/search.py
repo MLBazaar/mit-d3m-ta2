@@ -42,8 +42,8 @@ class Templates(Enum):
     MULTI_TABLE_REGRESSION = 'multi_table_dfs_xgb_regression.yml'
     # TIMESERIES_CLASSIFICATION = 'time_series_xgb_classification.yml'
     TIMESERIES = 'time_series_k_neighbors.yml'
-    # IMAGE_REGRESSION = 'image_rf_regression.yml'
-    # IMAGE_CLASSIFICATION = 'image_classification.yml'
+    IMAGE_REGRESSION = 'image_resnet50_xgb_regression.yml'
+    IMAGE_CLASSIFICATION = 'image_resnet50_xgb_classification.yml'
     TEXT_CLASSIFICATION = 'text_xgb_classification.hp.yml'
     TEXT_REGRESSION = 'text_xgb_regression.hp.yml'
     GRAPH_COMMUNITY_DETECTION = 'graph_community_detection.yml'
@@ -170,11 +170,11 @@ class PipelineSearcher:
             #     template = Templates.TIMESERIES_CLASSIFICATION
             # elif task_type == TaskType.REGRESSION.name.lower():
             #     template = Templates.TIMESERIES_REGRESSION
-        # elif data_modality == 'image':
-        #     if task_type == TaskType.CLASSIFICATION.name.lower():
-        #         template = Templates.IMAGE_CLASSIFICATION
-        #     elif task_type == TaskType.REGRESSION.name.lower():
-        #         template = Templates.IMAGE_REGRESSION
+        elif data_modality == 'image':
+            if task_type == TaskType.CLASSIFICATION.name.lower():
+                template = Templates.IMAGE_CLASSIFICATION
+            elif task_type == TaskType.REGRESSION.name.lower():
+                template = Templates.IMAGE_REGRESSION
         if data_modality == 'graph':
             if task_type == TaskType.COMMUNITY_DETECTION.name.lower():
                 template = Templates.GRAPH_COMMUNITY_DETECTION
@@ -191,9 +191,11 @@ class PipelineSearcher:
         return Templates.SINGLE_TABLE_CLASSIFICATION.value
         # raise ValueError('Unsupported problem')
 
-    def __init__(self, input_dir='input', output_dir='output', dump=False, hard_timeout=False):
+    def __init__(self, input_dir='input', output_dir='output', static_dir='static',
+                 dump=False, hard_timeout=False):
         self.input = input_dir
         self.output = output_dir
+        self.static = static_dir
         self.dump = dump
         self.hard_timeout = hard_timeout
 
@@ -230,6 +232,7 @@ class PipelineSearcher:
             random_seed=random_seed,
             data_random_seed=random_seed,
             scoring_random_seed=random_seed,
+            volumes_dir=self.static,
         )
 
         if not all_scores:

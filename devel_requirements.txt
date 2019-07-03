@@ -1,4 +1,5 @@
 numpy==1.16.4
 tensorflow==1.12.2
+python-prctl==1.7
 
 -e git+https://github.com/NewKnowledge/TimeSeries-D3M-Wrappers.git@86b8566d3767f79562ecec3316e77247b1a39061#egg=TimeSeriesD3MWrappers

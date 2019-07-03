@@ -47,13 +47,18 @@ def load_pipeline(pipeline_path):
 
 
 def search(dataset_root, problem, args):
-
-    pps = PipelineSearcher(args.input, args.output, dump=True, hard_timeout=True)
+    pps = PipelineSearcher(
+        args.input,
+        args.output,
+        args.static,
+        dump=True,
+        hard_timeout=True,
+    )
 
     return pps.search(problem, args.timeout, args.budget, args.template)
 
 
-def score_pipeline(dataset_root, problem, pipeline_path):
+def score_pipeline(dataset_root, problem, pipeline_path, static=None):
     train_dataset = load_dataset(dataset_root, 'TRAIN')
     test_dataset = load_dataset(dataset_root, 'SCORE', 'TEST')
     pipeline = load_pipeline(pipeline_path)
@@ -62,7 +67,8 @@ def score_pipeline(dataset_root, problem, pipeline_path):
     runtime = Runtime(
         pipeline=pipeline,
         problem_description=problem,
-        context=Context.TESTING
+        context=Context.TESTING,
+        volumes_dir=static,
     )
 
     LOGGER.info("Fitting the pipeline")
@@ -131,7 +137,7 @@ def process_dataset(dataset_name, dataset_root, problem, args):
         box_print("Best Pipeline: {} - CV Score: {}".format(pipeline_id, cv_score))
 
         pipeline_path = os.path.join(args.output, 'pipelines_ranked', pipeline_id + '.json')
-        test_score = score_pipeline(dataset_root, problem, pipeline_path)
+        test_score = score_pipeline(dataset_root, problem, pipeline_path, args.static)
         box_print("Test Score for pipeline {}: {}".format(pipeline_id, test_score))
 
         result['test_score'] = test_score
@@ -317,6 +323,8 @@ def parse_args():
 
     # Search Configuration
     search_args = argparse.ArgumentParser(add_help=False)
+    search_args.add_argument('-s', '--static', default='static', type=str,
+                             help='Path to a directory with static files required by primitives')
     search_args.add_argument('-t', '--timeout', type=int,
                              help='Maximum time allowed for the tuning, in number of seconds')
 
@@ -372,6 +380,8 @@ def parse_args():
     )
 
     args = parser.parse_args()
+
+    args.static = os.path.abspath(args.static)
 
     os.makedirs(args.output, exist_ok=True)
 

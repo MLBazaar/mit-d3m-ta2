@@ -23,15 +23,17 @@ def test_dt2ts():
 
 
 def test_core_servicer():
-    input_dir = '/input-dir'
-    output_dir = '/output-dir'
+    input_dir = '/input'
+    output_dir = '/output'
+    static_dir = '/static'
     timeout = 0.5
 
-    instance = CoreServicer(input_dir, output_dir, timeout)
+    instance = CoreServicer(input_dir, output_dir, static_dir, timeout)
     assert isinstance(instance, core_pb2_grpc.CoreServicer)
 
     assert instance.input_dir == input_dir
     assert instance.output_dir == output_dir
+    assert instance.static_dir == static_dir
     assert instance.timeout == timeout
     assert not instance.debug
 
@@ -44,7 +46,7 @@ def test_core_servicer_run_session(logger_info_mock, logger_exception_mock):
     # no arguments
     method = MagicMock()
 
-    instance = CoreServicer('/input-dir', '/output-dir', 0.5)
+    instance = CoreServicer('/input', '/output', '/static', 0.5)
     instance._run_session(session, method)
 
     args, kwargs = method.call_args
@@ -92,7 +94,7 @@ def test_core_servicer_start_session(thread_mock, logger_mock):
     method = MagicMock()
 
     # debug mode
-    instance = CoreServicer('/input-dir', '/output-dir', 0.5, debug=True)
+    instance = CoreServicer('/input', '/output', '/static', 0.5, debug=True)
     instance._start_session(session_id, session_type, method, 'first-argument', second='argument')
 
     args, kwargs = method.call_args
@@ -116,7 +118,7 @@ def test_core_servicer_start_session(thread_mock, logger_mock):
     # without debugging
     logger_mock.reset_mock()
 
-    instance = CoreServicer('/input-dir', '/output-dir', 0.5)
+    instance = CoreServicer('/input', '/output', '/static', 0.5)
     instance._start_session(session_id, session_type, method, 'first-argument', second='argument')
 
     assert len(instance.DB) == 1
@@ -139,7 +141,7 @@ def test_core_servicer_start_session(thread_mock, logger_mock):
 @patch('ta2.ta3.core_servicer.PipelineSearcher')
 @patch('ta2.ta3.core_servicer.core_pb2.SearchSolutionsResponse')
 def test_core_servicer_searchsolutions(searcher_mock, pipeline_searcher_mock, decode_mock):
-    instance = CoreServicer('/input-dir', '/output-dir', 0.5)
+    instance = CoreServicer('/input', '/output', '/static', 0.5)
     instance._start_session = MagicMock()
     expected_result = 'result'
     searcher_mock.return_value = expected_result
@@ -164,7 +166,8 @@ def test_core_servicer_searchsolutions(searcher_mock, pipeline_searcher_mock, de
     result = instance.SearchSolutions(request, None)  # context (None) is not used
 
     decode_mock.assert_called_once_with(problem)
-    pipeline_searcher_mock.assert_called_once_with(instance.input_dir, instance.output_dir)
+    pipeline_searcher_mock.assert_called_once_with(
+        instance.input_dir, instance.output_dir, instance.static_dir)
 
     assert instance._start_session.call_count == 1
     assert result == expected_result
@@ -173,7 +176,7 @@ def test_core_servicer_searchsolutions(searcher_mock, pipeline_searcher_mock, de
 @patch('ta2.ta3.core_servicer.core_pb2.Progress')
 @patch('ta2.ta3.core_servicer.core_pb2.ProgressState.Value')
 def test_core_servicer_get_progress(progress_state_mock, progress_mock):
-    instance = CoreServicer('/input-dir', '/output-dir', 0.5)
+    instance = CoreServicer('/input', '/output', '/static', 0.5)
 
     # ERRORED
     session = {'error': 'test-value'}
@@ -199,7 +202,7 @@ def test_core_servicer_get_progress(progress_state_mock, progress_mock):
 
 @patch('ta2.ta3.core_servicer.core_pb2.GetSearchSolutionsResultsResponse')
 def test_core_servicer_get_search_soltuion_results(solutions_results_mock):
-    instance = CoreServicer('/input-dir', '/output-dir', 0.5)
+    instance = CoreServicer('/input', '/output', '/static', 0.5)
     instance._get_progress = MagicMock()
     solutions = {
         1: {'id': 1, 'score': 1, 'rank': 1},
@@ -225,7 +228,7 @@ def test_core_servicer_get_search_soltuion_results(solutions_results_mock):
 
 
 def test_core_servicer_getsearchsolutionsresults():
-    instance = CoreServicer('/input-dir', '/output-dir', 0.5)
+    instance = CoreServicer('/input', '/output', '/static', 0.5)
     expected_result = 'result'
     instance._stream = MagicMock(return_value=expected_result)
 
@@ -251,7 +254,7 @@ def test_core_servicer_getsearchsolutionsresults():
 
 @patch('ta2.ta3.core_servicer.core_pb2.EndSearchSolutionsResponse')
 def test_core_servicer_endsearchsolutions(end_search_mock):
-    instance = CoreServicer('/input-dir', '/output-dir', 0.5)
+    instance = CoreServicer('/input', '/output', '/static', 0.5)
     expected_result = 'result'
     end_search_mock.return_value = expected_result
 
@@ -281,7 +284,7 @@ def test_core_servicer_endsearchsolutions(end_search_mock):
 
 @patch('ta2.ta3.core_servicer.core_pb2.StopSearchSolutionsResponse')
 def test_core_servicer_stopsearchsolutions(stop_search_mock):
-    instance = CoreServicer('/input-dir', '/output-dir', 0.5)
+    instance = CoreServicer('/input', '/output', '/static', 0.5)
     expected_result = 'result'
     stop_search_mock.return_value = expected_result
 
