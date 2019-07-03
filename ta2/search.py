@@ -191,11 +191,11 @@ class PipelineSearcher:
         return Templates.SINGLE_TABLE_CLASSIFICATION.value
         # raise ValueError('Unsupported problem')
 
-    def __init__(self, input_dir='input', output_dir='output', static='static',
+    def __init__(self, input_dir='input', output_dir='output', static_dir='static',
                  dump=False, hard_timeout=False):
         self.input = input_dir
         self.output = output_dir
-        self.static = static
+        self.static = static_dir
         self.dump = dump
         self.hard_timeout = hard_timeout
 

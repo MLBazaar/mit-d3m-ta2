@@ -15,11 +15,11 @@ _ONE_DAY_IN_SECONDS = 60 * 60 * 24
 LOGGER = logging.getLogger(__name__)
 
 
-def serve(port, input_dir, output_dir, static, timeout, debug, daemon=False):
+def serve(port, input_dir, output_dir, static_dir, timeout, debug, daemon=False):
     cs = core_servicer.CoreServicer(
         input_dir,
         output_dir,
-        static,
+        static_dir,
         timeout,
         debug
     )
@@ -59,7 +59,7 @@ if __name__ == '__main__':
 
     input_dir = args.input or os.getenv('D3MINPUTDIR', 'input')
     output_dir = args.output or os.getenv('D3MOUTPUTDIR', 'output')
-    static = args.static or os.getenv('D3MSTATICDIR', 'static')
+    static_dir = args.static or os.getenv('D3MSTATICDIR', 'static')
 
     timeout = args.timeout or os.getenv('D3MTIMEOUT', 600)
     debug = args.debug
@@ -73,4 +73,4 @@ if __name__ == '__main__':
     logging_setup(args.verbose, args.logfile)
     logging.getLogger("d3m.metadata.pipeline_run").setLevel(logging.ERROR)
 
-    serve(args.port, input_dir, output_dir, static, timeout, debug)
+    serve(args.port, input_dir, output_dir, static_dir, timeout, debug)

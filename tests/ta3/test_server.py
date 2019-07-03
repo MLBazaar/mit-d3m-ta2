@@ -17,12 +17,13 @@ def test_serve(core_servicer_mock, grpc_server_mock, add_cs_to_server_mock, slee
     port = 9999
     input_dir = 'input'
     output_dir = 'output'
+    static_dir = 'static'
     timeout = 60
     debug = False
 
     # daemon=True
-    return_value = serve(port, input_dir, output_dir, timeout, debug, daemon=True)
-    core_servicer_mock.assert_called_once_with(input_dir, output_dir, timeout, debug)
+    return_value = serve(port, input_dir, output_dir, static_dir, timeout, debug, daemon=True)
+    core_servicer_mock.assert_called_once_with(input_dir, output_dir, static_dir, timeout, debug)
 
     assert return_value == expected_value
     assert grpc_server_mock.called

@@ -163,6 +163,7 @@ def test_pipelinesearcher_get_template():
     # regression
     instance._get_template('single_table', 'regression')
 
+
 @patch('ta2.search.evaluate')
 def test_pipelinesearcher_score_pipeline(evaluate_mock):
     instance = PipelineSearcher()
@@ -204,6 +205,7 @@ def test_pipelinesearcher_score_pipeline(evaluate_mock):
         random_seed=random_seed,
         data_random_seed=random_seed,
         scoring_random_seed=random_seed,
+        volumes_dir=instance.static
     )
 
     assert pipeline_mock.cv_scores == [score.value[0] for score in expected_scores]
@@ -228,6 +230,7 @@ def test_pipelinesearcher_score_pipeline(evaluate_mock):
         random_seed=random_seed,
         data_random_seed=random_seed,
         scoring_random_seed=random_seed,
+        volumes_dir=instance.static
     )
 
     assert pipeline_mock.cv_scores == [score.value[0] for score in expected_scores]

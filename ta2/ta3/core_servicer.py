@@ -669,13 +669,13 @@ class CoreServicer(core_pb2_grpc.CoreServicer):
 
     DB = recursivedict()
 
-    def __init__(self, input_dir, output_dir, timeout, static, debug=False):
+    def __init__(self, input_dir, output_dir, static_dir, timeout, debug=False):
 
         super(CoreServicer, self).__init__()
 
         self.input_dir = os.path.abspath(input_dir)
         self.output_dir = os.path.abspath(output_dir)
-        self.static = os.path.abspath(static)
+        self.static_dir = os.path.abspath(static_dir)
         self.ranked_dir = os.path.join(self.output_dir, 'pipelines_ranked')
         self.timeout = timeout
         self.debug = debug
@@ -848,7 +848,7 @@ class CoreServicer(core_pb2_grpc.CoreServicer):
 
         problem = decode_problem_description(problem_description)
 
-        searcher = PipelineSearcher(self.input_dir, self.output_dir)
+        searcher = PipelineSearcher(self.input_dir, self.output_dir, self.static_dir)
 
         self._start_session(
             search_id,
@@ -1334,7 +1334,7 @@ class CoreServicer(core_pb2_grpc.CoreServicer):
             pipeline=pipeline,
             problem_description=problem,
             context=Context.TESTING,
-            volumes_dir=self.static,
+            volumes_dir=self.static_dir,
         )
 
         fit_results = runtime.fit(inputs=[dataset])
