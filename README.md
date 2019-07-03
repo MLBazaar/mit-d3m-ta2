@@ -105,6 +105,19 @@ In order to make them work, install the additional dependencies with this comman
 pip install -r devel_requirements.txt
 ```
 
+And also download the additional files that the primitives require, to do so, create a folder where
+you would like to store this files:
+
+```
+mkdir my_static_path
+```
+
+And then execute the following command:
+
+```
+python -m d3m.index download -o my_static_path/
+```
+
 And keep in mind the following considerations:
 
 * The command line script `ta2` explained in the usage section below will stop working and will
@@ -192,6 +205,7 @@ Additionally, the following options can be passed:
 * `-a, --all`: Process all the datasets found in the input folder.
 * `-v, --verbose`: Set logs to INFO level. Use it twice to increase verbosity to DEBUG.
 * `-r CSV_PATH`: Store the results in the indicated CSV file instead of printing them on stdout.
+* `-s STATIC_PATH`: Path to a directory with static files required by primitives.
 
 For a full description of the options, execute `ta2 test --help`.
 

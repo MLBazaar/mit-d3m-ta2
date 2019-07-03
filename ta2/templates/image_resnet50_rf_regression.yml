@@ -25,4 +25,3 @@ steps:
       arguments:
           reference:
               data: steps.1.produce
-
