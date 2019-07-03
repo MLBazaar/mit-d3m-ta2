@@ -88,7 +88,10 @@
 <li class="toctree-l1"><a class="reference internal" href="readme.html#install">Install</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="readme.html#requirements">Requirements</a></li>
 <li class="toctree-l2"><a class="reference internal" href="readme.html#install-the-latest-release">Install the latest release</a></li>
-<li class="toctree-l2"><a class="reference internal" href="readme.html#install-for-development">Install for Development</a></li>
+<li class="toctree-l2"><a class="reference internal" href="readme.html#install-for-development">Install for Development</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="readme.html#additional-dependencies">Additional Dependencies</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="readme.html#data-format">Data Format</a><ul>
@@ -293,6 +296,29 @@ dependencies for code linting and testing.</p>
 </pre></div>
 </div>
 <p>Make sure to use them regularly while developing by running the commands <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">lint</span></code> and <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">test</span></code>.</p>
+<div class="section" id="additional-dependencies">
+<h3>Additional Dependencies<a class="headerlink" href="#additional-dependencies" title="Permalink to this headline">¶</a></h3>
+<p>Additional dependencies required to execute some of the TA1 primitives have been left out from
+the command above in order to keep maximum compatibility with the different types of systems
+and avoid dependency conflicts.</p>
+<p>Because of this, some datasets, including timeseries and image data modalities, might not work
+properly.</p>
+<p>In order to make them work, install the additional dependencies and download additional files
+with the following commands:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo apt-get install <span class="k">$(</span>cat system_requirements.txt<span class="k">)</span>
+pip install -r devel_requirements.txt
+mkdir -p static
+python -m d3m.index download -o static
+</pre></div>
+</div>
+<p>And keep in mind the following considerations:</p>
+<ul class="simple">
+<li><p>The command line script <code class="docutils literal notranslate"><span class="pre">ta2</span></code> explained in the usage section below will stop working and will
+need to be replaced with <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">ta2</span></code> in all the examples.</p></li>
+<li><p>Some red warnings might show in the command line indicating that incompatible versions have been
+install. These warnings can be safely ignored, as their only consequence is the previous point.</p></li>
+</ul>
+</div>
 </div>
 </div>
 <div class="section" id="data-format">
@@ -414,11 +440,11 @@ allowed for the tuning (<code class="docutils literal notranslate"><span class="
 <div class="section" id="ta2-standalone-mode">
 <h3>TA2 Standalone Mode<a class="headerlink" href="#ta2-standalone-mode" title="Permalink to this headline">¶</a></h3>
 <p>The TA2 Standalone mode can be executed locally using the <code class="docutils literal notranslate"><span class="pre">ta2</span></code> command line interface.</p>
-<p>To use this, run the <code class="docutils literal notranslate"><span class="pre">ta2</span> <span class="pre">standalone</span></code> command passing one or more dataset names as positional
+<p>To use this, run the <code class="docutils literal notranslate"><span class="pre">ta2</span> <span class="pre">test</span></code> command passing one or more dataset names as positional
 arguments as well as either a budget. <code class="docutils literal notranslate"><span class="pre">-b</span></code>, or a timeout, <code class="docutils literal notranslate"><span class="pre">-t</span></code>.</p>
 <p>For example, in order to process the datasets <code class="docutils literal notranslate"><span class="pre">185_baseball</span></code> and <code class="docutils literal notranslate"><span class="pre">196_autoMpg</span></code> during 60 seconds
 each, the following command would be used:</p>
-<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span><span class="n">ta2</span><span class="o">-</span><span class="n">test</span> <span class="o">-</span><span class="n">t60</span> <span class="mi">185</span><span class="n">_baseball</span> <span class="mi">196</span><span class="n">_autoMpg</span>
+<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span><span class="n">ta2</span> <span class="n">test</span> <span class="o">-</span><span class="n">t60</span> <span class="mi">185</span><span class="n">_baseball</span> <span class="mi">196</span><span class="n">_autoMpg</span>
 </pre></div>
 </div>
 <p>This will start searching and tuning the best pipeline possible for each dataset during a maximum
@@ -432,36 +458,37 @@ of 60 seconds and, at the end, print a table with all the results on stdout.</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">-a,</span> <span class="pre">--all</span></code>: Process all the datasets found in the input folder.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">-v,</span> <span class="pre">--verbose</span></code>: Set logs to INFO level. Use it twice to increase verbosity to DEBUG.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">-r</span> <span class="pre">CSV_PATH</span></code>: Store the results in the indicated CSV file instead of printing them on stdout.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">STATIC_PATH</span></code>: Path to a directory with static files required by primitives. Defaults to <code class="docutils literal notranslate"><span class="pre">static</span></code>.</p></li>
 </ul>
-<p>For a full description of the options, execute <code class="docutils literal notranslate"><span class="pre">ta2-test</span> <span class="pre">--help</span></code>.</p>
+<p>For a full description of the options, execute <code class="docutils literal notranslate"><span class="pre">ta2</span> <span class="pre">test</span> <span class="pre">--help</span></code>.</p>
 </div>
 <div class="section" id="ta2-ta3-server-mode">
 <h3>TA2-TA3 Server Mode<a class="headerlink" href="#ta2-ta3-server-mode" title="Permalink to this headline">¶</a></h3>
 <p>The TA2-TA3 API mode can be executed using the <code class="docutils literal notranslate"><span class="pre">ta2</span> <span class="pre">server</span></code> command, as well as any of the
 optional named arguments required.</p>
 <p>This will start a ta2 server in the background ready to serve requests from a ta3 client.</p>
-<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span><span class="n">ta2</span><span class="o">-</span><span class="n">server</span>
+<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span><span class="n">ta2</span> <span class="n">server</span>
 </pre></div>
 </div>
-<p>For a full description of the script options, execute <code class="docutils literal notranslate"><span class="pre">ta2-server</span> <span class="pre">--help</span></code>.</p>
+<p>For a full description of the script options, execute <code class="docutils literal notranslate"><span class="pre">ta2</span> <span class="pre">server</span> <span class="pre">--help</span></code>.</p>
 </div>
 <div class="section" id="ta2-ta3-test">
 <h3>TA2-TA3 Test<a class="headerlink" href="#ta2-ta3-test" title="Permalink to this headline">¶</a></h3>
 <p>In order to test the TA2-TA3 Server, a convenience <code class="docutils literal notranslate"><span class="pre">ta3</span></code> command line interface has been included,
 which allows testing one or more datasets by issuing a predefined sequence of calls to the
 TA2-TA3 Server.</p>
-<p>To use it, run the <code class="docutils literal notranslate"><span class="pre">ta3</span></code> command passing one or more dataset names as positional
+<p>To use it, run the <code class="docutils literal notranslate"><span class="pre">ta2</span> <span class="pre">ta3</span></code> command passing one or more dataset names as positional
 arguments, as well as any of the optional arguments.</p>
 <p>For example, in order to process the datasets <code class="docutils literal notranslate"><span class="pre">185_baseball</span></code> and <code class="docutils literal notranslate"><span class="pre">196_autoMpg</span></code> during 60 seconds
 each, the following command would be used:</p>
-<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span><span class="n">ta3</span><span class="o">-</span><span class="n">test</span> <span class="o">-</span><span class="n">t60</span> <span class="mi">185</span><span class="n">_baseball</span> <span class="mi">196</span><span class="n">_autoMpg</span>
+<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span><span class="n">ta2</span> <span class="n">ta3</span> <span class="o">-</span><span class="n">t60</span> <span class="mi">185</span><span class="n">_baseball</span> <span class="mi">196</span><span class="n">_autoMpg</span>
 </pre></div>
 </div>
-<p><strong>NOTE</strong>: In order to be able to execute this command, a <code class="docutils literal notranslate"><span class="pre">ta2-server</span></code> process must be already
+<p><strong>NOTE</strong>: In order to be able to execute this command, a <code class="docutils literal notranslate"><span class="pre">ta2</span> <span class="pre">server</span></code> process must be already
 running in the same machine.</p>
 <p>This will start sending requests to the <code class="docutils literal notranslate"><span class="pre">ta3-server</span></code> to search and tune the best pipeline
 possible for each dataset during a maximum of 60 seconds.</p>
-<p>For a full description of the script options, execute <code class="docutils literal notranslate"><span class="pre">ta3-test</span> <span class="pre">--help</span></code>.</p>
+<p>For a full description of the script options, execute <code class="docutils literal notranslate"><span class="pre">ta2</span> <span class="pre">ta3</span> <span class="pre">--help</span></code>.</p>
 <p>Also remember that a TA2-TA3 Server must be running when you execute this script!</p>
 </div>
 </div>
@@ -476,7 +503,7 @@ After that, in a different console, you can run the <code class="docutils litera
 </pre></div>
 </div>
 <p>And, in a different terminal:</p>
-<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span><span class="n">ta3</span> <span class="o">-</span><span class="n">v</span> <span class="o">-</span><span class="n">t2</span> <span class="c1">--docker</span>
+<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span><span class="n">ta2</span> <span class="n">ta3</span> <span class="c1">--docker &lt;OPTIONS&gt;</span>
 </pre></div>
 </div>
 </div>

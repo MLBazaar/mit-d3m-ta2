@@ -87,7 +87,10 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../readme.html#install">Install</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../readme.html#requirements">Requirements</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../readme.html#install-the-latest-release">Install the latest release</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../readme.html#install-for-development">Install for Development</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../readme.html#install-for-development">Install for Development</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../readme.html#additional-dependencies">Additional Dependencies</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../readme.html#data-format">Data Format</a><ul>
@@ -233,8 +236,14 @@
 <span class="n">LOGGER</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="serve"><a class="viewcode-back" href="../../../api/ta2.ta3.server.html#ta2.ta3.server.serve">[docs]</a><span class="k">def</span> <span class="nf">serve</span><span class="p">(</span><span class="n">port</span><span class="p">,</span> <span class="n">input_dir</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">,</span> <span class="n">timeout</span><span class="p">,</span> <span class="n">debug</span><span class="p">,</span> <span class="n">daemon</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="n">cs</span> <span class="o">=</span> <span class="n">core_servicer</span><span class="o">.</span><span class="n">CoreServicer</span><span class="p">(</span><span class="n">input_dir</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">,</span> <span class="n">timeout</span><span class="p">,</span> <span class="n">debug</span><span class="p">)</span>
+<div class="viewcode-block" id="serve"><a class="viewcode-back" href="../../../api/ta2.ta3.server.html#ta2.ta3.server.serve">[docs]</a><span class="k">def</span> <span class="nf">serve</span><span class="p">(</span><span class="n">port</span><span class="p">,</span> <span class="n">input_dir</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">,</span> <span class="n">static_dir</span><span class="p">,</span> <span class="n">timeout</span><span class="p">,</span> <span class="n">debug</span><span class="p">,</span> <span class="n">daemon</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="n">cs</span> <span class="o">=</span> <span class="n">core_servicer</span><span class="o">.</span><span class="n">CoreServicer</span><span class="p">(</span>
+        <span class="n">input_dir</span><span class="p">,</span>
+        <span class="n">output_dir</span><span class="p">,</span>
+        <span class="n">static_dir</span><span class="p">,</span>
+        <span class="n">timeout</span><span class="p">,</span>
+        <span class="n">debug</span>
+    <span class="p">)</span>
     <span class="n">server</span> <span class="o">=</span> <span class="n">grpc</span><span class="o">.</span><span class="n">server</span><span class="p">(</span><span class="n">futures</span><span class="o">.</span><span class="n">ThreadPoolExecutor</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="mi">10</span><span class="p">))</span>
 
     <span class="n">core_pb2_grpc</span><span class="o">.</span><span class="n">add_CoreServicer_to_server</span><span class="p">(</span><span class="n">cs</span><span class="p">,</span> <span class="n">server</span><span class="p">)</span>
@@ -259,6 +268,7 @@
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
     <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;TA3 API Server&#39;</span><span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--port&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">45042</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-s&#39;</span><span class="p">,</span> <span class="s1">&#39;--static&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-v&#39;</span><span class="p">,</span> <span class="s1">&#39;--verbose&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;count&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-d&#39;</span><span class="p">,</span> <span class="s1">&#39;--input&#39;</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;?&#39;</span><span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-o&#39;</span><span class="p">,</span> <span class="s1">&#39;--output&#39;</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;?&#39;</span><span class="p">)</span>
@@ -270,6 +280,8 @@
 
     <span class="n">input_dir</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">input</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;D3MINPUTDIR&#39;</span><span class="p">,</span> <span class="s1">&#39;input&#39;</span><span class="p">)</span>
     <span class="n">output_dir</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">output</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;D3MOUTPUTDIR&#39;</span><span class="p">,</span> <span class="s1">&#39;output&#39;</span><span class="p">)</span>
+    <span class="n">static_dir</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">static</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;D3MSTATICDIR&#39;</span><span class="p">,</span> <span class="s1">&#39;static&#39;</span><span class="p">)</span>
+
     <span class="n">timeout</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">timeout</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;D3MTIMEOUT&#39;</span><span class="p">,</span> <span class="mi">600</span><span class="p">)</span>
     <span class="n">debug</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">debug</span>
 
@@ -282,7 +294,7 @@
     <span class="n">logging_setup</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">verbose</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">logfile</span><span class="p">)</span>
     <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;d3m.metadata.pipeline_run&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span>
 
-    <span class="n">serve</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="p">,</span> <span class="n">input_dir</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">,</span> <span class="n">timeout</span><span class="p">,</span> <span class="n">debug</span><span class="p">)</span>
+    <span class="n">serve</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="p">,</span> <span class="n">input_dir</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">,</span> <span class="n">static_dir</span><span class="p">,</span> <span class="n">timeout</span><span class="p">,</span> <span class="n">debug</span><span class="p">)</span>
 </pre></div>
 
            </div>

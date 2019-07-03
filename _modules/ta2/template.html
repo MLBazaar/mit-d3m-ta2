@@ -87,7 +87,10 @@
 <li class="toctree-l1"><a class="reference internal" href="../../readme.html#install">Install</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../readme.html#requirements">Requirements</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../readme.html#install-the-latest-release">Install the latest release</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../readme.html#install-for-development">Install for Development</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../readme.html#install-for-development">Install for Development</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../readme.html#additional-dependencies">Additional Dependencies</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../readme.html#data-format">Data Format</a><ul>
@@ -383,7 +386,10 @@
                 <span class="n">data</span><span class="o">=</span><span class="n">data</span>
             <span class="p">)</span>
 
-        <span class="n">step</span><span class="o">.</span><span class="n">add_output</span><span class="p">(</span><span class="s1">&#39;produce&#39;</span><span class="p">)</span>
+        <span class="n">outputs</span> <span class="o">=</span> <span class="n">primitive_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;outputs&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;produce&#39;</span><span class="p">,))</span>
+        <span class="k">for</span> <span class="n">output</span> <span class="ow">in</span> <span class="n">outputs</span><span class="p">:</span>
+            <span class="n">step</span><span class="o">.</span><span class="n">add_output</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+
         <span class="n">pipeline</span><span class="o">.</span><span class="n">add_step</span><span class="p">(</span><span class="n">step</span><span class="p">)</span>
 
     <span class="n">data_reference</span> <span class="o">=</span> <span class="s1">&#39;steps.</span><span class="si">{}</span><span class="s1">.produce&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">steps</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>

@@ -89,7 +89,10 @@
 <li class="toctree-l1"><a class="reference internal" href="../readme.html#install">Install</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../readme.html#requirements">Requirements</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../readme.html#install-the-latest-release">Install the latest release</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../readme.html#install-for-development">Install for Development</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../readme.html#install-for-development">Install for Development</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../readme.html#additional-dependencies">Additional Dependencies</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../readme.html#data-format">Data Format</a><ul>
@@ -227,7 +230,7 @@
 <span id="ta2-search-module"></span><h1>ta2.search module<a class="headerlink" href="#module-ta2.search" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="ta2.search.PipelineSearcher">
-<em class="property">class </em><code class="sig-prename descclassname">ta2.search.</code><code class="sig-name descname">PipelineSearcher</code><span class="sig-paren">(</span><em class="sig-param">input_dir='input'</em>, <em class="sig-param">output_dir='output'</em>, <em class="sig-param">dump=False</em>, <em class="sig-param">hard_timeout=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ta2/search.html#PipelineSearcher"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ta2.search.PipelineSearcher" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">ta2.search.</code><code class="sig-name descname">PipelineSearcher</code><span class="sig-paren">(</span><em class="sig-param">input_dir='input'</em>, <em class="sig-param">output_dir='output'</em>, <em class="sig-param">static_dir='static'</em>, <em class="sig-param">dump=False</em>, <em class="sig-param">hard_timeout=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ta2/search.html#PipelineSearcher"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ta2.search.PipelineSearcher" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="method">
 <dt id="ta2.search.PipelineSearcher.check_stop">
@@ -262,6 +265,31 @@
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></p>
 <p>An enumeration.</p>
 <dl class="attribute">
+<dt id="ta2.search.Templates.GRAPH_COMMUNITY_DETECTION">
+<code class="sig-name descname">GRAPH_COMMUNITY_DETECTION</code><em class="property"> = 'graph_community_detection.yml'</em><a class="headerlink" href="#ta2.search.Templates.GRAPH_COMMUNITY_DETECTION" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="ta2.search.Templates.GRAPH_LINK_PREDICTION">
+<code class="sig-name descname">GRAPH_LINK_PREDICTION</code><em class="property"> = 'graph_link_prediction.yml'</em><a class="headerlink" href="#ta2.search.Templates.GRAPH_LINK_PREDICTION" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="ta2.search.Templates.GRAPH_MATCHING">
+<code class="sig-name descname">GRAPH_MATCHING</code><em class="property"> = 'graph_matching_jhu.yml'</em><a class="headerlink" href="#ta2.search.Templates.GRAPH_MATCHING" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="ta2.search.Templates.IMAGE_CLASSIFICATION">
+<code class="sig-name descname">IMAGE_CLASSIFICATION</code><em class="property"> = 'image_resnet50_xgb_classification.yml'</em><a class="headerlink" href="#ta2.search.Templates.IMAGE_CLASSIFICATION" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="ta2.search.Templates.IMAGE_REGRESSION">
+<code class="sig-name descname">IMAGE_REGRESSION</code><em class="property"> = 'image_resnet50_xgb_regression.yml'</em><a class="headerlink" href="#ta2.search.Templates.IMAGE_REGRESSION" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
 <dt id="ta2.search.Templates.MULTI_TABLE_CLASSIFICATION">
 <code class="sig-name descname">MULTI_TABLE_CLASSIFICATION</code><em class="property"> = 'multi_table_dfs_xgb_classification.yml'</em><a class="headerlink" href="#ta2.search.Templates.MULTI_TABLE_CLASSIFICATION" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -273,7 +301,7 @@
 
 <dl class="attribute">
 <dt id="ta2.search.Templates.SINGLE_TABLE_CLASSIFICATION">
-<code class="sig-name descname">SINGLE_TABLE_CLASSIFICATION</code><em class="property"> = 'xgb_classification.hp.yml'</em><a class="headerlink" href="#ta2.search.Templates.SINGLE_TABLE_CLASSIFICATION" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">SINGLE_TABLE_CLASSIFICATION</code><em class="property"> = 'encoding_xgb_classification.hp.yml'</em><a class="headerlink" href="#ta2.search.Templates.SINGLE_TABLE_CLASSIFICATION" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -282,8 +310,18 @@
 <dd></dd></dl>
 
 <dl class="attribute">
-<dt id="ta2.search.Templates.TIMESERIES_CLASSIFICATION">
-<code class="sig-name descname">TIMESERIES_CLASSIFICATION</code><em class="property"> = 'time_series_k_neighbors.yml'</em><a class="headerlink" href="#ta2.search.Templates.TIMESERIES_CLASSIFICATION" title="Permalink to this definition">¶</a></dt>
+<dt id="ta2.search.Templates.TEXT_CLASSIFICATION">
+<code class="sig-name descname">TEXT_CLASSIFICATION</code><em class="property"> = 'text_xgb_classification.hp.yml'</em><a class="headerlink" href="#ta2.search.Templates.TEXT_CLASSIFICATION" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="ta2.search.Templates.TEXT_REGRESSION">
+<code class="sig-name descname">TEXT_REGRESSION</code><em class="property"> = 'text_xgb_regression.hp.yml'</em><a class="headerlink" href="#ta2.search.Templates.TEXT_REGRESSION" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="ta2.search.Templates.TIMESERIES">
+<code class="sig-name descname">TIMESERIES</code><em class="property"> = 'time_series_k_neighbors.yml'</em><a class="headerlink" href="#ta2.search.Templates.TIMESERIES" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -291,11 +329,6 @@
 <dl class="function">
 <dt id="ta2.search.detect_data_modality">
 <code class="sig-prename descclassname">ta2.search.</code><code class="sig-name descname">detect_data_modality</code><span class="sig-paren">(</span><em class="sig-param">dataset_doc_path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ta2/search.html#detect_data_modality"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ta2.search.detect_data_modality" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="ta2.search.detect_data_modality_old">
-<code class="sig-prename descclassname">ta2.search.</code><code class="sig-name descname">detect_data_modality_old</code><span class="sig-paren">(</span><em class="sig-param">dataset</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ta2/search.html#detect_data_modality_old"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ta2.search.detect_data_modality_old" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
