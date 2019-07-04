@@ -1,9 +1,7 @@
 steps:
-- primitive: d3m.primitives.data_transformation.denormalize.Common
 - primitive: d3m.primitives.data_transformation.dataset_to_dataframe.Common
 - primitive: d3m.primitives.data_transformation.column_parser.DataFrameCommon
 - primitive: d3m.primitives.data_transformation.extract_columns_by_semantic_types.DataFrameCommon
-- primitive: d3m.primitives.feature_construction.deep_feature_synthesis.SingleTableFeaturization
 - primitive: d3m.primitives.data_cleaning.imputer.SKlearn
 - primitive: d3m.primitives.data_transformation.extract_columns_by_semantic_types.DataFrameCommon
   arguments:
@@ -13,43 +11,36 @@ steps:
     semantic_types:
       data:
       - https://metadata.datadrivendiscovery.org/types/TrueTarget
-- primitive: d3m.primitives.regression.xgboost_gbtree.DataFrameCommon
+- primitive: d3m.primitives.semisupervised_classification.iterative_labeling.AutonBox
   arguments:
     inputs:
-      data: steps.5.produce
+      data: steps.3.produce
     outputs:
-      data: steps.6.produce
-  hyperparams:
-    n_jobs:
-      data: -1
+      data: steps.4.produce
 - primitive: d3m.primitives.data_transformation.construct_predictions.DataFrameCommon
   arguments:
     reference:
-      data: steps.2.produce
+      data: steps.1.produce
 tunable_hyperparameters:
-  '5':
+  '3':
     strategy:
       default: mean
-      range: [median, most_frequent, mean]
+      range:
+      - median
+      - most_frequent
+      - mean
+      - constant
       type: string
-  '7':
-    n_estimators:
-      default: 100
-      range: [10, 1000]
-      type: int
-    learning_rate:
-      default: 0.1
-      range: [0.0001, 1]
+  '5':
+    frac:
+      default: 0.2
+      range:
+      - 0.01
+      - 0.9999
       type: float
-    max_depth:
-      default: 3
-      range: [3, 20]
-      type: int
-    gamma:
-      default: 0
-      range: [0, 1]
-      type: float
-    min_child_weight:
-      default: 1
-      range: [1, 10]
+    iters:
+      default: 5
+      range:
+      - 1
+      - 99
       type: int

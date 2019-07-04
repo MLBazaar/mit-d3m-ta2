@@ -1,9 +1,9 @@
 steps:
-    - primitive: d3m.primitives.data_transformation.denormalize.Common
-    - primitive: d3m.primitives.time_series_classification.k_neighbors.Kanine
-      arguments:
-        outputs:
-          data: steps.0.produce
+- primitive: d3m.primitives.data_transformation.denormalize.Common
+- primitive: d3m.primitives.time_series_classification.k_neighbors.Kanine
+  arguments:
+    outputs:
+      data: steps.0.produce
 tunable_hyperparameters:
   '1':
     n_neighbors:

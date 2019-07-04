@@ -5,7 +5,7 @@ steps:
   hyperparams:
     semantic_types:
       data:
-        - https://metadata.datadrivendiscovery.org/types/TrueTarget
+      - https://metadata.datadrivendiscovery.org/types/TrueTarget
 - primitive: d3m.primitives.natural_language_processing.lda.Fastlvm
   arguments:
     inputs:
