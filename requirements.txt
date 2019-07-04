@@ -8,3 +8,4 @@
 -e git+https://github.com/usc-isi-i2/dsbox-primitives@5da8179cd96d3b0a64c970f1ee43f2960667fa8b#egg=dsbox-primitives
 -e git+https://github.com/uncharted-distil/distil-primitives.git@21b0a71a8585ce7b894ce241296d51c763f2078d#egg=distil-primitives
 -e git+https://github.com/neurodata/primitives-interfaces.git@a859043f43001a6be4ed6a93a45ca6916f059236#egg=jhu_primitives
+-e git+https://github.com/autonlab/autonbox.git@262f384d5f3167083f157f03eefdbf049aeaf94b#egg=autonbox

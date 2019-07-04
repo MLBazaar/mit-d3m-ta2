@@ -1,0 +1,47 @@
+steps:
+    - primitive: d3m.primitives.data_transformation.dataset_to_dataframe.Common
+    - primitive: d3m.primitives.data_transformation.column_parser.DataFrameCommon
+    - primitive: d3m.primitives.data_transformation.extract_columns_by_semantic_types.DataFrameCommon
+    - primitive: d3m.primitives.data_cleaning.imputer.SKlearn
+    - primitive: d3m.primitives.data_transformation.extract_columns_by_semantic_types.DataFrameCommon
+      arguments:
+          inputs:
+              data: steps.1.produce
+      hyperparams:
+          semantic_types:
+              data:
+                 - https://metadata.datadrivendiscovery.org/types/TrueTarget
+    - primitive: d3m.primitives.semisupervised_classification.iterative_labeling.AutonBox
+      arguments:
+          inputs:
+              data: steps.3.produce
+          outputs:
+              data: steps.4.produce
+    - primitive: d3m.primitives.data_transformation.construct_predictions.DataFrameCommon
+      arguments:
+          reference:
+              data: steps.1.produce
+tunable_hyperparameters:
+    '3':
+        strategy:
+            default: mean
+            range:
+                - median
+                - most_frequent
+                - mean
+                - constant
+            type: string
+    '5':
+        frac:
+            default: 0.2
+            range:
+                - 0.01
+                - 0.9999
+            type: float
+        iters:
+            default: 5
+            range:
+                - 1
+                - 99
+            type: int
+
