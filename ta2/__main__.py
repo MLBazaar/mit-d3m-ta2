@@ -3,6 +3,7 @@ import gc
 import logging
 import os
 import shutil
+import socket
 import sys
 import traceback
 from datetime import datetime
@@ -154,7 +155,7 @@ REPORT_COLUMNS = [
     'tuning_iterations',
     'data_modality',
     'task_type',
-    'error'
+    'error',
 ]
 
 
@@ -202,6 +203,7 @@ def _ta2_test(args):
             results,
             columns=REPORT_COLUMNS
         ).sort_values('dataset')
+        report['host'] = socket.gethostname()
 
         report.to_csv(report_name, index=False)
 
@@ -211,7 +213,7 @@ def _ta2_test(args):
 
     # print to stdout
     print(tabulate.tabulate(
-        report,
+        report[REPORT_COLUMNS],
         showindex=False,
         tablefmt='github',
         headers=REPORT_COLUMNS
