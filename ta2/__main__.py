@@ -177,14 +177,10 @@ def _ta2_test(args):
     if args.report:
         report_name = args.report
     else:
-        report_name = [os.path.join(args.output, 'results')]
-        if args.budget:
-            report_name.append('_b{}'.format(args.budget))
-        if args.timeout:
-            report_name.append('_t{}'.format(args.timeout))
+        report_name = os.path.join(args.output, 'results.csv')
 
-        report_name.append('.csv')
-        report_name = ''.join(report_name)
+    if os.path.exists(report_name):
+        os.remove(report_name)
 
     report = None
     for dataset_name, dataset_root, problem in get_datasets(args):
