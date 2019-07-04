@@ -1,17 +1,17 @@
 steps:
-    - primitive: d3m.primitives.data_transformation.denormalize.Common
-    - primitive: d3m.primitives.clustering.k_means.Sloth
-      arguments:
-        outputs:
-          data: steps.0.produce
-    - primitive: d3m.primitives.data_transformation.column_parser.DataFrameCommon
-    - primitive: d3m.primitives.classification.xgboost_gbtree.DataFrameCommon
-      arguments:
-        outputs:
-          data: steps.1.produce
-    - primitive: d3m.primitives.data_transformation.construct_predictions.DataFrameCommon
-      arguments:
-          reference:
-            type: CONTAINER
-            data: steps.1.produce
+- primitive: d3m.primitives.data_transformation.denormalize.Common
+- primitive: d3m.primitives.clustering.k_means.Sloth
+  arguments:
+    outputs:
+      data: steps.0.produce
+- primitive: d3m.primitives.data_transformation.column_parser.DataFrameCommon
+- primitive: d3m.primitives.classification.xgboost_gbtree.DataFrameCommon
+  arguments:
+    outputs:
+      data: steps.1.produce
+- primitive: d3m.primitives.data_transformation.construct_predictions.DataFrameCommon
+  arguments:
+      reference:
+        type: CONTAINER
+        data: steps.1.produce
 

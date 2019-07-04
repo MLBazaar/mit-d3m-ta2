@@ -49,6 +49,7 @@ class Templates(Enum):
     GRAPH_COMMUNITY_DETECTION = 'graph_community_detection.yml'
     GRAPH_LINK_PREDICTION = 'graph_link_prediction.yml'
     GRAPH_MATCHING = 'graph_matching_jhu.yml'
+    SINGLE_TABLE_SEMISUPERVISED_CLASSIFICATION = 'single_table_semisupervised_classification.yml'
 
 
 def detect_data_modality(dataset_doc_path):
@@ -154,6 +155,8 @@ class PipelineSearcher:
                 template = Templates.SINGLE_TABLE_REGRESSION
             elif task_type == TaskType.TIME_SERIES_FORECASTING.name.lower():
                 template = Templates.SINGLE_TABLE_REGRESSION
+            elif task_type == TaskType.SEMISUPERVISED_CLASSIFICATION.name.lower():
+                template = Templates.SINGLE_TABLE_SEMISUPERVISED_CLASSIFICATION
         if data_modality == 'multi_table':
             if task_type == TaskType.CLASSIFICATION.name.lower():
                 template = Templates.MULTI_TABLE_CLASSIFICATION

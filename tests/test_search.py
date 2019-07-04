@@ -163,6 +163,9 @@ def test_pipelinesearcher_get_template():
     # regression
     instance._get_template('single_table', 'regression')
 
+    # semisupervised classification
+    instance._get_template('single_table', 'semisupervised_classification')
+
 
 @patch('ta2.search.evaluate')
 def test_pipelinesearcher_score_pipeline(evaluate_mock):

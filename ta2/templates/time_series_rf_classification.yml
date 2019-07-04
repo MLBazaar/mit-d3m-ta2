@@ -1,11 +1,11 @@
 steps:
-    - primitive: d3m.primitives.data_transformation.denormalize.Common
-    - primitive: d3m.primitives.data_transformation.dataset_to_dataframe.Common
-    - primitive: d3m.primitives.data_transformation.extract_columns_by_semantic_types.DataFrameCommon
-    - primitive: d3m.primitives.data_transformation.to_numeric.DSBOX
-    - primitive: d3m.primitives.data_preprocessing.time_series_to_list.DSBOX
-    - primitive: d3m.primitives.feature_extraction.random_projection_timeseries_featurization.DSBOX
-    - primitive: d3m.primitives.classification.random_forest.SKlearn
-      arguments:
-          outputs:
-              data: steps.1.produce
+- primitive: d3m.primitives.data_transformation.denormalize.Common
+- primitive: d3m.primitives.data_transformation.dataset_to_dataframe.Common
+- primitive: d3m.primitives.data_transformation.extract_columns_by_semantic_types.DataFrameCommon
+- primitive: d3m.primitives.data_transformation.to_numeric.DSBOX
+- primitive: d3m.primitives.data_preprocessing.time_series_to_list.DSBOX
+- primitive: d3m.primitives.feature_extraction.random_projection_timeseries_featurization.DSBOX
+- primitive: d3m.primitives.classification.random_forest.SKlearn
+  arguments:
+    outputs:
+      data: steps.1.produce

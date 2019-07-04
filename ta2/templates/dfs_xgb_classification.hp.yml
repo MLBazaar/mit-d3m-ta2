@@ -1,25 +1,25 @@
 steps:
-  - primitive: d3m.primitives.data_transformation.denormalize.Common
-  - primitive: d3m.primitives.data_transformation.dataset_to_dataframe.Common
-  - primitive: d3m.primitives.data_transformation.column_parser.DataFrameCommon
-  - primitive: d3m.primitives.data_transformation.extract_columns_by_semantic_types.DataFrameCommon
-  - primitive: d3m.primitives.feature_construction.deep_feature_synthesis.SingleTableFeaturization
-  - primitive: d3m.primitives.data_cleaning.imputer.SKlearn
-  - primitive: d3m.primitives.classification.xgboost_gbtree.DataFrameCommon
-    arguments:
-      outputs:
-        data: steps.1.produce
-    hyperparams:
-      n_jobs:
-        data: -1
-      return_result:
-        data: new
-      add_index_columns:
-        data: true
-  - primitive: d3m.primitives.data_transformation.construct_predictions.DataFrameCommon
-    arguments:
-      reference:
-        data: steps.2.produce
+- primitive: d3m.primitives.data_transformation.denormalize.Common
+- primitive: d3m.primitives.data_transformation.dataset_to_dataframe.Common
+- primitive: d3m.primitives.data_transformation.column_parser.DataFrameCommon
+- primitive: d3m.primitives.data_transformation.extract_columns_by_semantic_types.DataFrameCommon
+- primitive: d3m.primitives.feature_construction.deep_feature_synthesis.SingleTableFeaturization
+- primitive: d3m.primitives.data_cleaning.imputer.SKlearn
+- primitive: d3m.primitives.classification.xgboost_gbtree.DataFrameCommon
+  arguments:
+    outputs:
+      data: steps.1.produce
+  hyperparams:
+    n_jobs:
+      data: -1
+    return_result:
+      data: new
+    add_index_columns:
+      data: true
+- primitive: d3m.primitives.data_transformation.construct_predictions.DataFrameCommon
+  arguments:
+    reference:
+      data: steps.2.produce
 tunable_hyperparameters:
   '5':
     strategy:
