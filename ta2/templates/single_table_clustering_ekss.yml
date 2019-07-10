@@ -1,0 +1,25 @@
+steps:
+- primitive: d3m.primitives.data_transformation.denormalize.Common
+- primitive: d3m.primitives.data_transformation.dataset_to_dataframe.Common
+- primitive: d3m.primitives.data_transformation.column_parser.DataFrameCommon
+- primitive: d3m.primitives.data_transformation.extract_columns_by_semantic_types.DataFrameCommon
+- primitive: d3m.primitives.data_transformation.dataframe_to_ndarray.Common
+- primitive: d3m.primitives.clustering.ekss.Umich
+  hyperparams:
+    n_clusters:
+      data: 200
+- primitive: d3m.primitives.data_transformation.ndarray_to_dataframe.Common
+- primitive: d3m.primitives.data_transformation.construct_predictions.DataFrameCommon
+  arguments:
+    reference:
+      data: steps.1.produce
+tunable_hyperparameters:
+  '5':
+    dim_subspaces:
+      default: 2
+      range: [1, 49]
+      type: int
+    n_base:
+      default: 100
+      range: [10, 999]
+      type: int

@@ -50,7 +50,7 @@ class Templates(Enum):
     GRAPH_LINK_PREDICTION = 'graph_link_prediction.yml'
     GRAPH_MATCHING = 'graph_matching_jhu.yml'
     SINGLE_TABLE_SEMISUPERVISED_CLASSIFICATION = 'single_table_semisupervised_classification.yml'
-    CLUSTERING = 'single_table_clustering.yml'
+    CLUSTERING = 'single_table_clustering_ekss.yml'
 
 
 def detect_data_modality(dataset_doc_path):
