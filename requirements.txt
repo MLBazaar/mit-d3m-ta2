@@ -9,3 +9,4 @@
 -e git+https://github.com/uncharted-distil/distil-primitives.git@21b0a71a8585ce7b894ce241296d51c763f2078d#egg=distil-primitives
 -e git+https://github.com/neurodata/primitives-interfaces.git@a859043f43001a6be4ed6a93a45ca6916f059236#egg=jhu_primitives
 -e git+https://github.com/autonlab/autonbox.git@262f384d5f3167083f157f03eefdbf049aeaf94b#egg=autonbox
+-e git+https://github.com/dvdmjohnson/d3m_michigan_primitives.git@aa14dd2ad88b7d580779f42eec8a7d0a9632f4c4#egg=spider
