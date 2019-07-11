@@ -286,7 +286,7 @@ def _server(args):
         # FIXME This is just to be sure that it does not crash
         timeout = 600
 
-    serve(args.port, input_dir, output_dir, timeout, args.debug)
+    serve(args.port, input_dir, output_dir, args.static, timeout, args.debug)
 
 
 def parse_args():
