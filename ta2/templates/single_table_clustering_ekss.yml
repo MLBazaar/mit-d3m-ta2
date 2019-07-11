@@ -1,5 +1,4 @@
 steps:
-- primitive: d3m.primitives.data_transformation.denormalize.Common
 - primitive: d3m.primitives.data_transformation.dataset_to_dataframe.Common
 - primitive: d3m.primitives.data_transformation.column_parser.DataFrameCommon
 - primitive: d3m.primitives.data_transformation.extract_columns_by_semantic_types.DataFrameCommon
@@ -12,14 +11,14 @@ steps:
 - primitive: d3m.primitives.data_transformation.construct_predictions.DataFrameCommon
   arguments:
     reference:
-      data: steps.1.produce
+      data: steps.0.produce
 tunable_hyperparameters:
-  '5':
+  '4':
     dim_subspaces:
       default: 2
       range: [1, 49]
       type: int
     n_base:
-      default: 100
-      range: [10, 999]
+      default: 200
+      range: [200, 999]
       type: int
