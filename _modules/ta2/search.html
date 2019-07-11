@@ -265,6 +265,7 @@
     <span class="n">TIMESERIES</span> <span class="o">=</span> <span class="s1">&#39;time_series_k_neighbors.yml&#39;</span>
     <span class="n">IMAGE_REGRESSION</span> <span class="o">=</span> <span class="s1">&#39;image_resnet50_xgb_regression.yml&#39;</span>
     <span class="n">IMAGE_CLASSIFICATION</span> <span class="o">=</span> <span class="s1">&#39;image_resnet50_xgb_classification.yml&#39;</span>
+    <span class="n">IMAGE_OBJECT_DETECTION</span> <span class="o">=</span> <span class="s1">&#39;image_object_detection_classification_dsbox.yml&#39;</span>
     <span class="n">TEXT_CLASSIFICATION</span> <span class="o">=</span> <span class="s1">&#39;text_xgb_classification.hp.yml&#39;</span>
     <span class="n">TEXT_REGRESSION</span> <span class="o">=</span> <span class="s1">&#39;text_xgb_regression.hp.yml&#39;</span>
     <span class="n">GRAPH_COMMUNITY_DETECTION</span> <span class="o">=</span> <span class="s1">&#39;graph_community_detection.yml&#39;</span>
@@ -399,6 +400,8 @@
                 <span class="n">template</span> <span class="o">=</span> <span class="n">Templates</span><span class="o">.</span><span class="n">IMAGE_CLASSIFICATION</span>
             <span class="k">elif</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskType</span><span class="o">.</span><span class="n">REGRESSION</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
                 <span class="n">template</span> <span class="o">=</span> <span class="n">Templates</span><span class="o">.</span><span class="n">IMAGE_REGRESSION</span>
+            <span class="k">elif</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskType</span><span class="o">.</span><span class="n">OBJECT_DETECTION</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+                <span class="n">template</span> <span class="o">=</span> <span class="n">Templates</span><span class="o">.</span><span class="n">IMAGE_OBJECT_DETECTION</span>
         <span class="k">if</span> <span class="n">data_modality</span> <span class="o">==</span> <span class="s1">&#39;graph&#39;</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskType</span><span class="o">.</span><span class="n">COMMUNITY_DETECTION</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
                 <span class="n">template</span> <span class="o">=</span> <span class="n">Templates</span><span class="o">.</span><span class="n">GRAPH_COMMUNITY_DETECTION</span>
