@@ -43,7 +43,7 @@ spec:
         memory: 56Gi
         cpu: 8
   - name: ta3-dummy
-    image: registry.gitlab.com/datadrivendiscovery/dummy-ta3/dummy-ta3:2019.6.11
+    image: registry.gitlab.com/datadrivendiscovery/dummy-ta3/dummy-ta3:2019.7.9
     imagePullPolicy: Always
     command: [ "/bin/bash", "/TA3/run.sh", "--host-address", "localhost" ]
     env:
