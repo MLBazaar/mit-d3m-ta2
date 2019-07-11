@@ -166,6 +166,9 @@ def test_pipelinesearcher_get_template():
     # semisupervised classification
     instance._get_template('single_table', 'semisupervised_classification')
 
+    # object detection
+    instance._get_template('image', 'object_detection')
+
 
 @patch('ta2.search.evaluate')
 def test_pipelinesearcher_score_pipeline(evaluate_mock):
