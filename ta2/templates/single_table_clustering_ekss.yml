@@ -15,7 +15,7 @@ steps:
 tunable_hyperparameters:
   '4':
     dim_subspaces:
-      default: 2
+      default: 44
       range: [1, 49]
       type: int
     n_base:
