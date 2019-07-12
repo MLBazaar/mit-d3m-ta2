@@ -19,6 +19,10 @@ tunable_hyperparameters:
       range: [1, 49]
       type: int
     n_base:
-      default: 200
-      range: [200, 999]
+      default: 179
+      range: [100, 999]
+      type: int
+    thresh:
+      default: 26
+      range: [4, 9999]
       type: int
