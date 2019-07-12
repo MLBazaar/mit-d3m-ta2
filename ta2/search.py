@@ -35,22 +35,22 @@ warnings.filterwarnings("ignore", category=DeprecationWarning)
 class Templates(Enum):
     # SINGLE_TABLE_CLASSIFICATION = 'gradient_boosting_classification.hp.yml'
     # SINGLE_TABLE_CLASSIFICATION = 'xgb_classification.hp.yml'
-    SINGLE_TABLE_CLASSIFICATION = 'encoding_xgb_classification.hp.yml'
+    SINGLE_TABLE_CLASSIFICATION = 'single_table_classification_encoding_xgb.yml'
     # SINGLE_TABLE_REGRESSION = 'gradient_boosting_regression.hp.yml'
-    SINGLE_TABLE_REGRESSION = 'xgb_regression.hp.yml'
-    MULTI_TABLE_CLASSIFICATION = 'multi_table_dfs_xgb_classification.yml'
-    MULTI_TABLE_REGRESSION = 'multi_table_dfs_xgb_regression.yml'
+    SINGLE_TABLE_REGRESSION = 'single_table_regression_xgb.yml'
+    MULTI_TABLE_CLASSIFICATION = 'multi_table_classification_dfs_xgb.yml'
+    MULTI_TABLE_REGRESSION = 'multi_table_regression_dfs_xgb.yml'
     # TIMESERIES_CLASSIFICATION = 'time_series_xgb_classification.yml'
-    TIMESERIES = 'time_series_k_neighbors.yml'
-    IMAGE_REGRESSION = 'image_resnet50_xgb_regression.yml'
-    IMAGE_CLASSIFICATION = 'image_resnet50_xgb_classification.yml'
-    IMAGE_OBJECT_DETECTION = 'image_object_detection_classification_dsbox.yml'
-    TEXT_CLASSIFICATION = 'text_xgb_classification.hp.yml'
-    TEXT_REGRESSION = 'text_xgb_regression.hp.yml'
+    TIMESERIES = 'time_series_classification_k_neighbors_kn.yml'
+    IMAGE_REGRESSION = 'image_regression_resnet50_xgb.yml'
+    IMAGE_CLASSIFICATION = 'image_classification_resnet50_xgb.yml'
+    IMAGE_OBJECT_DETECTION = 'image_object_detection_yolo.yml'
+    TEXT_CLASSIFICATION = 'text_classification_encoding_xgb.yml'
+    TEXT_REGRESSION = 'text_regression_encoding_xgb.yml'
     GRAPH_COMMUNITY_DETECTION = 'graph_community_detection.yml'
-    GRAPH_LINK_PREDICTION = 'graph_link_prediction.yml'
+    GRAPH_LINK_PREDICTION = 'graph_link_prediction_distil.yml'
     GRAPH_MATCHING = 'graph_matching_jhu.yml'
-    SINGLE_TABLE_SEMISUPERVISED_CLASSIFICATION = 'single_table_semisupervised_classification.yml'
+    SINGLE_TABLE_SEMI_CLASSIFICATION = 'single_table_semi_classification_autonbox.yml'
 
 
 def detect_data_modality(dataset_doc_path):
@@ -157,7 +157,7 @@ class PipelineSearcher:
             elif task_type == TaskType.TIME_SERIES_FORECASTING.name.lower():
                 template = Templates.SINGLE_TABLE_REGRESSION
             elif task_type == TaskType.SEMISUPERVISED_CLASSIFICATION.name.lower():
-                template = Templates.SINGLE_TABLE_SEMISUPERVISED_CLASSIFICATION
+                template = Templates.SINGLE_TABLE_SEMI_CLASSIFICATION
         if data_modality == 'multi_table':
             if task_type == TaskType.CLASSIFICATION.name.lower():
                 template = Templates.MULTI_TABLE_CLASSIFICATION
