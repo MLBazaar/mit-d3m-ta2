@@ -44,6 +44,7 @@ class Templates(Enum):
     TIMESERIES = 'time_series_k_neighbors.yml'
     IMAGE_REGRESSION = 'image_resnet50_xgb_regression.yml'
     IMAGE_CLASSIFICATION = 'image_resnet50_xgb_classification.yml'
+    IMAGE_OBJECT_DETECTION = 'image_object_detection_classification_dsbox.yml'
     TEXT_CLASSIFICATION = 'text_xgb_classification.hp.yml'
     TEXT_REGRESSION = 'text_xgb_regression.hp.yml'
     GRAPH_COMMUNITY_DETECTION = 'graph_community_detection.yml'
@@ -181,6 +182,8 @@ class PipelineSearcher:
                 template = Templates.IMAGE_CLASSIFICATION
             elif task_type == TaskType.REGRESSION.name.lower():
                 template = Templates.IMAGE_REGRESSION
+            elif task_type == TaskType.OBJECT_DETECTION.name.lower():
+                template = Templates.IMAGE_OBJECT_DETECTION
         if data_modality == 'graph':
             if task_type == TaskType.COMMUNITY_DETECTION.name.lower():
                 template = Templates.GRAPH_COMMUNITY_DETECTION

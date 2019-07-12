@@ -1,0 +1,23 @@
+steps:
+- primitive: d3m.primitives.data_transformation.denormalize.Common
+- primitive: d3m.primitives.data_transformation.dataset_to_dataframe.Common
+- primitive: d3m.primitives.data_transformation.extract_columns_by_semantic_types.DataFrameCommon
+  hyperparams:
+    semantic_types:
+      data:
+        - https://metadata.datadrivendiscovery.org/types/PrimaryMultiKey
+        - https://metadata.datadrivendiscovery.org/types/FileName
+- primitive: d3m.primitives.data_transformation.extract_columns_by_semantic_types.DataFrameCommon
+  arguments:
+    inputs:
+      data: steps.1.produce
+  hyperparams:
+    semantic_types:
+      data:
+        - https://metadata.datadrivendiscovery.org/types/TrueTarget
+- primitive: d3m.primitives.feature_extraction.yolo.DSBOX
+  arguments:
+    inputs:
+      data: steps.2.produce
+    outputs:
+      data: steps.3.produce

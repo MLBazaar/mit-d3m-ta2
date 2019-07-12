@@ -168,6 +168,8 @@ def test_pipelinesearcher_get_template():
 
     # single table clustering
     instance._get_template('single_table', 'clustering')
+    # object detection
+    instance._get_template('image', 'object_detection')
 
 
 @patch('ta2.search.evaluate')
