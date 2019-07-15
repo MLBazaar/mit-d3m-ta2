@@ -7,6 +7,7 @@ from collections import defaultdict
 
 import yaml
 from btb.hyper_parameter import HyperParameter
+from btb.tuning import GP
 from d3m import index
 from d3m.metadata.base import ArgumentType
 from d3m.metadata.hyperparams import Union
@@ -181,8 +182,9 @@ def load_template(template_name):
         LOGGER.info('Extracting tunables from pipeline')
         tunables, defaults = extract_pipeline_tunables(pipeline)
 
+    tuner = GP(tunables)
     print("Pipeline {} loaded".format(pipeline.id))
-    return pipeline, tunables, defaults
+    return pipeline, tuner, defaults
 
 
 def add_tunable_hyperparameters(input_path, output_path):

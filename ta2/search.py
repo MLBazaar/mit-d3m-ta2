@@ -11,7 +11,6 @@ from datetime import datetime, timedelta
 from enum import Enum
 
 import numpy as np
-from btb.tuning import GP
 from d3m.container.dataset import Dataset
 from d3m.metadata.base import ArgumentType, Context
 from d3m.metadata.pipeline import Pipeline, PrimitiveStep
@@ -33,25 +32,46 @@ warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 
 class Templates(Enum):
-    # SINGLE_TABLE_CLASSIFICATION = 'gradient_boosting_classification.hp.yml'
-    # SINGLE_TABLE_CLASSIFICATION = 'xgb_classification.hp.yml'
-    SINGLE_TABLE_CLASSIFICATION = 'single_table_classification_encoding_xgb.yml'
-    # SINGLE_TABLE_REGRESSION = 'gradient_boosting_regression.hp.yml'
-    SINGLE_TABLE_REGRESSION = 'single_table_regression_xgb.yml'
+    # SINGLE TABLE CLASSIFICATION
+    SINGLE_TABLE_CLASSIFICATION_ENC_XGB = 'single_table_classification_encoding_xgb.yml'
+    SINGLE_TABLE_CLASSIFICATION_AR_RF = 'single_table_classification_autorpi_rf.yml'
+    SINGLE_TABLE_CLASSIFICATION_DFS_ROBUST_XGB = 'single_table_classification_dfs_robust_xgb.yml'
+    SINGLE_TABLE_CLASSIFICATION_DFS_XGB = 'single_table_classification_dfs_xgb.yml'
+    SINGLE_TABLE_CLASSIFICATION_GB = 'single_table_classification_gradient_boosting.yml'
+
+    # SINGLE TABLE REGRESSION
+    SINGLE_TABLE_REGRESSION_DFS_XGB = 'single_table_regression_dfs_xgb.yml'
+    SINGLE_TABLE_REGRESSION_XGB = 'single_table_regression_xgb.yml'
+    SINGLE_TABLE_REGRESSION_GB = 'single_table_regression_gradient_boosting.yml'
+
+    # MULTI TABLE
     MULTI_TABLE_CLASSIFICATION = 'multi_table_classification_dfs_xgb.yml'
     MULTI_TABLE_REGRESSION = 'multi_table_regression_dfs_xgb.yml'
-    # TIMESERIES_CLASSIFICATION = 'time_series_xgb_classification.yml'
-    TIMESERIES = 'time_series_classification_k_neighbors_kn.yml'
+
+    # TIMESERIES CLASSIFICATION
+    TIMESERIES_CLASSIFICATION_KN = 'time_series_classification_k_neighbors_kn.yml'
+    TIMESERIES_CLASSIFICATION_RF = 'time_series_classification_rf.yml'
+    TIMESERIES_CLASSIFICATION_XGB = 'time_series_classification_xgb.yml'
+
+    # IMAGE
     IMAGE_REGRESSION = 'image_regression_resnet50_xgb.yml'
     IMAGE_CLASSIFICATION = 'image_classification_resnet50_xgb.yml'
     IMAGE_OBJECT_DETECTION = 'image_object_detection_yolo.yml'
+
+    # TEXT
     TEXT_CLASSIFICATION = 'text_classification_encoding_xgb.yml'
     TEXT_REGRESSION = 'text_regression_encoding_xgb.yml'
+
+    # GRAPH
     GRAPH_COMMUNITY_DETECTION = 'graph_community_detection.yml'
+    GRAPH_COMMUNITY_DETECTION_DISTIL = 'graph_community_detection_distil.yml'
     GRAPH_LINK_PREDICTION = 'graph_link_prediction_distil.yml'
-    GRAPH_MATCHING = 'graph_matching_jhu.yml'
-    SINGLE_TABLE_SEMISUPERVISED_CLASSIFICATION = 'single_table_semisupervised_classification.yml'
-    CLUSTERING = 'single_table_clustering_ekss.yml'
+    GRAPH_MATCHING = 'graph_matching.yml'
+    GRAPH_MATCHING_JHU = 'graph_matching_jhu.yml'
+
+    # MISC
+    SINGLE_TABLE_SEMI_CLASSIFICATION = 'single_table_semi_classification_autonbox.yml'
+    SINGLE_TABLE_CLUSTERING = 'single_table_clustering_ekss.yml'
 
 
 def detect_data_modality(dataset_doc_path):
@@ -143,62 +163,79 @@ class PipelineSearcher:
         with open(path, 'r') as pipeline_file:
             return loader(string_or_file=pipeline_file)
 
-    def _get_template(self, data_modality, task_type):
+    def _get_templates(self, data_modality, task_type):
         LOGGER.info("Loading template for data modality %s and task type %s",
                     data_modality, task_type)
 
-        template = None
+        templates = [Templates.SINGLE_TABLE_CLASSIFICATION_ENCODING]
+
         if data_modality == 'single_table':
             if task_type == TaskType.CLASSIFICATION.name.lower():
-                template = Templates.SINGLE_TABLE_CLASSIFICATION
+                templates = [
+                    Templates.SINGLE_TABLE_CLASSIFICATION_ENC_XGB,
+                    Templates.SINGLE_TABLE_CLASSIFICATION_AR_RF,
+                    Templates.SINGLE_TABLE_CLASSIFICATION_DFS_ROBUST_XGB,
+                    Templates.SINGLE_TABLE_CLASSIFICATION_GB,
+                ]
             elif task_type == TaskType.REGRESSION.name.lower():
-                template = Templates.SINGLE_TABLE_REGRESSION
+                templates = [
+                    Templates.SINGLE_TABLE_REGRESSION_DFS_XGB,
+                    Templates.SINGLE_TABLE_REGRESSION_XGB,
+                    Templates.SINGLE_TABLE_REGRESSION_GB
+                ]
             elif task_type == TaskType.COLLABORATIVE_FILTERING.name.lower():
-                template = Templates.SINGLE_TABLE_REGRESSION
+                templates = [
+                    Templates.SINGLE_TABLE_REGRESSION_DFS_XGB,
+                    Templates.SINGLE_TABLE_REGRESSION_XGB,
+                    Templates.SINGLE_TABLE_REGRESSION_GB
+                ]
             elif task_type == TaskType.TIME_SERIES_FORECASTING.name.lower():
-                template = Templates.SINGLE_TABLE_REGRESSION
+                templates = [
+                    Templates.SINGLE_TABLE_REGRESSION_DFS_XGB,
+                    Templates.SINGLE_TABLE_REGRESSION_XGB,
+                    Templates.SINGLE_TABLE_REGRESSION_GB
+                ]
             elif task_type == TaskType.SEMISUPERVISED_CLASSIFICATION.name.lower():
-                template = Templates.SINGLE_TABLE_SEMISUPERVISED_CLASSIFICATION
+                templates = [Templates.SINGLE_TABLE_SEMI_CLASSIFICATION]
             elif task_type == TaskType.CLUSTERING.name.lower():
-                template = Templates.CLUSTERING
+                templates = [Templates.SINGLE_TABLE_CLUSTERING]
+
         if data_modality == 'multi_table':
             if task_type == TaskType.CLASSIFICATION.name.lower():
-                template = Templates.MULTI_TABLE_CLASSIFICATION
+                templates = [Templates.MULTI_TABLE_CLASSIFICATION]
             elif task_type == TaskType.REGRESSION.name.lower():
-                template = Templates.MULTI_TABLE_REGRESSION
+                templates = [Templates.MULTI_TABLE_REGRESSION]
         elif data_modality == 'text':
             if task_type == TaskType.CLASSIFICATION.name.lower():
-                template = Templates.TEXT_CLASSIFICATION
+                templates = [Templates.TEXT_CLASSIFICATION]
             elif task_type == TaskType.REGRESSION.name.lower():
-                template = Templates.TEXT_REGRESSION
+                templates = [Templates.TEXT_REGRESSION]
+
         if data_modality == 'timeseries':
-            template = Templates.TIMESERIES
+            templates = [Templates.TIMESERIES_CLASSIFICATION_KN]
             # if task_type == TaskType.CLASSIFICATION.name.lower():
             #     template = Templates.TIMESERIES_CLASSIFICATION
             # elif task_type == TaskType.REGRESSION.name.lower():
             #     template = Templates.TIMESERIES_REGRESSION
         elif data_modality == 'image':
             if task_type == TaskType.CLASSIFICATION.name.lower():
-                template = Templates.IMAGE_CLASSIFICATION
+                templates = [Templates.IMAGE_CLASSIFICATION]
             elif task_type == TaskType.REGRESSION.name.lower():
-                template = Templates.IMAGE_REGRESSION
+                templates = [Templates.IMAGE_REGRESSION]
             elif task_type == TaskType.OBJECT_DETECTION.name.lower():
-                template = Templates.IMAGE_OBJECT_DETECTION
+                templates = [Templates.IMAGE_OBJECT_DETECTION]
+
         if data_modality == 'graph':
             if task_type == TaskType.COMMUNITY_DETECTION.name.lower():
-                template = Templates.GRAPH_COMMUNITY_DETECTION
+                templates = [Templates.GRAPH_COMMUNITY_DETECTION]
             elif task_type == TaskType.LINK_PREDICTION.name.lower():
-                template = Templates.GRAPH_LINK_PREDICTION
+                templates = [Templates.GRAPH_LINK_PREDICTION]
             elif task_type == TaskType.GRAPH_MATCHING.name.lower():
-                template = Templates.GRAPH_MATCHING
+                templates = [Templates.GRAPH_MATCHING]
             elif task_type == TaskType.VERTEX_CLASSIFICATION.name.lower():
-                template = Templates.SINGLE_TABLE_CLASSIFICATION
+                templates = [Templates.SINGLE_TABLE_CLASSIFICATION]
 
-        if template:
-            return template.value
-
-        return Templates.SINGLE_TABLE_CLASSIFICATION.value
-        # raise ValueError('Unsupported problem')
+        return templates
 
     def __init__(self, input_dir='input', output_dir='output', static_dir='static',
                  dump=False, hard_timeout=False):
@@ -353,11 +390,13 @@ class PipelineSearcher:
         best_pipeline = None
         best_score = None
         best_normalized = 0
+        best_template = None
+        best_template_name = None
         data_modality = None
         task_type = None
         task_subtype = None
         iteration = 0
-        error = None
+        errors = list()
 
         try:
             dataset_id = problem['inputs'][0]['dataset_id']
@@ -373,10 +412,9 @@ class PipelineSearcher:
                         dataset_name, data_modality, task_type, task_subtype)
             LOGGER.info("Loading the template and the tuner")
             if template_name is None:
-                template_name = self._get_template(data_modality, task_type)
-
-            template, tunables, defaults = load_template(template_name)
-            tuner = GP(tunables, r_minimum=10)
+                template_names = self._get_templates(data_modality, task_type)
+            else:
+                template_names = [template_name]
 
             if budget is not None:
                 iterator = range(budget)
@@ -385,9 +423,12 @@ class PipelineSearcher:
 
             self.setup_search()
 
-            first = True
-            proposal = defaults
             for iteration in iterator:
+                if iteration < len(template_names):
+                    first = True
+                    template_name = template_names[iteration]
+                    template, tuner, proposal = load_template(template_name)
+
                 self.check_stop()
                 pipeline = self._new_pipeline(template, proposal)
 
@@ -396,12 +437,14 @@ class PipelineSearcher:
                 try:
                     self.score_pipeline(dataset, problem, pipeline)
                     pipeline.normalized_score = metric.normalize(pipeline.score)
-                except Exception:
+                    # raise Exception("This won't work")
+                except Exception as ex:
                     if first:
-                        # We want this to be reported
-                        raise
+                        error = '{}: {}'.format(type(ex).__name__, ex)
+                        errors.append(error)
 
-                    LOGGER.exception("Error scoring pipeline %s", pipeline.id)
+                    LOGGER.exception("Error scoring pipeline %s for dataset %s",
+                                     pipeline.id, dataset)
                     pipeline.score = None
                     pipeline.normalized_score = 0.0
 
@@ -420,15 +463,23 @@ class PipelineSearcher:
                     best_pipeline = pipeline.id
                     best_score = pipeline.score
                     best_normalized = pipeline.normalized_score
+                    best_template_name = template_name
+                    best_template = template
+                    best_tuner = tuner
+
+                if iteration == len(template_names):
+                    template = best_template
+                    tuner = best_tuner
+                    first = False
 
                 proposal = tuner.propose(1)
-                first = False
 
         except KeyboardInterrupt:
             pass
         except Exception as ex:
             LOGGER.exception("Error processing dataset %s", dataset)
             error = '{}: {}'.format(type(ex).__name__, ex)
+            errors.append(error)
 
         finally:
             if self.timeout and self.hard_timeout:
@@ -438,10 +489,10 @@ class PipelineSearcher:
         return {
             'pipeline': best_pipeline,
             'cv_score': best_score,
-            'template': template_name,
+            'template': best_template_name,
             'data_modality': data_modality,
             'task_type': task_type,
             'task_subtype': task_subtype,
-            'tuning_iterations': iteration,
-            'error': error
+            'tuning_iterations': iteration - len(template_names) + 1,
+            'error': errors or None
         }
