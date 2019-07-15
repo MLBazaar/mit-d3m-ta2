@@ -235,7 +235,7 @@ class PipelineSearcher:
             elif task_type == TaskType.VERTEX_CLASSIFICATION.name.lower():
                 templates = [Templates.SINGLE_TABLE_CLASSIFICATION]
 
-        return templates
+        return [template.value for template in templates]
 
     def __init__(self, input_dir='input', output_dir='output', static_dir='static',
                  dump=False, hard_timeout=False):
