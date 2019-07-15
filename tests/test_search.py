@@ -158,18 +158,19 @@ def test_pipelinesearcher_get_template():
     instance = PipelineSearcher()
 
     # classification
-    instance._get_template('single_table', 'classification')
+    instance._get_templates('single_table', 'classification')
 
     # regression
-    instance._get_template('single_table', 'regression')
+    instance._get_templates('single_table', 'regression')
 
     # semisupervised classification
-    instance._get_template('single_table', 'semisupervised_classification')
+    instance._get_templates('single_table', 'semisupervised_classification')
 
     # single table clustering
-    instance._get_template('single_table', 'clustering')
+    instance._get_templates('single_table', 'clustering')
+
     # object detection
-    instance._get_template('image', 'object_detection')
+    instance._get_templates('image', 'object_detection')
 
 
 @patch('ta2.search.evaluate')
