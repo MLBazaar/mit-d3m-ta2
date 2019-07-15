@@ -50,7 +50,8 @@ class Templates(Enum):
     GRAPH_COMMUNITY_DETECTION = 'graph_community_detection.yml'
     GRAPH_LINK_PREDICTION = 'graph_link_prediction_distil.yml'
     GRAPH_MATCHING = 'graph_matching_jhu.yml'
-    SINGLE_TABLE_SEMI_CLASSIFICATION = 'single_table_semi_classification_autonbox.yml'
+    SINGLE_TABLE_SEMISUPERVISED_CLASSIFICATION = 'single_table_semisupervised_classification.yml'
+    CLUSTERING = 'single_table_clustering_ekss.yml'
 
 
 def detect_data_modality(dataset_doc_path):
@@ -157,7 +158,9 @@ class PipelineSearcher:
             elif task_type == TaskType.TIME_SERIES_FORECASTING.name.lower():
                 template = Templates.SINGLE_TABLE_REGRESSION
             elif task_type == TaskType.SEMISUPERVISED_CLASSIFICATION.name.lower():
-                template = Templates.SINGLE_TABLE_SEMI_CLASSIFICATION
+                template = Templates.SINGLE_TABLE_SEMISUPERVISED_CLASSIFICATION
+            elif task_type == TaskType.CLUSTERING.name.lower():
+                template = Templates.CLUSTERING
         if data_modality == 'multi_table':
             if task_type == TaskType.CLASSIFICATION.name.lower():
                 template = Templates.MULTI_TABLE_CLASSIFICATION

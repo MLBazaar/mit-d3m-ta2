@@ -1,11 +1,11 @@
--e git+https://gitlab.com/datadrivendiscovery/ta3ta2-api.git@5f806841f6aa8df64540cee37805586116633e6c#egg=ta3ta2-api
--e git+https://gitlab.com/datadrivendiscovery/sklearn-wrap.git@594f2a84ddd1e8b68fde672f21a746dcda7678e9#egg=sklearn_wrap
--e git+https://gitlab.com/datadrivendiscovery/common-primitives.git@48c0ebf7bb5b86ee6f00a38ae52546dc4c5b3be5#egg=common_primitives
+-e git+https://gitlab.com/datadrivendiscovery/ta3ta2-api.git@04e7da41580942ebade8154512ff41db1c624a65#egg=ta3ta2-api
+-e git+https://gitlab.com/datadrivendiscovery/sklearn-wrap.git@aab0f8373dfc08e52a61f21998fe2fd7d8d4860a#egg=sklearn_wrap
+-e git+https://gitlab.com/datadrivendiscovery/common-primitives.git@3df2ad23e1801e43166c64dc5767d847f232181d#egg=common_primitives
 -e git+https://gitlab.com/datadrivendiscovery/tests-data.git@e6299dfefcdfdc309dac0dc28b9bbf3eb9193cae#egg=test_primitives&subdirectory=primitives
 -e git+https://github.com/Featuretools/ta1-primitives.git@b8899ef5a3c0bb686b56ba3a170d4b1037a9d461#egg=featuretools_ta1
--e git+https://gitlab.com/datadrivendiscovery/sklearn-wrap.git@aab0f8373dfc08e52a61f21998fe2fd7d8d4860a#egg=sklearn_wrap
 -e git+https://github.com/Featuretools/featuretools.git@0257f523870ee9321720d01195598de92fc4e92c#egg=featuretools
 -e git+https://github.com/usc-isi-i2/dsbox-primitives@5da8179cd96d3b0a64c970f1ee43f2960667fa8b#egg=dsbox-primitives
 -e git+https://github.com/uncharted-distil/distil-primitives.git@21b0a71a8585ce7b894ce241296d51c763f2078d#egg=distil-primitives
 -e git+https://github.com/neurodata/primitives-interfaces.git@a859043f43001a6be4ed6a93a45ca6916f059236#egg=jhu_primitives
 -e git+https://github.com/autonlab/autonbox.git@262f384d5f3167083f157f03eefdbf049aeaf94b#egg=autonbox
+-e git+https://github.com/dvdmjohnson/d3m_michigan_primitives.git@aa14dd2ad88b7d580779f42eec8a7d0a9632f4c4#egg=spider
