@@ -167,7 +167,7 @@ class PipelineSearcher:
         LOGGER.info("Loading template for data modality %s and task type %s",
                     data_modality, task_type)
 
-        templates = [Templates.SINGLE_TABLE_CLASSIFICATION_ENCODING]
+        templates = [Templates.SINGLE_TABLE_CLASSIFICATION_ENC_XGB]
 
         if data_modality == 'single_table':
             if task_type == TaskType.CLASSIFICATION.name.lower():
