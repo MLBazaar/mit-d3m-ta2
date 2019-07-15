@@ -228,6 +228,7 @@
 
 <span class="kn">import</span> <span class="nn">yaml</span>
 <span class="kn">from</span> <span class="nn">btb.hyper_parameter</span> <span class="k">import</span> <span class="n">HyperParameter</span>
+<span class="kn">from</span> <span class="nn">btb.tuning</span> <span class="k">import</span> <span class="n">GP</span>
 <span class="kn">from</span> <span class="nn">d3m</span> <span class="k">import</span> <span class="n">index</span>
 <span class="kn">from</span> <span class="nn">d3m.metadata.base</span> <span class="k">import</span> <span class="n">ArgumentType</span>
 <span class="kn">from</span> <span class="nn">d3m.metadata.hyperparams</span> <span class="k">import</span> <span class="n">Union</span>
@@ -402,8 +403,9 @@
         <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Extracting tunables from pipeline&#39;</span><span class="p">)</span>
         <span class="n">tunables</span><span class="p">,</span> <span class="n">defaults</span> <span class="o">=</span> <span class="n">extract_pipeline_tunables</span><span class="p">(</span><span class="n">pipeline</span><span class="p">)</span>
 
+    <span class="n">tuner</span> <span class="o">=</span> <span class="n">GP</span><span class="p">(</span><span class="n">tunables</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Pipeline </span><span class="si">{}</span><span class="s2"> loaded&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pipeline</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
-    <span class="k">return</span> <span class="n">pipeline</span><span class="p">,</span> <span class="n">tunables</span><span class="p">,</span> <span class="n">defaults</span></div>
+    <span class="k">return</span> <span class="n">pipeline</span><span class="p">,</span> <span class="n">tuner</span><span class="p">,</span> <span class="n">defaults</span></div>
 
 
 <div class="viewcode-block" id="add_tunable_hyperparameters"><a class="viewcode-back" href="../../api/ta2.template.html#ta2.template.add_tunable_hyperparameters">[docs]</a><span class="k">def</span> <span class="nf">add_tunable_hyperparameters</span><span class="p">(</span><span class="n">input_path</span><span class="p">,</span> <span class="n">output_path</span><span class="p">):</span>

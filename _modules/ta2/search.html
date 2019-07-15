@@ -232,7 +232,6 @@
 <span class="kn">from</span> <span class="nn">enum</span> <span class="k">import</span> <span class="n">Enum</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">btb.tuning</span> <span class="k">import</span> <span class="n">GP</span>
 <span class="kn">from</span> <span class="nn">d3m.container.dataset</span> <span class="k">import</span> <span class="n">Dataset</span>
 <span class="kn">from</span> <span class="nn">d3m.metadata.base</span> <span class="k">import</span> <span class="n">ArgumentType</span><span class="p">,</span> <span class="n">Context</span>
 <span class="kn">from</span> <span class="nn">d3m.metadata.pipeline</span> <span class="k">import</span> <span class="n">Pipeline</span><span class="p">,</span> <span class="n">PrimitiveStep</span>
@@ -254,25 +253,46 @@
 
 
 <div class="viewcode-block" id="Templates"><a class="viewcode-back" href="../../api/ta2.search.html#ta2.search.Templates">[docs]</a><span class="k">class</span> <span class="nc">Templates</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
-    <span class="c1"># SINGLE_TABLE_CLASSIFICATION = &#39;gradient_boosting_classification.hp.yml&#39;</span>
-    <span class="c1"># SINGLE_TABLE_CLASSIFICATION = &#39;xgb_classification.hp.yml&#39;</span>
-    <span class="n">SINGLE_TABLE_CLASSIFICATION</span> <span class="o">=</span> <span class="s1">&#39;encoding_xgb_classification.hp.yml&#39;</span>
-    <span class="c1"># SINGLE_TABLE_REGRESSION = &#39;gradient_boosting_regression.hp.yml&#39;</span>
-    <span class="n">SINGLE_TABLE_REGRESSION</span> <span class="o">=</span> <span class="s1">&#39;xgb_regression.hp.yml&#39;</span>
-    <span class="n">MULTI_TABLE_CLASSIFICATION</span> <span class="o">=</span> <span class="s1">&#39;multi_table_dfs_xgb_classification.yml&#39;</span>
-    <span class="n">MULTI_TABLE_REGRESSION</span> <span class="o">=</span> <span class="s1">&#39;multi_table_dfs_xgb_regression.yml&#39;</span>
-    <span class="c1"># TIMESERIES_CLASSIFICATION = &#39;time_series_xgb_classification.yml&#39;</span>
-    <span class="n">TIMESERIES</span> <span class="o">=</span> <span class="s1">&#39;time_series_k_neighbors.yml&#39;</span>
-    <span class="n">IMAGE_REGRESSION</span> <span class="o">=</span> <span class="s1">&#39;image_resnet50_xgb_regression.yml&#39;</span>
-    <span class="n">IMAGE_CLASSIFICATION</span> <span class="o">=</span> <span class="s1">&#39;image_resnet50_xgb_classification.yml&#39;</span>
-    <span class="n">IMAGE_OBJECT_DETECTION</span> <span class="o">=</span> <span class="s1">&#39;image_object_detection_classification_dsbox.yml&#39;</span>
-    <span class="n">TEXT_CLASSIFICATION</span> <span class="o">=</span> <span class="s1">&#39;text_xgb_classification.hp.yml&#39;</span>
-    <span class="n">TEXT_REGRESSION</span> <span class="o">=</span> <span class="s1">&#39;text_xgb_regression.hp.yml&#39;</span>
+    <span class="c1"># SINGLE TABLE CLASSIFICATION</span>
+    <span class="n">SINGLE_TABLE_CLASSIFICATION_ENC_XGB</span> <span class="o">=</span> <span class="s1">&#39;single_table_classification_encoding_xgb.yml&#39;</span>
+    <span class="n">SINGLE_TABLE_CLASSIFICATION_AR_RF</span> <span class="o">=</span> <span class="s1">&#39;single_table_classification_autorpi_rf.yml&#39;</span>
+    <span class="n">SINGLE_TABLE_CLASSIFICATION_DFS_ROBUST_XGB</span> <span class="o">=</span> <span class="s1">&#39;single_table_classification_dfs_robust_xgb.yml&#39;</span>
+    <span class="n">SINGLE_TABLE_CLASSIFICATION_DFS_XGB</span> <span class="o">=</span> <span class="s1">&#39;single_table_classification_dfs_xgb.yml&#39;</span>
+    <span class="n">SINGLE_TABLE_CLASSIFICATION_GB</span> <span class="o">=</span> <span class="s1">&#39;single_table_classification_gradient_boosting.yml&#39;</span>
+
+    <span class="c1"># SINGLE TABLE REGRESSION</span>
+    <span class="n">SINGLE_TABLE_REGRESSION_DFS_XGB</span> <span class="o">=</span> <span class="s1">&#39;single_table_regression_dfs_xgb.yml&#39;</span>
+    <span class="n">SINGLE_TABLE_REGRESSION_XGB</span> <span class="o">=</span> <span class="s1">&#39;single_table_regression_xgb.yml&#39;</span>
+    <span class="n">SINGLE_TABLE_REGRESSION_GB</span> <span class="o">=</span> <span class="s1">&#39;single_table_regression_gradient_boosting.yml&#39;</span>
+
+    <span class="c1"># MULTI TABLE</span>
+    <span class="n">MULTI_TABLE_CLASSIFICATION</span> <span class="o">=</span> <span class="s1">&#39;multi_table_classification_dfs_xgb.yml&#39;</span>
+    <span class="n">MULTI_TABLE_REGRESSION</span> <span class="o">=</span> <span class="s1">&#39;multi_table_regression_dfs_xgb.yml&#39;</span>
+
+    <span class="c1"># TIMESERIES CLASSIFICATION</span>
+    <span class="n">TIMESERIES_CLASSIFICATION_KN</span> <span class="o">=</span> <span class="s1">&#39;time_series_classification_k_neighbors_kn.yml&#39;</span>
+    <span class="n">TIMESERIES_CLASSIFICATION_RF</span> <span class="o">=</span> <span class="s1">&#39;time_series_classification_rf.yml&#39;</span>
+    <span class="n">TIMESERIES_CLASSIFICATION_XGB</span> <span class="o">=</span> <span class="s1">&#39;time_series_classification_xgb.yml&#39;</span>
+
+    <span class="c1"># IMAGE</span>
+    <span class="n">IMAGE_REGRESSION</span> <span class="o">=</span> <span class="s1">&#39;image_regression_resnet50_xgb.yml&#39;</span>
+    <span class="n">IMAGE_CLASSIFICATION</span> <span class="o">=</span> <span class="s1">&#39;image_classification_resnet50_xgb.yml&#39;</span>
+    <span class="n">IMAGE_OBJECT_DETECTION</span> <span class="o">=</span> <span class="s1">&#39;image_object_detection_yolo.yml&#39;</span>
+
+    <span class="c1"># TEXT</span>
+    <span class="n">TEXT_CLASSIFICATION</span> <span class="o">=</span> <span class="s1">&#39;text_classification_encoding_xgb.yml&#39;</span>
+    <span class="n">TEXT_REGRESSION</span> <span class="o">=</span> <span class="s1">&#39;text_regression_encoding_xgb.yml&#39;</span>
+
+    <span class="c1"># GRAPH</span>
     <span class="n">GRAPH_COMMUNITY_DETECTION</span> <span class="o">=</span> <span class="s1">&#39;graph_community_detection.yml&#39;</span>
-    <span class="n">GRAPH_LINK_PREDICTION</span> <span class="o">=</span> <span class="s1">&#39;graph_link_prediction.yml&#39;</span>
-    <span class="n">GRAPH_MATCHING</span> <span class="o">=</span> <span class="s1">&#39;graph_matching_jhu.yml&#39;</span>
-    <span class="n">SINGLE_TABLE_SEMISUPERVISED_CLASSIFICATION</span> <span class="o">=</span> <span class="s1">&#39;single_table_semisupervised_classification.yml&#39;</span>
-    <span class="n">CLUSTERING</span> <span class="o">=</span> <span class="s1">&#39;single_table_clustering_ekss.yml&#39;</span></div>
+    <span class="n">GRAPH_COMMUNITY_DETECTION_DISTIL</span> <span class="o">=</span> <span class="s1">&#39;graph_community_detection_distil.yml&#39;</span>
+    <span class="n">GRAPH_LINK_PREDICTION</span> <span class="o">=</span> <span class="s1">&#39;graph_link_prediction_distil.yml&#39;</span>
+    <span class="n">GRAPH_MATCHING</span> <span class="o">=</span> <span class="s1">&#39;graph_matching.yml&#39;</span>
+    <span class="n">GRAPH_MATCHING_JHU</span> <span class="o">=</span> <span class="s1">&#39;graph_matching_jhu.yml&#39;</span>
+
+    <span class="c1"># MISC</span>
+    <span class="n">SINGLE_TABLE_SEMI_CLASSIFICATION</span> <span class="o">=</span> <span class="s1">&#39;single_table_semi_classification_autonbox.yml&#39;</span>
+    <span class="n">SINGLE_TABLE_CLUSTERING</span> <span class="o">=</span> <span class="s1">&#39;single_table_clustering_ekss.yml&#39;</span></div>
 
 
 <div class="viewcode-block" id="detect_data_modality"><a class="viewcode-back" href="../../api/ta2.search.html#ta2.search.detect_data_modality">[docs]</a><span class="k">def</span> <span class="nf">detect_data_modality</span><span class="p">(</span><span class="n">dataset_doc_path</span><span class="p">):</span>
@@ -364,62 +384,79 @@
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">pipeline_file</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">loader</span><span class="p">(</span><span class="n">string_or_file</span><span class="o">=</span><span class="n">pipeline_file</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_get_template</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_modality</span><span class="p">,</span> <span class="n">task_type</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_get_templates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_modality</span><span class="p">,</span> <span class="n">task_type</span><span class="p">):</span>
         <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Loading template for data modality </span><span class="si">%s</span><span class="s2"> and task type </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
                     <span class="n">data_modality</span><span class="p">,</span> <span class="n">task_type</span><span class="p">)</span>
 
-        <span class="n">template</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">templates</span> <span class="o">=</span> <span class="p">[</span><span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_CLASSIFICATION_ENC_XGB</span><span class="p">]</span>
+
         <span class="k">if</span> <span class="n">data_modality</span> <span class="o">==</span> <span class="s1">&#39;single_table&#39;</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskType</span><span class="o">.</span><span class="n">CLASSIFICATION</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
-                <span class="n">template</span> <span class="o">=</span> <span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_CLASSIFICATION</span>
+                <span class="n">templates</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_CLASSIFICATION_ENC_XGB</span><span class="p">,</span>
+                    <span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_CLASSIFICATION_AR_RF</span><span class="p">,</span>
+                    <span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_CLASSIFICATION_DFS_ROBUST_XGB</span><span class="p">,</span>
+                    <span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_CLASSIFICATION_GB</span><span class="p">,</span>
+                <span class="p">]</span>
             <span class="k">elif</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskType</span><span class="o">.</span><span class="n">REGRESSION</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
-                <span class="n">template</span> <span class="o">=</span> <span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_REGRESSION</span>
+                <span class="n">templates</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_REGRESSION_DFS_XGB</span><span class="p">,</span>
+                    <span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_REGRESSION_XGB</span><span class="p">,</span>
+                    <span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_REGRESSION_GB</span>
+                <span class="p">]</span>
             <span class="k">elif</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskType</span><span class="o">.</span><span class="n">COLLABORATIVE_FILTERING</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
-                <span class="n">template</span> <span class="o">=</span> <span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_REGRESSION</span>
+                <span class="n">templates</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_REGRESSION_DFS_XGB</span><span class="p">,</span>
+                    <span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_REGRESSION_XGB</span><span class="p">,</span>
+                    <span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_REGRESSION_GB</span>
+                <span class="p">]</span>
             <span class="k">elif</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskType</span><span class="o">.</span><span class="n">TIME_SERIES_FORECASTING</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
-                <span class="n">template</span> <span class="o">=</span> <span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_REGRESSION</span>
+                <span class="n">templates</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_REGRESSION_DFS_XGB</span><span class="p">,</span>
+                    <span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_REGRESSION_XGB</span><span class="p">,</span>
+                    <span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_REGRESSION_GB</span>
+                <span class="p">]</span>
             <span class="k">elif</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskType</span><span class="o">.</span><span class="n">SEMISUPERVISED_CLASSIFICATION</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
-                <span class="n">template</span> <span class="o">=</span> <span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_SEMISUPERVISED_CLASSIFICATION</span>
+                <span class="n">templates</span> <span class="o">=</span> <span class="p">[</span><span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_SEMI_CLASSIFICATION</span><span class="p">]</span>
             <span class="k">elif</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskType</span><span class="o">.</span><span class="n">CLUSTERING</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
-                <span class="n">template</span> <span class="o">=</span> <span class="n">Templates</span><span class="o">.</span><span class="n">CLUSTERING</span>
+                <span class="n">templates</span> <span class="o">=</span> <span class="p">[</span><span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_CLUSTERING</span><span class="p">]</span>
+
         <span class="k">if</span> <span class="n">data_modality</span> <span class="o">==</span> <span class="s1">&#39;multi_table&#39;</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskType</span><span class="o">.</span><span class="n">CLASSIFICATION</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
-                <span class="n">template</span> <span class="o">=</span> <span class="n">Templates</span><span class="o">.</span><span class="n">MULTI_TABLE_CLASSIFICATION</span>
+                <span class="n">templates</span> <span class="o">=</span> <span class="p">[</span><span class="n">Templates</span><span class="o">.</span><span class="n">MULTI_TABLE_CLASSIFICATION</span><span class="p">]</span>
             <span class="k">elif</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskType</span><span class="o">.</span><span class="n">REGRESSION</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
-                <span class="n">template</span> <span class="o">=</span> <span class="n">Templates</span><span class="o">.</span><span class="n">MULTI_TABLE_REGRESSION</span>
+                <span class="n">templates</span> <span class="o">=</span> <span class="p">[</span><span class="n">Templates</span><span class="o">.</span><span class="n">MULTI_TABLE_REGRESSION</span><span class="p">]</span>
         <span class="k">elif</span> <span class="n">data_modality</span> <span class="o">==</span> <span class="s1">&#39;text&#39;</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskType</span><span class="o">.</span><span class="n">CLASSIFICATION</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
-                <span class="n">template</span> <span class="o">=</span> <span class="n">Templates</span><span class="o">.</span><span class="n">TEXT_CLASSIFICATION</span>
+                <span class="n">templates</span> <span class="o">=</span> <span class="p">[</span><span class="n">Templates</span><span class="o">.</span><span class="n">TEXT_CLASSIFICATION</span><span class="p">]</span>
             <span class="k">elif</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskType</span><span class="o">.</span><span class="n">REGRESSION</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
-                <span class="n">template</span> <span class="o">=</span> <span class="n">Templates</span><span class="o">.</span><span class="n">TEXT_REGRESSION</span>
+                <span class="n">templates</span> <span class="o">=</span> <span class="p">[</span><span class="n">Templates</span><span class="o">.</span><span class="n">TEXT_REGRESSION</span><span class="p">]</span>
+
         <span class="k">if</span> <span class="n">data_modality</span> <span class="o">==</span> <span class="s1">&#39;timeseries&#39;</span><span class="p">:</span>
-            <span class="n">template</span> <span class="o">=</span> <span class="n">Templates</span><span class="o">.</span><span class="n">TIMESERIES</span>
+            <span class="n">templates</span> <span class="o">=</span> <span class="p">[</span><span class="n">Templates</span><span class="o">.</span><span class="n">TIMESERIES_CLASSIFICATION_KN</span><span class="p">]</span>
             <span class="c1"># if task_type == TaskType.CLASSIFICATION.name.lower():</span>
             <span class="c1">#     template = Templates.TIMESERIES_CLASSIFICATION</span>
             <span class="c1"># elif task_type == TaskType.REGRESSION.name.lower():</span>
             <span class="c1">#     template = Templates.TIMESERIES_REGRESSION</span>
         <span class="k">elif</span> <span class="n">data_modality</span> <span class="o">==</span> <span class="s1">&#39;image&#39;</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskType</span><span class="o">.</span><span class="n">CLASSIFICATION</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
-                <span class="n">template</span> <span class="o">=</span> <span class="n">Templates</span><span class="o">.</span><span class="n">IMAGE_CLASSIFICATION</span>
+                <span class="n">templates</span> <span class="o">=</span> <span class="p">[</span><span class="n">Templates</span><span class="o">.</span><span class="n">IMAGE_CLASSIFICATION</span><span class="p">]</span>
             <span class="k">elif</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskType</span><span class="o">.</span><span class="n">REGRESSION</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
-                <span class="n">template</span> <span class="o">=</span> <span class="n">Templates</span><span class="o">.</span><span class="n">IMAGE_REGRESSION</span>
+                <span class="n">templates</span> <span class="o">=</span> <span class="p">[</span><span class="n">Templates</span><span class="o">.</span><span class="n">IMAGE_REGRESSION</span><span class="p">]</span>
             <span class="k">elif</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskType</span><span class="o">.</span><span class="n">OBJECT_DETECTION</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
-                <span class="n">template</span> <span class="o">=</span> <span class="n">Templates</span><span class="o">.</span><span class="n">IMAGE_OBJECT_DETECTION</span>
+                <span class="n">templates</span> <span class="o">=</span> <span class="p">[</span><span class="n">Templates</span><span class="o">.</span><span class="n">IMAGE_OBJECT_DETECTION</span><span class="p">]</span>
+
         <span class="k">if</span> <span class="n">data_modality</span> <span class="o">==</span> <span class="s1">&#39;graph&#39;</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskType</span><span class="o">.</span><span class="n">COMMUNITY_DETECTION</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
-                <span class="n">template</span> <span class="o">=</span> <span class="n">Templates</span><span class="o">.</span><span class="n">GRAPH_COMMUNITY_DETECTION</span>
+                <span class="n">templates</span> <span class="o">=</span> <span class="p">[</span><span class="n">Templates</span><span class="o">.</span><span class="n">GRAPH_COMMUNITY_DETECTION</span><span class="p">]</span>
             <span class="k">elif</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskType</span><span class="o">.</span><span class="n">LINK_PREDICTION</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
-                <span class="n">template</span> <span class="o">=</span> <span class="n">Templates</span><span class="o">.</span><span class="n">GRAPH_LINK_PREDICTION</span>
+                <span class="n">templates</span> <span class="o">=</span> <span class="p">[</span><span class="n">Templates</span><span class="o">.</span><span class="n">GRAPH_LINK_PREDICTION</span><span class="p">]</span>
             <span class="k">elif</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskType</span><span class="o">.</span><span class="n">GRAPH_MATCHING</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
-                <span class="n">template</span> <span class="o">=</span> <span class="n">Templates</span><span class="o">.</span><span class="n">GRAPH_MATCHING</span>
+                <span class="n">templates</span> <span class="o">=</span> <span class="p">[</span><span class="n">Templates</span><span class="o">.</span><span class="n">GRAPH_MATCHING</span><span class="p">]</span>
             <span class="k">elif</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskType</span><span class="o">.</span><span class="n">VERTEX_CLASSIFICATION</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
-                <span class="n">template</span> <span class="o">=</span> <span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_CLASSIFICATION</span>
+                <span class="n">templates</span> <span class="o">=</span> <span class="p">[</span><span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_CLASSIFICATION</span><span class="p">]</span>
 
-        <span class="k">if</span> <span class="n">template</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">template</span><span class="o">.</span><span class="n">value</span>
-
-        <span class="k">return</span> <span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_CLASSIFICATION</span><span class="o">.</span><span class="n">value</span>
-        <span class="c1"># raise ValueError(&#39;Unsupported problem&#39;)</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">template</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">template</span> <span class="ow">in</span> <span class="n">templates</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_dir</span><span class="o">=</span><span class="s1">&#39;input&#39;</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;output&#39;</span><span class="p">,</span> <span class="n">static_dir</span><span class="o">=</span><span class="s1">&#39;static&#39;</span><span class="p">,</span>
                  <span class="n">dump</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">hard_timeout</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
@@ -574,11 +611,14 @@
         <span class="n">best_pipeline</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">best_score</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">best_normalized</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">best_template</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">best_template_name</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">best_tuner</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">data_modality</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">task_type</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">task_subtype</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">iteration</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">error</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">errors</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
 
         <span class="k">try</span><span class="p">:</span>
             <span class="n">dataset_id</span> <span class="o">=</span> <span class="n">problem</span><span class="p">[</span><span class="s1">&#39;inputs&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;dataset_id&#39;</span><span class="p">]</span>
@@ -594,10 +634,9 @@
                         <span class="n">dataset_name</span><span class="p">,</span> <span class="n">data_modality</span><span class="p">,</span> <span class="n">task_type</span><span class="p">,</span> <span class="n">task_subtype</span><span class="p">)</span>
             <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Loading the template and the tuner&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">template_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">template_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_template</span><span class="p">(</span><span class="n">data_modality</span><span class="p">,</span> <span class="n">task_type</span><span class="p">)</span>
-
-            <span class="n">template</span><span class="p">,</span> <span class="n">tunables</span><span class="p">,</span> <span class="n">defaults</span> <span class="o">=</span> <span class="n">load_template</span><span class="p">(</span><span class="n">template_name</span><span class="p">)</span>
-            <span class="n">tuner</span> <span class="o">=</span> <span class="n">GP</span><span class="p">(</span><span class="n">tunables</span><span class="p">,</span> <span class="n">r_minimum</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+                <span class="n">template_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_templates</span><span class="p">(</span><span class="n">data_modality</span><span class="p">,</span> <span class="n">task_type</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">template_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">template_name</span><span class="p">]</span>
 
             <span class="k">if</span> <span class="n">budget</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">iterator</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="n">budget</span><span class="p">)</span>
@@ -606,9 +645,12 @@
 
             <span class="bp">self</span><span class="o">.</span><span class="n">setup_search</span><span class="p">()</span>
 
-            <span class="n">first</span> <span class="o">=</span> <span class="kc">True</span>
-            <span class="n">proposal</span> <span class="o">=</span> <span class="n">defaults</span>
             <span class="k">for</span> <span class="n">iteration</span> <span class="ow">in</span> <span class="n">iterator</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">iteration</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">template_names</span><span class="p">):</span>
+                    <span class="n">first</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="n">template_name</span> <span class="o">=</span> <span class="n">template_names</span><span class="p">[</span><span class="n">iteration</span><span class="p">]</span>
+                    <span class="n">template</span><span class="p">,</span> <span class="n">tuner</span><span class="p">,</span> <span class="n">proposal</span> <span class="o">=</span> <span class="n">load_template</span><span class="p">(</span><span class="n">template_name</span><span class="p">)</span>
+
                 <span class="bp">self</span><span class="o">.</span><span class="n">check_stop</span><span class="p">()</span>
                 <span class="n">pipeline</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_new_pipeline</span><span class="p">(</span><span class="n">template</span><span class="p">,</span> <span class="n">proposal</span><span class="p">)</span>
 
@@ -617,12 +659,14 @@
                 <span class="k">try</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">score_pipeline</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">problem</span><span class="p">,</span> <span class="n">pipeline</span><span class="p">)</span>
                     <span class="n">pipeline</span><span class="o">.</span><span class="n">normalized_score</span> <span class="o">=</span> <span class="n">metric</span><span class="o">.</span><span class="n">normalize</span><span class="p">(</span><span class="n">pipeline</span><span class="o">.</span><span class="n">score</span><span class="p">)</span>
-                <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                    <span class="c1"># raise Exception(&quot;This won&#39;t work&quot;)</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
                     <span class="k">if</span> <span class="n">first</span><span class="p">:</span>
-                        <span class="c1"># We want this to be reported</span>
-                        <span class="k">raise</span>
+                        <span class="n">error</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">ex</span><span class="p">)</span>
+                        <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">error</span><span class="p">)</span>
 
-                    <span class="n">LOGGER</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Error scoring pipeline </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+                    <span class="n">LOGGER</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Error scoring pipeline </span><span class="si">%s</span><span class="s2"> for dataset </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+                                     <span class="n">pipeline</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">dataset</span><span class="p">)</span>
                     <span class="n">pipeline</span><span class="o">.</span><span class="n">score</span> <span class="o">=</span> <span class="kc">None</span>
                     <span class="n">pipeline</span><span class="o">.</span><span class="n">normalized_score</span> <span class="o">=</span> <span class="mf">0.0</span>
 
@@ -641,15 +685,23 @@
                     <span class="n">best_pipeline</span> <span class="o">=</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">id</span>
                     <span class="n">best_score</span> <span class="o">=</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">score</span>
                     <span class="n">best_normalized</span> <span class="o">=</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">normalized_score</span>
+                    <span class="n">best_template_name</span> <span class="o">=</span> <span class="n">template_name</span>
+                    <span class="n">best_template</span> <span class="o">=</span> <span class="n">template</span>
+                    <span class="n">best_tuner</span> <span class="o">=</span> <span class="n">tuner</span>
+
+                <span class="k">if</span> <span class="n">iteration</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">template_names</span><span class="p">):</span>
+                    <span class="n">template</span> <span class="o">=</span> <span class="n">best_template</span>
+                    <span class="n">tuner</span> <span class="o">=</span> <span class="n">best_tuner</span> <span class="ow">or</span> <span class="n">tuner</span>
+                    <span class="n">first</span> <span class="o">=</span> <span class="kc">False</span>
 
                 <span class="n">proposal</span> <span class="o">=</span> <span class="n">tuner</span><span class="o">.</span><span class="n">propose</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-                <span class="n">first</span> <span class="o">=</span> <span class="kc">False</span>
 
         <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
             <span class="k">pass</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
             <span class="n">LOGGER</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Error processing dataset </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">dataset</span><span class="p">)</span>
             <span class="n">error</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">ex</span><span class="p">)</span>
+            <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">error</span><span class="p">)</span>
 
         <span class="k">finally</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">hard_timeout</span><span class="p">:</span>
@@ -659,12 +711,12 @@
         <span class="k">return</span> <span class="p">{</span>
             <span class="s1">&#39;pipeline&#39;</span><span class="p">:</span> <span class="n">best_pipeline</span><span class="p">,</span>
             <span class="s1">&#39;cv_score&#39;</span><span class="p">:</span> <span class="n">best_score</span><span class="p">,</span>
-            <span class="s1">&#39;template&#39;</span><span class="p">:</span> <span class="n">template_name</span><span class="p">,</span>
+            <span class="s1">&#39;template&#39;</span><span class="p">:</span> <span class="n">best_template_name</span><span class="p">,</span>
             <span class="s1">&#39;data_modality&#39;</span><span class="p">:</span> <span class="n">data_modality</span><span class="p">,</span>
             <span class="s1">&#39;task_type&#39;</span><span class="p">:</span> <span class="n">task_type</span><span class="p">,</span>
             <span class="s1">&#39;task_subtype&#39;</span><span class="p">:</span> <span class="n">task_subtype</span><span class="p">,</span>
-            <span class="s1">&#39;tuning_iterations&#39;</span><span class="p">:</span> <span class="n">iteration</span><span class="p">,</span>
-            <span class="s1">&#39;error&#39;</span><span class="p">:</span> <span class="n">error</span>
+            <span class="s1">&#39;tuning_iterations&#39;</span><span class="p">:</span> <span class="n">iteration</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">template_names</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="s1">&#39;error&#39;</span><span class="p">:</span> <span class="n">errors</span> <span class="ow">or</span> <span class="kc">None</span>
         <span class="p">}</span></div></div>
 </pre></div>
 
