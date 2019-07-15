@@ -270,9 +270,15 @@ def _ta3_test(args):
     print('### Hello ###')
     client.hello()
 
+    if args.all:
+        args.dataset = os.listdir(args.input)
+
     for dataset in args.dataset:
-        ensure_downloaded(dataset, args.input)
-        _ta3_test_dataset(client, dataset, args.timeout / 60)
+        try:
+            ensure_downloaded(dataset, args.input)
+            _ta3_test_dataset(client, dataset, args.timeout / 60)
+        except Exception as e:
+            print('An error occurred trying to process the dataset {}, produced by {}'.format(dataset, e))
 
 
 def _server(args):
@@ -286,7 +292,7 @@ def _server(args):
         # FIXME This is just to be sure that it does not crash
         timeout = 600
 
-    serve(args.port, input_dir, output_dir, timeout, args.debug)
+    serve(args.port, input_dir, output_dir, args.static, timeout, args.debug)
 
 
 def parse_args():
