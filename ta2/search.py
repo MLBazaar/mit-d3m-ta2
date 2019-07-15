@@ -392,6 +392,7 @@ class PipelineSearcher:
         best_normalized = 0
         best_template = None
         best_template_name = None
+        best_tuner = None
         data_modality = None
         task_type = None
         task_subtype = None
@@ -469,7 +470,7 @@ class PipelineSearcher:
 
                 if iteration == len(template_names):
                     template = best_template
-                    tuner = best_tuner
+                    tuner = best_tuner or tuner
                     first = False
 
                 proposal = tuner.propose(1)
