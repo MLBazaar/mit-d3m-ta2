@@ -271,7 +271,8 @@
     <span class="n">GRAPH_COMMUNITY_DETECTION</span> <span class="o">=</span> <span class="s1">&#39;graph_community_detection.yml&#39;</span>
     <span class="n">GRAPH_LINK_PREDICTION</span> <span class="o">=</span> <span class="s1">&#39;graph_link_prediction.yml&#39;</span>
     <span class="n">GRAPH_MATCHING</span> <span class="o">=</span> <span class="s1">&#39;graph_matching_jhu.yml&#39;</span>
-    <span class="n">SINGLE_TABLE_SEMISUPERVISED_CLASSIFICATION</span> <span class="o">=</span> <span class="s1">&#39;single_table_semisupervised_classification.yml&#39;</span></div>
+    <span class="n">SINGLE_TABLE_SEMISUPERVISED_CLASSIFICATION</span> <span class="o">=</span> <span class="s1">&#39;single_table_semisupervised_classification.yml&#39;</span>
+    <span class="n">CLUSTERING</span> <span class="o">=</span> <span class="s1">&#39;single_table_clustering_ekss.yml&#39;</span></div>
 
 
 <div class="viewcode-block" id="detect_data_modality"><a class="viewcode-back" href="../../api/ta2.search.html#ta2.search.detect_data_modality">[docs]</a><span class="k">def</span> <span class="nf">detect_data_modality</span><span class="p">(</span><span class="n">dataset_doc_path</span><span class="p">):</span>
@@ -379,6 +380,8 @@
                 <span class="n">template</span> <span class="o">=</span> <span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_REGRESSION</span>
             <span class="k">elif</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskType</span><span class="o">.</span><span class="n">SEMISUPERVISED_CLASSIFICATION</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
                 <span class="n">template</span> <span class="o">=</span> <span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_SEMISUPERVISED_CLASSIFICATION</span>
+            <span class="k">elif</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskType</span><span class="o">.</span><span class="n">CLUSTERING</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+                <span class="n">template</span> <span class="o">=</span> <span class="n">Templates</span><span class="o">.</span><span class="n">CLUSTERING</span>
         <span class="k">if</span> <span class="n">data_modality</span> <span class="o">==</span> <span class="s1">&#39;multi_table&#39;</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskType</span><span class="o">.</span><span class="n">CLASSIFICATION</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
                 <span class="n">template</span> <span class="o">=</span> <span class="n">Templates</span><span class="o">.</span><span class="n">MULTI_TABLE_CLASSIFICATION</span>
