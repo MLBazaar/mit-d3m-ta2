@@ -35,14 +35,18 @@ class Templates(Enum):
     # SINGLE TABLE CLASSIFICATION
     SINGLE_TABLE_CLASSIFICATION_ENC_XGB = 'single_table_classification_encoding_xgb.yml'
     SINGLE_TABLE_CLASSIFICATION_AR_RF = 'single_table_classification_autorpi_rf.yml'
-    SINGLE_TABLE_CLASSIFICATION_DFS_ROBUST_XGB = 'single_table_classification_dfs_robust_xgb.yml'
-    SINGLE_TABLE_CLASSIFICATION_DFS_XGB = 'single_table_classification_dfs_xgb.yml'
-    SINGLE_TABLE_CLASSIFICATION_GB = 'single_table_classification_gradient_boosting.yml'
+    # SINGLE_TABLE_CLASSIFICATION_DFS_ROBUST_XGB = 'single_table_classification_dfs_robust_xgb.yml'
+    # SINGLE_TABLE_CLASSIFICATION_DFS_XGB = 'single_table_classification_dfs_xgb.yml'
+    # SINGLE_TABLE_CLASSIFICATION_GB = 'single_table_classification_gradient_boosting.yml'
 
     # SINGLE TABLE REGRESSION
-    SINGLE_TABLE_REGRESSION_DFS_XGB = 'single_table_regression_dfs_xgb.yml'
     SINGLE_TABLE_REGRESSION_XGB = 'single_table_regression_xgb.yml'
-    SINGLE_TABLE_REGRESSION_GB = 'single_table_regression_gradient_boosting.yml'
+    # SINGLE_TABLE_REGRESSION_DFS_XGB = 'single_table_regression_dfs_xgb.yml'
+    # SINGLE_TABLE_REGRESSION_GB = 'single_table_regression_gradient_boosting.yml'
+
+    # MISC
+    SINGLE_TABLE_SEMI_CLASSIFICATION = 'single_table_semi_classification_autonbox.yml'
+    SINGLE_TABLE_CLUSTERING = 'single_table_clustering_ekss.yml'
 
     # MULTI TABLE
     MULTI_TABLE_CLASSIFICATION = 'multi_table_classification_dfs_xgb.yml'
@@ -50,8 +54,8 @@ class Templates(Enum):
 
     # TIMESERIES CLASSIFICATION
     TIMESERIES_CLASSIFICATION_KN = 'time_series_classification_k_neighbors_kn.yml'
-    TIMESERIES_CLASSIFICATION_RF = 'time_series_classification_rf.yml'
-    TIMESERIES_CLASSIFICATION_XGB = 'time_series_classification_xgb.yml'
+    # TIMESERIES_CLASSIFICATION_XGB = 'time_series_classification_xgb.yml'
+    # TIMESERIES_CLASSIFICATION_RF = 'time_series_classification_rf.yml'
 
     # IMAGE
     IMAGE_REGRESSION = 'image_regression_resnet50_xgb.yml'
@@ -64,14 +68,10 @@ class Templates(Enum):
 
     # GRAPH
     GRAPH_COMMUNITY_DETECTION = 'graph_community_detection.yml'
-    GRAPH_COMMUNITY_DETECTION_DISTIL = 'graph_community_detection_distil.yml'
+    # GRAPH_COMMUNITY_DETECTION_DISTIL = 'graph_community_detection_distil.yml'
     GRAPH_LINK_PREDICTION = 'graph_link_prediction_distil.yml'
     GRAPH_MATCHING = 'graph_matching.yml'
-    GRAPH_MATCHING_JHU = 'graph_matching_jhu.yml'
-
-    # MISC
-    SINGLE_TABLE_SEMI_CLASSIFICATION = 'single_table_semi_classification_autonbox.yml'
-    SINGLE_TABLE_CLUSTERING = 'single_table_clustering_ekss.yml'
+    # GRAPH_MATCHING_JHU = 'graph_matching_jhu.yml'
 
 
 def detect_data_modality(dataset_doc_path):
@@ -174,26 +174,26 @@ class PipelineSearcher:
                 templates = [
                     Templates.SINGLE_TABLE_CLASSIFICATION_ENC_XGB,
                     Templates.SINGLE_TABLE_CLASSIFICATION_AR_RF,
-                    Templates.SINGLE_TABLE_CLASSIFICATION_DFS_ROBUST_XGB,
-                    Templates.SINGLE_TABLE_CLASSIFICATION_GB,
+                    # Templates.SINGLE_TABLE_CLASSIFICATION_DFS_ROBUST_XGB,
+                    # Templates.SINGLE_TABLE_CLASSIFICATION_GB,
                 ]
             elif task_type == TaskType.REGRESSION.name.lower():
                 templates = [
-                    Templates.SINGLE_TABLE_REGRESSION_DFS_XGB,
                     Templates.SINGLE_TABLE_REGRESSION_XGB,
-                    Templates.SINGLE_TABLE_REGRESSION_GB
+                    # Templates.SINGLE_TABLE_REGRESSION_DFS_XGB,
+                    # Templates.SINGLE_TABLE_REGRESSION_GB
                 ]
             elif task_type == TaskType.COLLABORATIVE_FILTERING.name.lower():
                 templates = [
-                    Templates.SINGLE_TABLE_REGRESSION_DFS_XGB,
                     Templates.SINGLE_TABLE_REGRESSION_XGB,
-                    Templates.SINGLE_TABLE_REGRESSION_GB
+                    # Templates.SINGLE_TABLE_REGRESSION_DFS_XGB,
+                    # Templates.SINGLE_TABLE_REGRESSION_GB
                 ]
             elif task_type == TaskType.TIME_SERIES_FORECASTING.name.lower():
                 templates = [
-                    Templates.SINGLE_TABLE_REGRESSION_DFS_XGB,
                     Templates.SINGLE_TABLE_REGRESSION_XGB,
-                    Templates.SINGLE_TABLE_REGRESSION_GB
+                    # Templates.SINGLE_TABLE_REGRESSION_DFS_XGB,
+                    # Templates.SINGLE_TABLE_REGRESSION_GB
                 ]
             elif task_type == TaskType.SEMISUPERVISED_CLASSIFICATION.name.lower():
                 templates = [Templates.SINGLE_TABLE_SEMI_CLASSIFICATION]

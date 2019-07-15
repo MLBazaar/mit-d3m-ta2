@@ -154,25 +154,6 @@ def test_pipelinesearcher_load_pipeline(json_loader_mock, yaml_loader_mock):
     assert json_loader_mock.call_count == 2
 
 
-def test_pipelinesearcher_get_template():
-    instance = PipelineSearcher()
-
-    # classification
-    instance._get_templates('single_table', 'classification')
-
-    # regression
-    instance._get_templates('single_table', 'regression')
-
-    # semisupervised classification
-    instance._get_templates('single_table', 'semisupervised_classification')
-
-    # single table clustering
-    instance._get_templates('single_table', 'clustering')
-
-    # object detection
-    instance._get_templates('image', 'object_detection')
-
-
 @patch('ta2.search.evaluate')
 def test_pipelinesearcher_score_pipeline(evaluate_mock):
     instance = PipelineSearcher()
