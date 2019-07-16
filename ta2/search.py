@@ -17,7 +17,7 @@ from d3m.metadata.pipeline import Pipeline, PrimitiveStep
 from d3m.metadata.problem import TaskType
 from d3m.runtime import DEFAULT_SCORING_PIPELINE_PATH, evaluate
 
-from ta2.template import load_template
+from ta2.tuning import SelectorTuner
 from ta2.utils import dump_pipeline
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
@@ -35,7 +35,7 @@ class Templates(Enum):
     # SINGLE TABLE CLASSIFICATION
     SINGLE_TABLE_CLASSIFICATION_ENC_XGB = 'single_table_classification_encoding_xgb.yml'
     SINGLE_TABLE_CLASSIFICATION_AR_RF = 'single_table_classification_autorpi_rf.yml'
-    # SINGLE_TABLE_CLASSIFICATION_DFS_ROBUST_XGB = 'single_table_classification_dfs_robust_xgb.yml'
+    SINGLE_TABLE_CLASSIFICATION_DFS_ROBUST_XGB = 'single_table_classification_dfs_robust_xgb.yml'
     # SINGLE_TABLE_CLASSIFICATION_DFS_XGB = 'single_table_classification_dfs_xgb.yml'
     # SINGLE_TABLE_CLASSIFICATION_GB = 'single_table_classification_gradient_boosting.yml'
 
@@ -174,7 +174,7 @@ class PipelineSearcher:
                 templates = [
                     Templates.SINGLE_TABLE_CLASSIFICATION_ENC_XGB,
                     Templates.SINGLE_TABLE_CLASSIFICATION_AR_RF,
-                    # Templates.SINGLE_TABLE_CLASSIFICATION_DFS_ROBUST_XGB,
+                    Templates.SINGLE_TABLE_CLASSIFICATION_DFS_ROBUST_XGB,
                     # Templates.SINGLE_TABLE_CLASSIFICATION_GB,
                 ]
             elif task_type == TaskType.REGRESSION.name.lower():
@@ -390,9 +390,7 @@ class PipelineSearcher:
         best_pipeline = None
         best_score = None
         best_normalized = 0
-        best_template = None
         best_template_name = None
-        best_tuner = None
         data_modality = None
         task_type = None
         task_subtype = None
@@ -424,25 +422,26 @@ class PipelineSearcher:
 
             self.setup_search()
 
-            for iteration in iterator:
-                if iteration < len(template_names):
-                    first = True
-                    template_name = template_names[iteration]
-                    template, tuner, proposal = load_template(template_name)
+            selector_tuner = SelectorTuner(template_names)
 
+            for iteration in iterator:
                 self.check_stop()
+                template_name, template, proposal, defaults = selector_tuner.propose()
                 pipeline = self._new_pipeline(template, proposal)
 
                 params = '\n'.join('{}: {}'.format(k, v) for k, v in proposal.items())
-                LOGGER.info("Scoring pipeline %s: %s\n%s", iteration + 1, pipeline.id, params)
+                LOGGER.warn("Scoring pipeline %s - %s: %s\n%s",
+                            iteration + 1, template_name, pipeline.id, params)
                 try:
                     self.score_pipeline(dataset, problem, pipeline)
                     pipeline.normalized_score = metric.normalize(pipeline.score)
                     # raise Exception("This won't work")
                 except Exception as ex:
-                    if first:
+                    if defaults:
                         error = '{}: {}'.format(type(ex).__name__, ex)
                         errors.append(error)
+                        if len(errors) >= len(template_names):
+                            raise Exception(errors)
 
                     LOGGER.exception("Error scoring pipeline %s for dataset %s",
                                      pipeline.id, dataset)
@@ -454,33 +453,22 @@ class PipelineSearcher:
                 except Exception:
                     LOGGER.exception("Error saving pipeline %s", pipeline.id)
 
-                tuner.add(proposal, pipeline.normalized_score)
+                selector_tuner.add(template_name, proposal, pipeline.normalized_score)
                 LOGGER.info("Pipeline %s score: %s - %s",
                             pipeline.id, pipeline.score, pipeline.normalized_score)
 
                 if pipeline.normalized_score > best_normalized:
-                    LOGGER.info("New best pipeline found! %s is better than %s",
-                                pipeline.score, best_score)
+                    LOGGER.warn("New best pipeline found: %s! %s is better than %s",
+                                template_name, pipeline.score, best_score)
                     best_pipeline = pipeline.id
                     best_score = pipeline.score
                     best_normalized = pipeline.normalized_score
                     best_template_name = template_name
-                    best_template = template
-                    best_tuner = tuner
-
-                if iteration == len(template_names):
-                    template = best_template
-                    tuner = best_tuner or tuner
-                    first = False
-
-                proposal = tuner.propose(1)
 
         except KeyboardInterrupt:
             pass
-        except Exception as ex:
+        except Exception:
             LOGGER.exception("Error processing dataset %s", dataset)
-            error = '{}: {}'.format(type(ex).__name__, ex)
-            errors.append(error)
 
         finally:
             if self.timeout and self.hard_timeout:
