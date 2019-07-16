@@ -487,6 +487,10 @@ class PipelineSearcher:
                 signal.alarm(0)
 
         self.done = True
+        iterations = iteration - len(template_names) + 1
+        if iterations <= 0:
+            iterations = None
+
         return {
             'pipeline': best_pipeline,
             'cv_score': best_score,
@@ -494,6 +498,6 @@ class PipelineSearcher:
             'data_modality': data_modality,
             'task_type': task_type,
             'task_subtype': task_subtype,
-            'tuning_iterations': iteration - len(template_names) + 1,
+            'tuning_iterations': iterations,
             'error': errors or None
         }
