@@ -256,14 +256,18 @@
     <span class="c1"># SINGLE TABLE CLASSIFICATION</span>
     <span class="n">SINGLE_TABLE_CLASSIFICATION_ENC_XGB</span> <span class="o">=</span> <span class="s1">&#39;single_table_classification_encoding_xgb.yml&#39;</span>
     <span class="n">SINGLE_TABLE_CLASSIFICATION_AR_RF</span> <span class="o">=</span> <span class="s1">&#39;single_table_classification_autorpi_rf.yml&#39;</span>
-    <span class="n">SINGLE_TABLE_CLASSIFICATION_DFS_ROBUST_XGB</span> <span class="o">=</span> <span class="s1">&#39;single_table_classification_dfs_robust_xgb.yml&#39;</span>
-    <span class="n">SINGLE_TABLE_CLASSIFICATION_DFS_XGB</span> <span class="o">=</span> <span class="s1">&#39;single_table_classification_dfs_xgb.yml&#39;</span>
-    <span class="n">SINGLE_TABLE_CLASSIFICATION_GB</span> <span class="o">=</span> <span class="s1">&#39;single_table_classification_gradient_boosting.yml&#39;</span>
+    <span class="c1"># SINGLE_TABLE_CLASSIFICATION_DFS_ROBUST_XGB = &#39;single_table_classification_dfs_robust_xgb.yml&#39;</span>
+    <span class="c1"># SINGLE_TABLE_CLASSIFICATION_DFS_XGB = &#39;single_table_classification_dfs_xgb.yml&#39;</span>
+    <span class="c1"># SINGLE_TABLE_CLASSIFICATION_GB = &#39;single_table_classification_gradient_boosting.yml&#39;</span>
 
     <span class="c1"># SINGLE TABLE REGRESSION</span>
-    <span class="n">SINGLE_TABLE_REGRESSION_DFS_XGB</span> <span class="o">=</span> <span class="s1">&#39;single_table_regression_dfs_xgb.yml&#39;</span>
     <span class="n">SINGLE_TABLE_REGRESSION_XGB</span> <span class="o">=</span> <span class="s1">&#39;single_table_regression_xgb.yml&#39;</span>
-    <span class="n">SINGLE_TABLE_REGRESSION_GB</span> <span class="o">=</span> <span class="s1">&#39;single_table_regression_gradient_boosting.yml&#39;</span>
+    <span class="c1"># SINGLE_TABLE_REGRESSION_DFS_XGB = &#39;single_table_regression_dfs_xgb.yml&#39;</span>
+    <span class="c1"># SINGLE_TABLE_REGRESSION_GB = &#39;single_table_regression_gradient_boosting.yml&#39;</span>
+
+    <span class="c1"># MISC</span>
+    <span class="n">SINGLE_TABLE_SEMI_CLASSIFICATION</span> <span class="o">=</span> <span class="s1">&#39;single_table_semi_classification_autonbox.yml&#39;</span>
+    <span class="n">SINGLE_TABLE_CLUSTERING</span> <span class="o">=</span> <span class="s1">&#39;single_table_clustering_ekss.yml&#39;</span>
 
     <span class="c1"># MULTI TABLE</span>
     <span class="n">MULTI_TABLE_CLASSIFICATION</span> <span class="o">=</span> <span class="s1">&#39;multi_table_classification_dfs_xgb.yml&#39;</span>
@@ -271,8 +275,8 @@
 
     <span class="c1"># TIMESERIES CLASSIFICATION</span>
     <span class="n">TIMESERIES_CLASSIFICATION_KN</span> <span class="o">=</span> <span class="s1">&#39;time_series_classification_k_neighbors_kn.yml&#39;</span>
-    <span class="n">TIMESERIES_CLASSIFICATION_RF</span> <span class="o">=</span> <span class="s1">&#39;time_series_classification_rf.yml&#39;</span>
-    <span class="n">TIMESERIES_CLASSIFICATION_XGB</span> <span class="o">=</span> <span class="s1">&#39;time_series_classification_xgb.yml&#39;</span>
+    <span class="c1"># TIMESERIES_CLASSIFICATION_XGB = &#39;time_series_classification_xgb.yml&#39;</span>
+    <span class="c1"># TIMESERIES_CLASSIFICATION_RF = &#39;time_series_classification_rf.yml&#39;</span>
 
     <span class="c1"># IMAGE</span>
     <span class="n">IMAGE_REGRESSION</span> <span class="o">=</span> <span class="s1">&#39;image_regression_resnet50_xgb.yml&#39;</span>
@@ -285,14 +289,10 @@
 
     <span class="c1"># GRAPH</span>
     <span class="n">GRAPH_COMMUNITY_DETECTION</span> <span class="o">=</span> <span class="s1">&#39;graph_community_detection.yml&#39;</span>
-    <span class="n">GRAPH_COMMUNITY_DETECTION_DISTIL</span> <span class="o">=</span> <span class="s1">&#39;graph_community_detection_distil.yml&#39;</span>
+    <span class="c1"># GRAPH_COMMUNITY_DETECTION_DISTIL = &#39;graph_community_detection_distil.yml&#39;</span>
     <span class="n">GRAPH_LINK_PREDICTION</span> <span class="o">=</span> <span class="s1">&#39;graph_link_prediction_distil.yml&#39;</span>
-    <span class="n">GRAPH_MATCHING</span> <span class="o">=</span> <span class="s1">&#39;graph_matching.yml&#39;</span>
-    <span class="n">GRAPH_MATCHING_JHU</span> <span class="o">=</span> <span class="s1">&#39;graph_matching_jhu.yml&#39;</span>
-
-    <span class="c1"># MISC</span>
-    <span class="n">SINGLE_TABLE_SEMI_CLASSIFICATION</span> <span class="o">=</span> <span class="s1">&#39;single_table_semi_classification_autonbox.yml&#39;</span>
-    <span class="n">SINGLE_TABLE_CLUSTERING</span> <span class="o">=</span> <span class="s1">&#39;single_table_clustering_ekss.yml&#39;</span></div>
+    <span class="n">GRAPH_MATCHING</span> <span class="o">=</span> <span class="s1">&#39;graph_matching.yml&#39;</span></div>
+    <span class="c1"># GRAPH_MATCHING_JHU = &#39;graph_matching_jhu.yml&#39;</span>
 
 
 <div class="viewcode-block" id="detect_data_modality"><a class="viewcode-back" href="../../api/ta2.search.html#ta2.search.detect_data_modality">[docs]</a><span class="k">def</span> <span class="nf">detect_data_modality</span><span class="p">(</span><span class="n">dataset_doc_path</span><span class="p">):</span>
@@ -395,26 +395,26 @@
                 <span class="n">templates</span> <span class="o">=</span> <span class="p">[</span>
                     <span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_CLASSIFICATION_ENC_XGB</span><span class="p">,</span>
                     <span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_CLASSIFICATION_AR_RF</span><span class="p">,</span>
-                    <span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_CLASSIFICATION_DFS_ROBUST_XGB</span><span class="p">,</span>
-                    <span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_CLASSIFICATION_GB</span><span class="p">,</span>
+                    <span class="c1"># Templates.SINGLE_TABLE_CLASSIFICATION_DFS_ROBUST_XGB,</span>
+                    <span class="c1"># Templates.SINGLE_TABLE_CLASSIFICATION_GB,</span>
                 <span class="p">]</span>
             <span class="k">elif</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskType</span><span class="o">.</span><span class="n">REGRESSION</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
                 <span class="n">templates</span> <span class="o">=</span> <span class="p">[</span>
-                    <span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_REGRESSION_DFS_XGB</span><span class="p">,</span>
                     <span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_REGRESSION_XGB</span><span class="p">,</span>
-                    <span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_REGRESSION_GB</span>
+                    <span class="c1"># Templates.SINGLE_TABLE_REGRESSION_DFS_XGB,</span>
+                    <span class="c1"># Templates.SINGLE_TABLE_REGRESSION_GB</span>
                 <span class="p">]</span>
             <span class="k">elif</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskType</span><span class="o">.</span><span class="n">COLLABORATIVE_FILTERING</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
                 <span class="n">templates</span> <span class="o">=</span> <span class="p">[</span>
-                    <span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_REGRESSION_DFS_XGB</span><span class="p">,</span>
                     <span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_REGRESSION_XGB</span><span class="p">,</span>
-                    <span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_REGRESSION_GB</span>
+                    <span class="c1"># Templates.SINGLE_TABLE_REGRESSION_DFS_XGB,</span>
+                    <span class="c1"># Templates.SINGLE_TABLE_REGRESSION_GB</span>
                 <span class="p">]</span>
             <span class="k">elif</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskType</span><span class="o">.</span><span class="n">TIME_SERIES_FORECASTING</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
                 <span class="n">templates</span> <span class="o">=</span> <span class="p">[</span>
-                    <span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_REGRESSION_DFS_XGB</span><span class="p">,</span>
                     <span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_REGRESSION_XGB</span><span class="p">,</span>
-                    <span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_REGRESSION_GB</span>
+                    <span class="c1"># Templates.SINGLE_TABLE_REGRESSION_DFS_XGB,</span>
+                    <span class="c1"># Templates.SINGLE_TABLE_REGRESSION_GB</span>
                 <span class="p">]</span>
             <span class="k">elif</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskType</span><span class="o">.</span><span class="n">SEMISUPERVISED_CLASSIFICATION</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
                 <span class="n">templates</span> <span class="o">=</span> <span class="p">[</span><span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_SEMI_CLASSIFICATION</span><span class="p">]</span>
