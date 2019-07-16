@@ -11,6 +11,7 @@ from datetime import datetime, timedelta
 from enum import Enum
 
 import numpy as np
+from btb.selection import UCB1
 from d3m.container.dataset import Dataset
 from d3m.metadata.base import ArgumentType, Context
 from d3m.metadata.pipeline import Pipeline, PrimitiveStep
@@ -35,7 +36,7 @@ class Templates(Enum):
     # SINGLE TABLE CLASSIFICATION
     SINGLE_TABLE_CLASSIFICATION_ENC_XGB = 'single_table_classification_encoding_xgb.yml'
     SINGLE_TABLE_CLASSIFICATION_AR_RF = 'single_table_classification_autorpi_rf.yml'
-    # SINGLE_TABLE_CLASSIFICATION_DFS_ROBUST_XGB = 'single_table_classification_dfs_robust_xgb.yml'
+    SINGLE_TABLE_CLASSIFICATION_DFS_ROBUST_XGB = 'single_table_classification_dfs_robust_xgb.yml'
     # SINGLE_TABLE_CLASSIFICATION_DFS_XGB = 'single_table_classification_dfs_xgb.yml'
     # SINGLE_TABLE_CLASSIFICATION_GB = 'single_table_classification_gradient_boosting.yml'
 
@@ -174,7 +175,7 @@ class PipelineSearcher:
                 templates = [
                     Templates.SINGLE_TABLE_CLASSIFICATION_ENC_XGB,
                     Templates.SINGLE_TABLE_CLASSIFICATION_AR_RF,
-                    # Templates.SINGLE_TABLE_CLASSIFICATION_DFS_ROBUST_XGB,
+                    Templates.SINGLE_TABLE_CLASSIFICATION_DFS_ROBUST_XGB,
                     # Templates.SINGLE_TABLE_CLASSIFICATION_GB,
                 ]
             elif task_type == TaskType.REGRESSION.name.lower():
@@ -424,11 +425,21 @@ class PipelineSearcher:
 
             self.setup_search()
 
+            selector = UCB1(template_names)
+            tuners = {
+                template_name: load_template(template_name)
+                for template_name in template_names
+            }
+
+            next_choice = None
+
             for iteration in iterator:
                 if iteration < len(template_names):
                     first = True
-                    template_name = template_names[iteration]
-                    template, tuner, proposal = load_template(template_name)
+                    template, tuner, proposal = tuners[template_names[iteration]]
+                elif next_choice:
+                    template, tuner, _ = tuners[next_choice]
+                    proposal = tuner.propose(1)
 
                 self.check_stop()
                 pipeline = self._new_pipeline(template, proposal)
@@ -471,9 +482,12 @@ class PipelineSearcher:
                 if iteration == len(template_names):
                     template = best_template
                     tuner = best_tuner or tuner
-                    first = False
+                    next_choice = selector.select({
+                        template_name: tuners[template_name][1].y
+                        for template_name in template_names
+                    })
 
-                proposal = tuner.propose(1)
+                    first = False
 
         except KeyboardInterrupt:
             pass
