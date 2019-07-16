@@ -358,7 +358,7 @@ def parse_args():
         '-b', '--budget', type=int,
         help='Maximum number of tuning iterations to perform')
     ta2_parser.add_argument(
-        '-e', '--template',
+        '-e', '--template', action='append',
         help='Name of the template to Use.')
 
     # TA3 Mode

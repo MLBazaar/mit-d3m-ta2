@@ -384,7 +384,7 @@ class PipelineSearcher:
         LOGGER.info("Timeout: %s (Hard: %s); Max end: %s",
                     self.timeout, self.hard_timeout, self.max_end_time)
 
-    def search(self, problem, timeout=None, budget=None, template_name=None):
+    def search(self, problem, timeout=None, budget=None, template_names=None):
 
         self.timeout = timeout
         best_pipeline = None
@@ -410,10 +410,8 @@ class PipelineSearcher:
             LOGGER.info("Searching dataset %s: %s/%s/%s",
                         dataset_name, data_modality, task_type, task_subtype)
             LOGGER.info("Loading the template and the tuner")
-            if template_name is None:
+            if template_names is None:
                 template_names = self._get_templates(data_modality, task_type)
-            else:
-                template_names = [template_name]
 
             if budget is not None:
                 iterator = range(budget)
