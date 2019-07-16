@@ -15,6 +15,7 @@ Submodules
 
    ta2.search
    ta2.template
+   ta2.tuning
    ta2.utils
 
 Module contents
