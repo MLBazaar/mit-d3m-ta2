@@ -175,25 +175,18 @@ class PipelineSearcher:
                     Templates.SINGLE_TABLE_CLASSIFICATION_ENC_XGB,
                     Templates.SINGLE_TABLE_CLASSIFICATION_AR_RF,
                     Templates.SINGLE_TABLE_CLASSIFICATION_DFS_ROBUST_XGB,
-                    # Templates.SINGLE_TABLE_CLASSIFICATION_GB,
                 ]
             elif task_type == TaskType.REGRESSION.name.lower():
                 templates = [
                     Templates.SINGLE_TABLE_REGRESSION_XGB,
-                    # Templates.SINGLE_TABLE_REGRESSION_DFS_XGB,
-                    # Templates.SINGLE_TABLE_REGRESSION_GB
                 ]
             elif task_type == TaskType.COLLABORATIVE_FILTERING.name.lower():
                 templates = [
                     Templates.SINGLE_TABLE_REGRESSION_XGB,
-                    # Templates.SINGLE_TABLE_REGRESSION_DFS_XGB,
-                    # Templates.SINGLE_TABLE_REGRESSION_GB
                 ]
             elif task_type == TaskType.TIME_SERIES_FORECASTING.name.lower():
                 templates = [
                     Templates.SINGLE_TABLE_REGRESSION_XGB,
-                    # Templates.SINGLE_TABLE_REGRESSION_DFS_XGB,
-                    # Templates.SINGLE_TABLE_REGRESSION_GB
                 ]
             elif task_type == TaskType.SEMISUPERVISED_CLASSIFICATION.name.lower():
                 templates = [Templates.SINGLE_TABLE_SEMI_CLASSIFICATION]
@@ -233,7 +226,7 @@ class PipelineSearcher:
             elif task_type == TaskType.GRAPH_MATCHING.name.lower():
                 templates = [Templates.GRAPH_MATCHING]
             elif task_type == TaskType.VERTEX_CLASSIFICATION.name.lower():
-                templates = [Templates.SINGLE_TABLE_CLASSIFICATION]
+                templates = [Templates.SINGLE_TABLE_CLASSIFICATION_ENC_XGB]
 
         return [template.value for template in templates]
 
