@@ -391,9 +391,7 @@ class PipelineSearcher:
         best_pipeline = None
         best_score = None
         best_normalized = 0
-        best_template = None
         best_template_name = None
-        best_tuner = None
         data_modality = None
         task_type = None
         task_subtype = None
@@ -476,12 +474,8 @@ class PipelineSearcher:
                     best_score = pipeline.score
                     best_normalized = pipeline.normalized_score
                     best_template_name = template_name
-                    best_template = template
-                    best_tuner = tuner
 
                 if iteration == len(template_names):
-                    template = best_template
-                    tuner = best_tuner or tuner
                     next_choice = selector.select({
                         template_name: tuners[template_name][1].y
                         for template_name in template_names
