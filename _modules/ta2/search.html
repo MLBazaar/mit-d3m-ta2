@@ -708,6 +708,10 @@
                 <span class="n">signal</span><span class="o">.</span><span class="n">alarm</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">done</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">iterations</span> <span class="o">=</span> <span class="n">iteration</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">template_names</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">iterations</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">iterations</span> <span class="o">=</span> <span class="kc">None</span>
+
         <span class="k">return</span> <span class="p">{</span>
             <span class="s1">&#39;pipeline&#39;</span><span class="p">:</span> <span class="n">best_pipeline</span><span class="p">,</span>
             <span class="s1">&#39;cv_score&#39;</span><span class="p">:</span> <span class="n">best_score</span><span class="p">,</span>
@@ -715,7 +719,7 @@
             <span class="s1">&#39;data_modality&#39;</span><span class="p">:</span> <span class="n">data_modality</span><span class="p">,</span>
             <span class="s1">&#39;task_type&#39;</span><span class="p">:</span> <span class="n">task_type</span><span class="p">,</span>
             <span class="s1">&#39;task_subtype&#39;</span><span class="p">:</span> <span class="n">task_subtype</span><span class="p">,</span>
-            <span class="s1">&#39;tuning_iterations&#39;</span><span class="p">:</span> <span class="n">iteration</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">template_names</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="s1">&#39;tuning_iterations&#39;</span><span class="p">:</span> <span class="n">iterations</span><span class="p">,</span>
             <span class="s1">&#39;error&#39;</span><span class="p">:</span> <span class="n">errors</span> <span class="ow">or</span> <span class="kc">None</span>
         <span class="p">}</span></div></div>
 </pre></div>
