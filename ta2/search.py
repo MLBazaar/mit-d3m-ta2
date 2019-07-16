@@ -11,14 +11,13 @@ from datetime import datetime, timedelta
 from enum import Enum
 
 import numpy as np
-from btb.selection import UCB1
 from d3m.container.dataset import Dataset
 from d3m.metadata.base import ArgumentType, Context
 from d3m.metadata.pipeline import Pipeline, PrimitiveStep
 from d3m.metadata.problem import TaskType
 from d3m.runtime import DEFAULT_SCORING_PIPELINE_PATH, evaluate
 
-from ta2.template import load_template
+from ta2.tuning import SelectorTuner
 from ta2.utils import dump_pipeline
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
@@ -423,35 +422,26 @@ class PipelineSearcher:
 
             self.setup_search()
 
-            selector = UCB1(template_names)
-            tuners = {
-                template_name: load_template(template_name)
-                for template_name in template_names
-            }
-
-            next_choice = None
+            selector_tuner = SelectorTuner(template_names)
 
             for iteration in iterator:
-                if iteration < len(template_names):
-                    first = True
-                    template, tuner, proposal = tuners[template_names[iteration]]
-                elif next_choice:
-                    template, tuner, _ = tuners[next_choice]
-                    proposal = tuner.propose(1)
-
                 self.check_stop()
+                template_name, template, proposal, defaults = selector_tuner.propose()
                 pipeline = self._new_pipeline(template, proposal)
 
                 params = '\n'.join('{}: {}'.format(k, v) for k, v in proposal.items())
-                LOGGER.info("Scoring pipeline %s: %s\n%s", iteration + 1, pipeline.id, params)
+                LOGGER.warn("Scoring pipeline %s - %s: %s\n%s",
+                            iteration + 1, template_name, pipeline.id, params)
                 try:
                     self.score_pipeline(dataset, problem, pipeline)
                     pipeline.normalized_score = metric.normalize(pipeline.score)
                     # raise Exception("This won't work")
                 except Exception as ex:
-                    if first:
+                    if defaults:
                         error = '{}: {}'.format(type(ex).__name__, ex)
                         errors.append(error)
+                        if len(errors) >= len(template_names):
+                            raise Exception(errors)
 
                     LOGGER.exception("Error scoring pipeline %s for dataset %s",
                                      pipeline.id, dataset)
@@ -463,32 +453,22 @@ class PipelineSearcher:
                 except Exception:
                     LOGGER.exception("Error saving pipeline %s", pipeline.id)
 
-                tuner.add(proposal, pipeline.normalized_score)
+                selector_tuner.add(template_name, proposal, pipeline.normalized_score)
                 LOGGER.info("Pipeline %s score: %s - %s",
                             pipeline.id, pipeline.score, pipeline.normalized_score)
 
                 if pipeline.normalized_score > best_normalized:
-                    LOGGER.info("New best pipeline found! %s is better than %s",
-                                pipeline.score, best_score)
+                    LOGGER.warn("New best pipeline found: %s! %s is better than %s",
+                                template_name, pipeline.score, best_score)
                     best_pipeline = pipeline.id
                     best_score = pipeline.score
                     best_normalized = pipeline.normalized_score
                     best_template_name = template_name
 
-                if iteration == len(template_names):
-                    next_choice = selector.select({
-                        template_name: tuners[template_name][1].y
-                        for template_name in template_names
-                    })
-
-                    first = False
-
         except KeyboardInterrupt:
             pass
-        except Exception as ex:
+        except Exception:
             LOGGER.exception("Error processing dataset %s", dataset)
-            error = '{}: {}'.format(type(ex).__name__, ex)
-            errors.append(error)
 
         finally:
             if self.timeout and self.hard_timeout:

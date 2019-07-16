@@ -6,8 +6,7 @@ import warnings
 from collections import defaultdict
 
 import yaml
-from btb.hyper_parameter import HyperParameter
-from btb.tuning import GP
+from btb import HyperParameter
 from d3m import index
 from d3m.metadata.base import ArgumentType
 from d3m.metadata.hyperparams import Union
@@ -24,8 +23,7 @@ warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 
 def extract_pipeline_tunables(pipeline):
-    tunables = []
-    defaults = dict()
+    tunable_hyperparameters = defaultdict(dict)
     for step, step_hyperparams in enumerate(pipeline.get_free_hyperparams()):
         for name, hyperparam in step_hyperparams.items():
             if TUNING_PARAMETER not in hyperparam.semantic_types:
@@ -34,7 +32,6 @@ def extract_pipeline_tunables(pipeline):
             if isinstance(hyperparam, Union):
                 hyperparam = hyperparam.default_hyperparameter
 
-            key = (str(step), name)
             try:
                 param_type = hyperparam.structural_type.__name__
                 param_type = 'string' if param_type == 'str' else param_type
@@ -60,15 +57,21 @@ def extract_pipeline_tunables(pipeline):
                 continue
 
             try:
-                value = HyperParameter(param_type, param_range)
-                tunables.append((key, value))
-                defaults[key] = hyperparam.get_default()
+                # Health-Check: Some configurations make HyperParameter crash
+                HyperParameter(param_type, param_range)
+
+                # If the line above did not crash, we are safe
+                tunable_hyperparameters[step][name] = {
+                    'type': param_type,
+                    'range': param_range,
+                    'default': hyperparam.get_default()
+                }
 
             except OverflowError:
                 LOGGER.warn('Warning! Overflow: %s, %s, %s', step, name, hyperparam)
                 continue
 
-    return tunables, defaults
+    return tunable_hyperparameters
 
 
 def get_tunables(tunable_hyperparameters):
@@ -177,14 +180,15 @@ def load_template(template_name):
 
     if 'tunable_hyperparameters' in template:
         LOGGER.info('Using predefined tunable hyperparameters')
-        tunables, defaults = get_tunables(template['tunable_hyperparameters'])
+        # tunables, defaults = get_tunables(template['tunable_hyperparameters'])
+        tunable_hyperparameters = template['tunable_hyperparameters']
     else:
         LOGGER.info('Extracting tunables from pipeline')
-        tunables, defaults = extract_pipeline_tunables(pipeline)
+        # tunables, defaults = extract_pipeline_tunables(pipeline)
+        tunable_hyperparameters = extract_pipeline_tunables(pipeline)
 
-    tuner = GP(tunables)
     print("Pipeline {} loaded".format(pipeline.id))
-    return pipeline, tuner, defaults
+    return pipeline, tunable_hyperparameters
 
 
 def add_tunable_hyperparameters(input_path, output_path):
