@@ -397,25 +397,18 @@
                     <span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_CLASSIFICATION_ENC_XGB</span><span class="p">,</span>
                     <span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_CLASSIFICATION_AR_RF</span><span class="p">,</span>
                     <span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_CLASSIFICATION_DFS_ROBUST_XGB</span><span class="p">,</span>
-                    <span class="c1"># Templates.SINGLE_TABLE_CLASSIFICATION_GB,</span>
                 <span class="p">]</span>
             <span class="k">elif</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskType</span><span class="o">.</span><span class="n">REGRESSION</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
                 <span class="n">templates</span> <span class="o">=</span> <span class="p">[</span>
                     <span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_REGRESSION_XGB</span><span class="p">,</span>
-                    <span class="c1"># Templates.SINGLE_TABLE_REGRESSION_DFS_XGB,</span>
-                    <span class="c1"># Templates.SINGLE_TABLE_REGRESSION_GB</span>
                 <span class="p">]</span>
             <span class="k">elif</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskType</span><span class="o">.</span><span class="n">COLLABORATIVE_FILTERING</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
                 <span class="n">templates</span> <span class="o">=</span> <span class="p">[</span>
                     <span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_REGRESSION_XGB</span><span class="p">,</span>
-                    <span class="c1"># Templates.SINGLE_TABLE_REGRESSION_DFS_XGB,</span>
-                    <span class="c1"># Templates.SINGLE_TABLE_REGRESSION_GB</span>
                 <span class="p">]</span>
             <span class="k">elif</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskType</span><span class="o">.</span><span class="n">TIME_SERIES_FORECASTING</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
                 <span class="n">templates</span> <span class="o">=</span> <span class="p">[</span>
                     <span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_REGRESSION_XGB</span><span class="p">,</span>
-                    <span class="c1"># Templates.SINGLE_TABLE_REGRESSION_DFS_XGB,</span>
-                    <span class="c1"># Templates.SINGLE_TABLE_REGRESSION_GB</span>
                 <span class="p">]</span>
             <span class="k">elif</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskType</span><span class="o">.</span><span class="n">SEMISUPERVISED_CLASSIFICATION</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
                 <span class="n">templates</span> <span class="o">=</span> <span class="p">[</span><span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_SEMI_CLASSIFICATION</span><span class="p">]</span>
@@ -455,7 +448,7 @@
             <span class="k">elif</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskType</span><span class="o">.</span><span class="n">GRAPH_MATCHING</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
                 <span class="n">templates</span> <span class="o">=</span> <span class="p">[</span><span class="n">Templates</span><span class="o">.</span><span class="n">GRAPH_MATCHING</span><span class="p">]</span>
             <span class="k">elif</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskType</span><span class="o">.</span><span class="n">VERTEX_CLASSIFICATION</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
-                <span class="n">templates</span> <span class="o">=</span> <span class="p">[</span><span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_CLASSIFICATION</span><span class="p">]</span>
+                <span class="n">templates</span> <span class="o">=</span> <span class="p">[</span><span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_CLASSIFICATION_ENC_XGB</span><span class="p">]</span>
 
         <span class="k">return</span> <span class="p">[</span><span class="n">template</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">template</span> <span class="ow">in</span> <span class="n">templates</span><span class="p">]</span>
 
@@ -606,7 +599,7 @@
         <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Timeout: </span><span class="si">%s</span><span class="s2"> (Hard: </span><span class="si">%s</span><span class="s2">); Max end: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">hard_timeout</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_end_time</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="PipelineSearcher.search"><a class="viewcode-back" href="../../api/ta2.search.html#ta2.search.PipelineSearcher.search">[docs]</a>    <span class="k">def</span> <span class="nf">search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">problem</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">budget</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">template_name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="PipelineSearcher.search"><a class="viewcode-back" href="../../api/ta2.search.html#ta2.search.PipelineSearcher.search">[docs]</a>    <span class="k">def</span> <span class="nf">search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">problem</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">budget</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">template_names</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span> <span class="o">=</span> <span class="n">timeout</span>
         <span class="n">best_pipeline</span> <span class="o">=</span> <span class="kc">None</span>
@@ -632,10 +625,8 @@
             <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Searching dataset </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
                         <span class="n">dataset_name</span><span class="p">,</span> <span class="n">data_modality</span><span class="p">,</span> <span class="n">task_type</span><span class="p">,</span> <span class="n">task_subtype</span><span class="p">)</span>
             <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Loading the template and the tuner&quot;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">template_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">template_names</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">template_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_templates</span><span class="p">(</span><span class="n">data_modality</span><span class="p">,</span> <span class="n">task_type</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">template_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">template_name</span><span class="p">]</span>
 
             <span class="k">if</span> <span class="n">budget</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">iterator</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="n">budget</span><span class="p">)</span>
