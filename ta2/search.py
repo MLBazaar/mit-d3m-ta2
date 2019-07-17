@@ -463,10 +463,9 @@ class PipelineSearcher:
             LOGGER.error("All templates failed for %s. Using fallback", dataset)
             self.score_pipeline(dataset, problem, self.fallback_pipeline)
             self._save_pipeline(self.fallback_pipeline)
-            best_pipeline = pipeline.id
-            best_score = pipeline.score
+            best_pipeline = self.fallback_pipeline.id
+            best_score = self.fallback_pipeline.score
             best_template_name = 'fallback_pipeline.yml'
-
         finally:
             if self.timeout and self.hard_timeout:
                 signal.alarm(0)
