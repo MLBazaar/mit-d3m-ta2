@@ -38,7 +38,7 @@ class SelectorTuner:
 
     def propose(self):
         if len(self.templates) < len(self.template_names):
-            template_name = self.template_names[len(self.templates)][0]
+            template_name = self.template_names[len(self.templates)]
             template, tunable_hyperparameters = load_template(template_name)
             tunables, proposal = self._get_tunables(tunable_hyperparameters)
             self.templates[template_name] = template, GP(tunables)
