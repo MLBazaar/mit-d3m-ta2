@@ -83,7 +83,7 @@ install-develop: clean-build clean-pyc ## install the package in editable mode a
 
 .PHONY: install-system
 install-system: ## install system requirements
-	sudo apt-get install -y $(cat system_requirements.txt)
+	sudo apt-get install -y $(shell cat system_requirements.txt)
 
 .PHONY: install-all
 install-all: clean-build clean-pyc install-system install-develop ## install-develop + additional requirements
