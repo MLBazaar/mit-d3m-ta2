@@ -12,6 +12,7 @@ install_requires = [
     'scikit-learn[alldeps]==0.20.3',
     'sri-d3m==1.5.5',
     'rpi_d3m_primitives==0.1.6',
+    'Cython==0.29.7',
 ]
 
 
