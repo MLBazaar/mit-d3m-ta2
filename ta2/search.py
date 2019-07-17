@@ -249,6 +249,7 @@ class PipelineSearcher:
         self.datasets = self._find_datasets(input_dir)
         self.data_pipeline = self._load_pipeline('kfold_pipeline.yml')
         self.scoring_pipeline = self._load_pipeline(DEFAULT_SCORING_PIPELINE_PATH)
+        # self.fallback_pipeline = self._load_pipeline(FALLBACK_PIPELINE_PATH)
 
     def score_pipeline(self, dataset, problem, pipeline, metrics=None, random_seed=0,
                        folds=5, stratified=False, shuffle=False):
@@ -459,7 +460,12 @@ class PipelineSearcher:
         except KeyboardInterrupt:
             pass
         except Exception:
-            LOGGER.exception("Error processing dataset %s", dataset)
+            LOGGER.error("All templates failed for %s. Using fallback", dataset)
+            self.score_pipeline(dataset, problem, self.fallback_pipeline)
+            self._save_pipeline(self.fallback_pipeline)
+            best_pipeline = pipeline.id
+            best_score = pipeline.score
+            best_template_name = 'fallback_pipeline.yml'
 
         finally:
             if self.timeout and self.hard_timeout:
