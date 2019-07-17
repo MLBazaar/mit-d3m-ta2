@@ -434,14 +434,15 @@ class PipelineSearcher:
                     pipeline.normalized_score = metric.normalize(pipeline.score)
                     # raise Exception("This won't work")
                 except Exception as ex:
+                    LOGGER.exception("Error scoring pipeline %s for dataset %s",
+                                     pipeline.id, dataset)
+
                     if defaults:
                         error = '{}: {}'.format(type(ex).__name__, ex)
                         errors.append(error)
                         if len(errors) >= len(template_names):
                             raise Exception(errors)
 
-                    LOGGER.exception("Error scoring pipeline %s for dataset %s",
-                                     pipeline.id, dataset)
                     pipeline.score = None
                     pipeline.normalized_score = 0.0
 
@@ -465,7 +466,7 @@ class PipelineSearcher:
         except KeyboardInterrupt:
             pass
         except Exception:
-            LOGGER.error("All templates failed for %s. Using fallback", dataset)
+            LOGGER.exception("All templates failed for %s. Using fallback", dataset)
             self.score_pipeline(dataset, problem, self.fallback)
             self.fallback.normalized_score = metric.normalize(self.fallback.score)
             self._save_pipeline(self.fallback)
