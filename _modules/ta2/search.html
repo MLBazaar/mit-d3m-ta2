@@ -420,7 +420,7 @@
         <span class="k">if</span> <span class="n">data_modality</span> <span class="o">==</span> <span class="s1">&#39;multi_table&#39;</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskType</span><span class="o">.</span><span class="n">CLASSIFICATION</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
                 <span class="n">templates</span> <span class="o">=</span> <span class="p">[</span>
-                    <span class="n">Templates</span><span class="o">.</span><span class="n">MULTI_TABLE_CLASSIFICATION_LDA_LOGREG</span><span class="p">,</span>
+                    <span class="c1"># Templates.MULTI_TABLE_CLASSIFICATION_LDA_LOGREG,</span>
                     <span class="n">Templates</span><span class="o">.</span><span class="n">MULTI_TABLE_CLASSIFICATION_DFS_XGB</span><span class="p">,</span>
                 <span class="p">]</span>
             <span class="k">elif</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskType</span><span class="o">.</span><span class="n">REGRESSION</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
