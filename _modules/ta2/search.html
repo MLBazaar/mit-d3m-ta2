@@ -682,12 +682,12 @@
         <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
             <span class="k">pass</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-            <span class="n">LOGGER</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;All templates failed for </span><span class="si">%s</span><span class="s2">. Using fallback&quot;</span><span class="p">,</span> <span class="n">dataset</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">score_pipeline</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">problem</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fallback_pipeline</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_save_pipeline</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fallback_pipeline</span><span class="p">)</span>
-            <span class="n">best_pipeline</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fallback_pipeline</span><span class="o">.</span><span class="n">id</span>
-            <span class="n">best_score</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fallback_pipeline</span><span class="o">.</span><span class="n">score</span>
-            <span class="n">best_template_name</span> <span class="o">=</span> <span class="s1">&#39;fallback_pipeline.yml&#39;</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;All templates failed for </span><span class="si">%s</span><span class="s2">. Using fallback&quot;</span><span class="p">,</span> <span class="n">dataset</span><span class="p">)</span>
+            <span class="c1"># self.score_pipeline(dataset, problem, self.fallback_pipeline)</span>
+            <span class="c1"># self._save_pipeline(self.fallback_pipeline)</span>
+            <span class="c1"># best_pipeline = self.fallback_pipeline.id</span>
+            <span class="c1"># best_score = self.fallback_pipeline.score</span>
+            <span class="c1"># best_template_name = &#39;fallback_pipeline.yml&#39;</span>
         <span class="k">finally</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">hard_timeout</span><span class="p">:</span>
                 <span class="n">signal</span><span class="o">.</span><span class="n">alarm</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
