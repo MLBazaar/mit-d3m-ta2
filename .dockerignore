@@ -4,3 +4,7 @@ output/
 docs/
 tests/
 logs/
+static/
+notebooks/
+.tox/
+.git/

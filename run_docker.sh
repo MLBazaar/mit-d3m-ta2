@@ -1,6 +1,10 @@
 #!/bin/bash
 
-# docker build -t mit-d3m-ta2 .
+docker build -t mit-d3m-ta2 .
+
+if [ -n "$*" ]; then
+    COMMAND="ta2 $*"
+fi
 
 rm -r output
 mkdir -p output
@@ -16,4 +20,5 @@ docker run -i -t --rm \
     -v $(pwd)/output:/output \
     -v $(pwd)/static:/static \
     -u $UID \
-    mit-d3m-ta2
+    mit-d3m-ta2 \
+    $COMMAND

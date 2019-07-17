@@ -7,14 +7,20 @@ WORKDIR /user_dev
 EXPOSE $D3MPORT
 
 RUN mkdir -p /user_dev && \
-    mkdir -p /output && \
-    mkdir -p /input
+    mkdir -p /user_dev/output && \
+    mkdir -p /user_dev/input && \
+    ln -s /user_dev/output /output && \
+    ln -s /user_dev/input /input
 
-# Install project
-COPY setup.py docker_requirements.txt /user_dev/
-RUN pip3 install -e /user_dev -r /user_dev/docker_requirements.txt
+# Install requirements
+COPY docker_requirements.txt /user_dev/
+RUN pip3 install -r /user_dev/docker_requirements.txt
 
 # Copy code
+COPY setup.py MANIFEST.in /user_dev/
 COPY ta2 /user_dev/ta2
+
+# Install project
+RUN pip3 install /user_dev
 
 CMD ["python3", "/user_dev/ta2/ta3/server.py", "-v"]
