@@ -23,6 +23,7 @@ from ta2.utils import dump_pipeline
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 PIPELINES_DIR = os.path.join(BASE_DIR, 'pipelines')
 TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')
+FALLBACK_PIPELINE = 'fallback_pipeline.yml'
 
 TUNING_PARAMETER = 'https://metadata.datadrivendiscovery.org/types/TuningParameter'
 
@@ -49,7 +50,8 @@ class Templates(Enum):
     SINGLE_TABLE_CLUSTERING = 'single_table_clustering_ekss.yml'
 
     # MULTI TABLE
-    MULTI_TABLE_CLASSIFICATION = 'multi_table_classification_dfs_xgb.yml'
+    MULTI_TABLE_CLASSIFICATION_DFS_XGB = 'multi_table_classification_dfs_xgb.yml'
+    MULTI_TABLE_CLASSIFICATION_LDA_LOGREG = 'multi_table_classification_lda_logreg.yml'
     MULTI_TABLE_REGRESSION = 'multi_table_regression_dfs_xgb.yml'
 
     # TIMESERIES CLASSIFICATION
@@ -195,7 +197,10 @@ class PipelineSearcher:
 
         if data_modality == 'multi_table':
             if task_type == TaskType.CLASSIFICATION.name.lower():
-                templates = [Templates.MULTI_TABLE_CLASSIFICATION]
+                templates = [
+                    Templates.MULTI_TABLE_CLASSIFICATION_LDA_LOGREG,
+                    Templates.MULTI_TABLE_CLASSIFICATION_DFS_XGB,
+                ]
             elif task_type == TaskType.REGRESSION.name.lower():
                 templates = [Templates.MULTI_TABLE_REGRESSION]
         elif data_modality == 'text':
@@ -249,7 +254,7 @@ class PipelineSearcher:
         self.datasets = self._find_datasets(input_dir)
         self.data_pipeline = self._load_pipeline('kfold_pipeline.yml')
         self.scoring_pipeline = self._load_pipeline(DEFAULT_SCORING_PIPELINE_PATH)
-        # self.fallback_pipeline = self._load_pipeline(FALLBACK_PIPELINE_PATH)
+        self.fallback = self._load_pipeline(FALLBACK_PIPELINE)
 
     def score_pipeline(self, dataset, problem, pipeline, metrics=None, random_seed=0,
                        folds=5, stratified=False, shuffle=False):
@@ -461,11 +466,12 @@ class PipelineSearcher:
             pass
         except Exception:
             LOGGER.error("All templates failed for %s. Using fallback", dataset)
-            self.score_pipeline(dataset, problem, self.fallback_pipeline)
-            self._save_pipeline(self.fallback_pipeline)
-            best_pipeline = self.fallback_pipeline.id
-            best_score = self.fallback_pipeline.score
-            best_template_name = 'fallback_pipeline.yml'
+            self.score_pipeline(dataset, problem, self.fallback)
+            self.fallback.normalized_score = metric.normalize(self.fallback.score)
+            self._save_pipeline(self.fallback)
+            best_pipeline = self.fallback.id
+            best_score = self.fallback.score
+            best_template_name = FALLBACK_PIPELINE
         finally:
             if self.timeout and self.hard_timeout:
                 signal.alarm(0)

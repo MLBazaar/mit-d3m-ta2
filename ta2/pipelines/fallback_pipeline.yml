@@ -1,0 +1,23 @@
+created: '2019-07-17T10:52:17.365572Z'
+digest: f8424b74cbed2854a17aa366b7ebff15f4d81b3a74a20ac783d0cb26b7ab31b9
+id: ca71b123-c15b-4d8f-bc9c-1cc07d058f15
+inputs:
+- name: inputs
+outputs:
+- data: steps.0.produce
+  name: output predictions
+schema: https://metadata.datadrivendiscovery.org/schemas/v0/pipeline.json
+steps:
+- arguments:
+    inputs:
+      data: inputs.0
+      type: CONTAINER
+  outputs:
+  - id: produce
+  primitive:
+    digest: fddf9d4f8ed4adff089c90181c5d2bb76198ce45ecd54c2386d2544443f59917
+    id: 36d5472c-e0a4-4ed6-a1d0-2665feacff39
+    name: Mean Baseline
+    python_path: d3m.primitives.classification.gaussian_classification.MeanBaseline
+    version: 1.5.5
+  type: PRIMITIVE
