@@ -81,8 +81,12 @@ install-test: clean-build clean-pyc ## install the package and test dependencies
 install-develop: clean-build clean-pyc ## install the package in editable mode and dependencies for development
 	pip install -e .[dev] && pip install -r requirements.txt
 
+.PHONY: install-system
+install-system: ## install system requirements
+	sudo apt-get install -y $(cat system_requirements.txt)
+
 .PHONY: install-all
-install-all: clean-build clean-pyc install-develop ## install-develop + additional requirements
+install-all: clean-build clean-pyc install-all install-develop ## install-develop + additional requirements
 	pip install -r devel_requirements.txt
 	python -m d3m.index download -o static
 
