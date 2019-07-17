@@ -198,7 +198,7 @@ class PipelineSearcher:
         if data_modality == 'multi_table':
             if task_type == TaskType.CLASSIFICATION.name.lower():
                 templates = [
-                    Templates.MULTI_TABLE_CLASSIFICATION_LDA_LOGREG,
+                    # Templates.MULTI_TABLE_CLASSIFICATION_LDA_LOGREG,
                     Templates.MULTI_TABLE_CLASSIFICATION_DFS_XGB,
                 ]
             elif task_type == TaskType.REGRESSION.name.lower():
