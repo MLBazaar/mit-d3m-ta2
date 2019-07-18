@@ -244,6 +244,7 @@ class PipelineSearcher:
         self.static = static_dir
         self.dump = dump
         self.hard_timeout = hard_timeout
+        self.subprocess = None
 
         self.ranked_dir = os.path.join(self.output, 'pipelines_ranked')
         self.scored_dir = os.path.join(self.output, 'pipelines_scored')
@@ -262,13 +263,13 @@ class PipelineSearcher:
     def _evaluate(out, *args, **kwargs):
         out.extend(evaluate(*args, **kwargs))
 
-    @classmethod
-    def evaluate(cls, *args, **kwargs):
+    def evaluate(self, *args, **kwargs):
         with Manager() as manager:
             output = manager.list()
-            process = Process(target=cls._evaluate, args=(output, *args), kwargs=kwargs)
-            process.start()
-            process.join()
+            self.subprocess = Process(target=self._evaluate, args=(output, *args), kwargs=kwargs)
+            self.subprocess.start()
+            self.subprocess.join()
+            self.subprocess = None
 
             if not output:
                 raise Exception("Evaluate crashed")
@@ -383,6 +384,10 @@ class PipelineSearcher:
 
     def stop(self):
         self._stop = True
+        if self.subprocess:
+            LOGGER.info('Killing subprocess: %s', self.subprocess.pid)
+            self.subprocess.terminate()
+            self.subprocess = None
 
     def _timeout(self, *args, **kwargs):
         raise KeyboardInterrupt()
