@@ -507,7 +507,7 @@ class PipelineSearcher:
             pass
         except Exception as ex:
             LOGGER.exception("Error processing dataset %s", dataset)
-            error = '{}: {}'.format(type(ex).__name__, ex)
+            errors.append('{}: {}'.format(type(ex).__name__, ex))
 
         finally:
             if self.timeout and self.hard_timeout:
