@@ -461,7 +461,7 @@ class PipelineSearcher:
                     if defaults:
                         error = '{}: {}'.format(type(ex).__name__, ex)
                         errors.append(error)
-                        if len(errors) >= len(template_names):
+                        if len(errors) >= min(len(template_names), budget or np.inf):
                             raise Exception(errors)
 
                     pipeline.score = None
