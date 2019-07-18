@@ -534,7 +534,11 @@
             <span class="n">failed_result</span> <span class="o">=</span> <span class="n">all_results</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
             <span class="n">message</span> <span class="o">=</span> <span class="n">failed_result</span><span class="o">.</span><span class="n">pipeline_run</span><span class="o">.</span><span class="n">status</span><span class="p">[</span><span class="s1">&#39;message&#39;</span><span class="p">]</span>
             <span class="n">LOGGER</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
-            <span class="k">raise</span> <span class="n">failed_result</span><span class="o">.</span><span class="n">error</span><span class="o">.</span><span class="n">__cause__</span>
+            <span class="n">cause</span> <span class="o">=</span> <span class="n">failed_result</span><span class="o">.</span><span class="n">error</span><span class="o">.</span><span class="n">__cause__</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cause</span><span class="p">,</span> <span class="ne">BaseException</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="n">cause</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">cause</span><span class="p">)</span>
 
         <span class="n">pipeline</span><span class="o">.</span><span class="n">cv_scores</span> <span class="o">=</span> <span class="p">[</span><span class="n">score</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">score</span> <span class="ow">in</span> <span class="n">all_scores</span><span class="p">]</span>
         <span class="n">pipeline</span><span class="o">.</span><span class="n">score</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">pipeline</span><span class="o">.</span><span class="n">cv_scores</span><span class="p">)</span></div>
