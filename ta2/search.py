@@ -57,6 +57,8 @@ class Templates(Enum):
 
     # TIMESERIES CLASSIFICATION
     TIMESERIES_CLASSIFICATION_KN = 'time_series_classification_k_neighbors_kn.yml'
+    TIMESERIES_CLASSIFICATION_DSBOX_LR = 'time_series_classification_dsbox_lr.yml'
+    TIMESERIES_CLASSIFICATION_LSTM_FCN = 'time_series_classification_lstm_fcn.yml'
     # TIMESERIES_CLASSIFICATION_XGB = 'time_series_classification_xgb.yml'
     # TIMESERIES_CLASSIFICATION_RF = 'time_series_classification_rf.yml'
 
@@ -211,7 +213,11 @@ class PipelineSearcher:
                 templates = [Templates.TEXT_REGRESSION]
 
         if data_modality == 'timeseries':
-            templates = [Templates.TIMESERIES_CLASSIFICATION_KN]
+            templates = [
+                Templates.TIMESERIES_CLASSIFICATION_KN,
+                Templates.TIMESERIES_CLASSIFICATION_DSBOX_LR,
+                Templates.TIMESERIES_CLASSIFICATION_LSTM_FCN
+            ]
             # if task_type == TaskType.CLASSIFICATION.name.lower():
             #     template = Templates.TIMESERIES_CLASSIFICATION
             # elif task_type == TaskType.REGRESSION.name.lower():
