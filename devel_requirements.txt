@@ -6,4 +6,3 @@ cython==0.29.7
 -e git+https://github.com/autonlab/fastlvm.git@f0c7d40c8e7005d5e3470a0247f0bf4449a56eed#egg=fastlvm
 
 tensorflow==1.12.2
-keras==2.2.2
