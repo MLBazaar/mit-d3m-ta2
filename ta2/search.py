@@ -9,6 +9,7 @@ import warnings
 from collections import defaultdict
 from datetime import datetime, timedelta
 from enum import Enum
+from multiprocessing import Manager, Process
 
 import numpy as np
 from d3m.container.dataset import Dataset
@@ -198,7 +199,7 @@ class PipelineSearcher:
         if data_modality == 'multi_table':
             if task_type == TaskType.CLASSIFICATION.name.lower():
                 templates = [
-                    # Templates.MULTI_TABLE_CLASSIFICATION_LDA_LOGREG,
+                    Templates.MULTI_TABLE_CLASSIFICATION_LDA_LOGREG,
                     Templates.MULTI_TABLE_CLASSIFICATION_DFS_XGB,
                 ]
             elif task_type == TaskType.REGRESSION.name.lower():
@@ -242,6 +243,7 @@ class PipelineSearcher:
         self.static = static_dir
         self.dump = dump
         self.hard_timeout = hard_timeout
+        self.subprocess = None
 
         self.ranked_dir = os.path.join(self.output, 'pipelines_ranked')
         self.scored_dir = os.path.join(self.output, 'pipelines_scored')
@@ -256,8 +258,26 @@ class PipelineSearcher:
         self.scoring_pipeline = self._load_pipeline(DEFAULT_SCORING_PIPELINE_PATH)
         self.fallback = self._load_pipeline(FALLBACK_PIPELINE)
 
+    @staticmethod
+    def _evaluate(out, *args, **kwargs):
+        out.extend(evaluate(*args, **kwargs))
+
+    def evaluate(self, *args, **kwargs):
+        with Manager() as manager:
+            output = manager.list()
+            self.subprocess = Process(target=self._evaluate, args=(output, *args), kwargs=kwargs)
+            self.subprocess.start()
+            self.subprocess.join()
+            self.subprocess = None
+
+            if not output:
+                raise Exception("Evaluate crashed")
+
+            return tuple(output)
+
     def score_pipeline(self, dataset, problem, pipeline, metrics=None, random_seed=0,
                        folds=5, stratified=False, shuffle=False):
+
         problem_metrics = problem['problem']['performance_metrics']
         metrics = metrics or problem_metrics
         data_params = {
@@ -265,7 +285,8 @@ class PipelineSearcher:
             'stratified': json.dumps(stratified),
             'shuffle': json.dumps(shuffle),
         }
-        all_scores, all_results = evaluate(
+
+        all_scores, all_results = self.evaluate(
             pipeline,
             self.data_pipeline,
             self.scoring_pipeline,
@@ -362,6 +383,10 @@ class PipelineSearcher:
 
     def stop(self):
         self._stop = True
+        if self.subprocess:
+            LOGGER.info('Killing subprocess: %s', self.subprocess.pid)
+            self.subprocess.terminate()
+            self.subprocess = None
 
     def _timeout(self, *args, **kwargs):
         raise KeyboardInterrupt()
@@ -440,7 +465,7 @@ class PipelineSearcher:
                     if defaults:
                         error = '{}: {}'.format(type(ex).__name__, ex)
                         errors.append(error)
-                        if len(errors) >= len(template_names):
+                        if len(errors) >= min(len(template_names), budget or np.inf):
                             raise Exception(errors)
 
                     pipeline.score = None
