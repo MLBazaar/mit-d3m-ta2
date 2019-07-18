@@ -274,6 +274,7 @@ class PipelineSearcher:
             self.subprocess = Process(target=self._evaluate, args=(output, *args), kwargs=kwargs)
             self.subprocess.start()
             self.subprocess.join()
+            self.subprocess.terminate()
             self.subprocess = None
 
             if not output:
@@ -422,6 +423,7 @@ class PipelineSearcher:
         best_score = None
         best_normalized = 0
         best_template_name = None
+        template_names = template_names or list()
         data_modality = None
         task_type = None
         task_subtype = None
@@ -433,9 +435,16 @@ class PipelineSearcher:
         dataset = Dataset.load(dataset_path)
         metric = problem['problem']['performance_metrics'][0]['metric']
 
-        self.setup_search()
+        data_modality = detect_data_modality(dataset_path[7:])
+        task_type = problem['problem']['task_type'].name.lower()
+        task_subtype = problem['problem']['task_subtype'].name.lower()
+
+        LOGGER.info("Searching dataset %s: %s/%s/%s",
+                    dataset_name, data_modality, task_type, task_subtype)
 
         try:
+            self.setup_search()
+
             self.score_pipeline(dataset, problem, self.fallback)
             self.fallback.normalized_score = metric.normalize(self.fallback.score)
             self._save_pipeline(self.fallback)
@@ -447,19 +456,8 @@ class PipelineSearcher:
             LOGGER.info("Fallback pipeline score: %s - %s",
                         self.fallback.score, self.fallback.normalized_score)
 
-        except Exception:
-            LOGGER.exception('Error processing dataset %s with fallback pipeline', dataset_name)
-
-        data_modality = detect_data_modality(dataset_path[7:])
-        task_type = problem['problem']['task_type'].name.lower()
-        task_subtype = problem['problem']['task_subtype'].name.lower()
-
-        LOGGER.info("Searching dataset %s: %s/%s/%s",
-                    dataset_name, data_modality, task_type, task_subtype)
-
-        try:
             LOGGER.info("Loading the template and the tuner")
-            if template_names is None:
+            if not template_names:
                 template_names = self._get_templates(data_modality, task_type)
 
             if budget is not None:
