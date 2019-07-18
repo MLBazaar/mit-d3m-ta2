@@ -9,6 +9,8 @@ import warnings
 from collections import defaultdict
 from datetime import datetime, timedelta
 from enum import Enum
+from multiprocessing import Process, Queue
+from time import sleep
 
 import numpy as np
 from d3m.container.dataset import Dataset
@@ -30,6 +32,12 @@ TUNING_PARAMETER = 'https://metadata.datadrivendiscovery.org/types/TuningParamet
 LOGGER = logging.getLogger(__name__)
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
+
+
+def evaluate_process(queue, evaluate_params):
+    all_scores, all_results = evaluate(**evaluate_params)
+
+    queue.put({'all_scores': all_scores, 'all_results': all_results})
 
 
 class Templates(Enum):
@@ -265,20 +273,40 @@ class PipelineSearcher:
             'stratified': json.dumps(stratified),
             'shuffle': json.dumps(shuffle),
         }
-        all_scores, all_results = evaluate(
-            pipeline,
-            self.data_pipeline,
-            self.scoring_pipeline,
-            problem,
-            [dataset],
-            data_params,
-            metrics,
-            context=Context.TESTING,
-            random_seed=random_seed,
-            data_random_seed=random_seed,
-            scoring_random_seed=random_seed,
-            volumes_dir=self.static,
-        )
+
+        evaluate_params = {
+            'pipeline': pipeline,
+            'data_pipeline': self.data_pipeline,
+            'scoring_pipeline': self.scoring_pipeline,
+            'problem_description': problem,
+            'inputs': [dataset],
+            'data_params': data_params,
+            'metrics': metrics,
+            'context': Context.TESTING,
+            'random_seed': random_seed,
+            'data_random_seed': random_seed,
+            'scoring_random_seed': random_seed,
+            'volumes_dir': self.static,
+        }
+
+        queue = Queue()
+        process = Process(target=evaluate_process, args=(queue, evaluate_params))
+        process_list = list()
+        process_list.append(process)
+        process.start()
+        results = dict()
+        sleep(2)
+
+        for proc in process_list:
+            if queue.qsize():
+                results = queue.get()
+            proc.terminate()
+
+        all_scores = results.get('all_scores')
+        all_results = results.get('all_results')
+
+        if not all_results:
+            raise Exception
 
         if not all_scores:
             failed_result = all_results[-1]
