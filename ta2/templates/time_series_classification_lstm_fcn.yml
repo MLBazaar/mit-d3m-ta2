@@ -1,0 +1,6 @@
+steps:
+- primitive: d3m.primitives.data_transformation.denormalize.Common
+- primitive: d3m.primitives.time_series_classification.convolutional_neural_net.LSTM_FCN
+  arguments:
+    outputs:
+      data: steps.0.produce
