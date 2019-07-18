@@ -34,12 +34,6 @@ LOGGER = logging.getLogger(__name__)
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 
-def evaluate_process(queue, evaluate_params):
-    all_scores, all_results = evaluate(**evaluate_params)
-
-    queue.put({'all_scores': all_scores, 'all_results': all_results})
-
-
 class Templates(Enum):
     # SINGLE TABLE CLASSIFICATION
     SINGLE_TABLE_CLASSIFICATION_ENC_XGB = 'single_table_classification_encoding_xgb.yml'
@@ -264,8 +258,21 @@ class PipelineSearcher:
         self.scoring_pipeline = self._load_pipeline(DEFAULT_SCORING_PIPELINE_PATH)
         self.fallback = self._load_pipeline(FALLBACK_PIPELINE)
 
+    @staticmethod
+    def _evaluate(queue, *args, **kwargs):
+        queue.put(evaluate(*args, **kwargs))
+
+    @classmethod
+    def evaluate(cls, *args, **kwargs):
+        queue = Queue()
+        process = Process(target=cls._evaluate, args=(queue, *args), kwargs=kwargs)
+        process.start()
+
+        return queue.get()
+
     def score_pipeline(self, dataset, problem, pipeline, metrics=None, random_seed=0,
                        folds=5, stratified=False, shuffle=False):
+
         problem_metrics = problem['problem']['performance_metrics']
         metrics = metrics or problem_metrics
         data_params = {
@@ -274,39 +281,20 @@ class PipelineSearcher:
             'shuffle': json.dumps(shuffle),
         }
 
-        evaluate_params = {
-            'pipeline': pipeline,
-            'data_pipeline': self.data_pipeline,
-            'scoring_pipeline': self.scoring_pipeline,
-            'problem_description': problem,
-            'inputs': [dataset],
-            'data_params': data_params,
-            'metrics': metrics,
-            'context': Context.TESTING,
-            'random_seed': random_seed,
-            'data_random_seed': random_seed,
-            'scoring_random_seed': random_seed,
-            'volumes_dir': self.static,
-        }
-
-        queue = Queue()
-        process = Process(target=evaluate_process, args=(queue, evaluate_params))
-        process_list = list()
-        process_list.append(process)
-        process.start()
-        results = dict()
-        sleep(2)
-
-        for proc in process_list:
-            if queue.qsize():
-                results = queue.get()
-            proc.terminate()
-
-        all_scores = results.get('all_scores')
-        all_results = results.get('all_results')
-
-        if not all_results:
-            raise Exception
+        all_scores, all_results = self.evaluate(
+            pipeline,
+            self.data_pipeline,
+            self.scoring_pipeline,
+            problem,
+            [dataset],
+            data_params,
+            metrics,
+            context=Context.TESTING,
+            random_seed=random_seed,
+            data_random_seed=random_seed,
+            scoring_random_seed=random_seed,
+            volumes_dir=self.static,
+        )
 
         if not all_scores:
             failed_result = all_results[-1]
