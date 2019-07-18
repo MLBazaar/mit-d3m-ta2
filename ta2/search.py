@@ -431,6 +431,21 @@ class PipelineSearcher:
             task_type = problem['problem']['task_type'].name.lower()
             task_subtype = problem['problem']['task_subtype'].name.lower()
 
+            try:
+                self.score_pipeline(dataset, problem, self.fallback)
+                self.fallback.normalized_score = metric.normalize(self.fallback.score)
+                self._save_pipeline(self.fallback)
+                best_pipeline = self.fallback.id
+                best_score = self.fallback.score
+                best_template_name = FALLBACK_PIPELINE
+                best_normalized = self.fallback.normalized_score
+
+                LOGGER.info("Fallback pipeline %s score: %s - %s",
+                            self.fallback.id, self.fallback.score, self.fallback.normalized_score)
+
+            except Exception as ex:
+                LOGGER.error('Error processing dataset %s with fallback pipeline, %s', dataset, ex)
+
             LOGGER.info("Searching dataset %s: %s/%s/%s",
                         dataset_name, data_modality, task_type, task_subtype)
             LOGGER.info("Loading the template and the tuner")
@@ -490,14 +505,10 @@ class PipelineSearcher:
 
         except KeyboardInterrupt:
             pass
-        except Exception:
-            LOGGER.exception("All templates failed for %s. Using fallback", dataset)
-            self.score_pipeline(dataset, problem, self.fallback)
-            self.fallback.normalized_score = metric.normalize(self.fallback.score)
-            self._save_pipeline(self.fallback)
-            best_pipeline = self.fallback.id
-            best_score = self.fallback.score
-            best_template_name = FALLBACK_PIPELINE
+        except Exception as ex:
+            LOGGER.exception("Error processing dataset %s", dataset)
+            error = '{}: {}'.format(type(ex).__name__, ex)
+
         finally:
             if self.timeout and self.hard_timeout:
                 signal.alarm(0)
