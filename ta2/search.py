@@ -9,7 +9,7 @@ import warnings
 from collections import defaultdict
 from datetime import datetime, timedelta
 from enum import Enum
-from multiprocessing import Process, Queue
+from multiprocessing import Manager, Process
 from time import sleep
 
 import numpy as np
@@ -200,7 +200,7 @@ class PipelineSearcher:
         if data_modality == 'multi_table':
             if task_type == TaskType.CLASSIFICATION.name.lower():
                 templates = [
-                    # Templates.MULTI_TABLE_CLASSIFICATION_LDA_LOGREG,
+                    Templates.MULTI_TABLE_CLASSIFICATION_LDA_LOGREG,
                     Templates.MULTI_TABLE_CLASSIFICATION_DFS_XGB,
                 ]
             elif task_type == TaskType.REGRESSION.name.lower():
@@ -259,16 +259,21 @@ class PipelineSearcher:
         self.fallback = self._load_pipeline(FALLBACK_PIPELINE)
 
     @staticmethod
-    def _evaluate(queue, *args, **kwargs):
-        queue.put(evaluate(*args, **kwargs))
+    def _evaluate(out, *args, **kwargs):
+        out.extend(evaluate(*args, **kwargs))
 
     @classmethod
     def evaluate(cls, *args, **kwargs):
-        queue = Queue()
-        process = Process(target=cls._evaluate, args=(queue, *args), kwargs=kwargs)
-        process.start()
+        with Manager() as manager:
+            output = manager.list()
+            process = Process(target=cls._evaluate, args=(output, *args), kwargs=kwargs)
+            process.start()
+            process.join()
 
-        return queue.get()
+            if not output:
+                raise Exception("Evaluate crashed")
+
+            return tuple(output)
 
     def score_pipeline(self, dataset, problem, pipeline, metrics=None, random_seed=0,
                        folds=5, stratified=False, shuffle=False):
