@@ -395,6 +395,7 @@ class PipelineSearcher:
             self.subprocess = None
 
     def _timeout(self, *args, **kwargs):
+        self.stop()
         raise KeyboardInterrupt()
 
     def setup_search(self):
@@ -427,18 +428,36 @@ class PipelineSearcher:
         iteration = 0
         errors = list()
 
+        dataset_id = problem['inputs'][0]['dataset_id']
+        dataset_name, dataset_path = self.datasets[dataset_id]
+        dataset = Dataset.load(dataset_path)
+        metric = problem['problem']['performance_metrics'][0]['metric']
+
+        self.setup_search()
+
         try:
-            dataset_id = problem['inputs'][0]['dataset_id']
-            dataset_name, dataset_path = self.datasets[dataset_id]
-            dataset = Dataset.load(dataset_path)
-            metric = problem['problem']['performance_metrics'][0]['metric']
+            self.score_pipeline(dataset, problem, self.fallback)
+            self.fallback.normalized_score = metric.normalize(self.fallback.score)
+            self._save_pipeline(self.fallback)
+            best_pipeline = self.fallback.id
+            best_score = self.fallback.score
+            best_template_name = FALLBACK_PIPELINE
+            best_normalized = self.fallback.normalized_score
 
-            data_modality = detect_data_modality(dataset_path[7:])
-            task_type = problem['problem']['task_type'].name.lower()
-            task_subtype = problem['problem']['task_subtype'].name.lower()
+            LOGGER.info("Fallback pipeline score: %s - %s",
+                        self.fallback.score, self.fallback.normalized_score)
 
-            LOGGER.info("Searching dataset %s: %s/%s/%s",
-                        dataset_name, data_modality, task_type, task_subtype)
+        except Exception:
+            LOGGER.exception('Error processing dataset %s with fallback pipeline', dataset_name)
+
+        data_modality = detect_data_modality(dataset_path[7:])
+        task_type = problem['problem']['task_type'].name.lower()
+        task_subtype = problem['problem']['task_subtype'].name.lower()
+
+        LOGGER.info("Searching dataset %s: %s/%s/%s",
+                    dataset_name, data_modality, task_type, task_subtype)
+
+        try:
             LOGGER.info("Loading the template and the tuner")
             if template_names is None:
                 template_names = self._get_templates(data_modality, task_type)
@@ -447,8 +466,6 @@ class PipelineSearcher:
                 iterator = range(budget)
             else:
                 iterator = itertools.count()   # infinite range
-
-            self.setup_search()
 
             selector_tuner = SelectorTuner(template_names)
 
@@ -466,7 +483,7 @@ class PipelineSearcher:
                     # raise Exception("This won't work")
                 except Exception as ex:
                     LOGGER.exception("Error scoring pipeline %s for dataset %s",
-                                     pipeline.id, dataset)
+                                     pipeline.id, dataset_name)
 
                     if defaults:
                         error = '{}: {}'.format(type(ex).__name__, ex)
@@ -497,13 +514,8 @@ class PipelineSearcher:
         except KeyboardInterrupt:
             pass
         except Exception:
-            LOGGER.exception("All templates failed for %s. Using fallback", dataset)
-            self.score_pipeline(dataset, problem, self.fallback)
-            self.fallback.normalized_score = metric.normalize(self.fallback.score)
-            self._save_pipeline(self.fallback)
-            best_pipeline = self.fallback.id
-            best_score = self.fallback.score
-            best_template_name = FALLBACK_PIPELINE
+            LOGGER.exception("Error processing dataset %s", dataset)
+
         finally:
             if self.timeout and self.hard_timeout:
                 signal.alarm(0)
