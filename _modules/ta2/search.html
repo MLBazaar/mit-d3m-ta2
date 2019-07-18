@@ -279,6 +279,8 @@
 
     <span class="c1"># TIMESERIES CLASSIFICATION</span>
     <span class="n">TIMESERIES_CLASSIFICATION_KN</span> <span class="o">=</span> <span class="s1">&#39;time_series_classification_k_neighbors_kn.yml&#39;</span>
+    <span class="n">TIMESERIES_CLASSIFICATION_DSBOX_LR</span> <span class="o">=</span> <span class="s1">&#39;time_series_classification_dsbox_lr.yml&#39;</span>
+    <span class="n">TIMESERIES_CLASSIFICATION_LSTM_FCN</span> <span class="o">=</span> <span class="s1">&#39;time_series_classification_lstm_fcn.yml&#39;</span>
     <span class="c1"># TIMESERIES_CLASSIFICATION_XGB = &#39;time_series_classification_xgb.yml&#39;</span>
     <span class="c1"># TIMESERIES_CLASSIFICATION_RF = &#39;time_series_classification_rf.yml&#39;</span>
 
@@ -433,7 +435,11 @@
                 <span class="n">templates</span> <span class="o">=</span> <span class="p">[</span><span class="n">Templates</span><span class="o">.</span><span class="n">TEXT_REGRESSION</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="n">data_modality</span> <span class="o">==</span> <span class="s1">&#39;timeseries&#39;</span><span class="p">:</span>
-            <span class="n">templates</span> <span class="o">=</span> <span class="p">[</span><span class="n">Templates</span><span class="o">.</span><span class="n">TIMESERIES_CLASSIFICATION_KN</span><span class="p">]</span>
+            <span class="n">templates</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">Templates</span><span class="o">.</span><span class="n">TIMESERIES_CLASSIFICATION_KN</span><span class="p">,</span>
+                <span class="n">Templates</span><span class="o">.</span><span class="n">TIMESERIES_CLASSIFICATION_DSBOX_LR</span><span class="p">,</span>
+                <span class="n">Templates</span><span class="o">.</span><span class="n">TIMESERIES_CLASSIFICATION_LSTM_FCN</span>
+            <span class="p">]</span>
             <span class="c1"># if task_type == TaskType.CLASSIFICATION.name.lower():</span>
             <span class="c1">#     template = Templates.TIMESERIES_CLASSIFICATION</span>
             <span class="c1"># elif task_type == TaskType.REGRESSION.name.lower():</span>
