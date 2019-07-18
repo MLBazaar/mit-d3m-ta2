@@ -10,7 +10,6 @@ from collections import defaultdict
 from datetime import datetime, timedelta
 from enum import Enum
 from multiprocessing import Manager, Process
-from time import sleep
 
 import numpy as np
 from d3m.container.dataset import Dataset
