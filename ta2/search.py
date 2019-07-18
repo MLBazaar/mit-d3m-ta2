@@ -312,7 +312,11 @@ class PipelineSearcher:
             failed_result = all_results[-1]
             message = failed_result.pipeline_run.status['message']
             LOGGER.error(message)
-            raise failed_result.error.__cause__
+            cause = failed_result.error.__cause__
+            if isinstance(cause, BaseException):
+                raise cause
+            else:
+                raise Exception(cause)
 
         pipeline.cv_scores = [score.value[0] for score in all_scores]
         pipeline.score = np.mean(pipeline.cv_scores)
