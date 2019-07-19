@@ -16,7 +16,8 @@ from d3m.container.dataset import Dataset
 from d3m.metadata.base import ArgumentType, Context
 from d3m.metadata.pipeline import Pipeline, PrimitiveStep
 from d3m.metadata.problem import TaskType
-from d3m.runtime import DEFAULT_SCORING_PIPELINE_PATH, evaluate
+from d3m.runtime import DEFAULT_SCORING_PIPELINE_PATH
+from d3m.runtime import evaluate as d3m_evaluate
 
 from ta2.tuning import SelectorTuner
 from ta2.utils import dump_pipeline
@@ -27,6 +28,10 @@ TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')
 FALLBACK_PIPELINE = 'fallback_pipeline.yml'
 
 TUNING_PARAMETER = 'https://metadata.datadrivendiscovery.org/types/TuningParameter'
+
+SUBPROCESS_PRIMITIVES = [
+    'd3m.primitives.natural_language_processing.lda.Fastlvm'
+]
 
 LOGGER = logging.getLogger(__name__)
 
@@ -267,13 +272,13 @@ class PipelineSearcher:
     @staticmethod
     def _evaluate(out, pipeline, *args, **kwargs):
         LOGGER.info('Running d3m.runtime.evalute on pipeline %s', pipeline.id)
-        results = evaluate(pipeline, *args, **kwargs)
+        results = d3m_evaluate(pipeline, *args, **kwargs)
 
         LOGGER.info('Returning results for %s', pipeline.id)
         out.extend(results)
 
-    def evaluate(self, pipeline, *args, **kwargs):
-        LOGGER.info('Evaluating pipeline %s', pipeline.id)
+    def subprocess_evaluate(self, pipeline, *args, **kwargs):
+        LOGGER.info('Evaluating pipeline %s in a subprocess', pipeline.id)
         with Manager() as manager:
             output = manager.list()
             process = Process(
@@ -281,7 +286,6 @@ class PipelineSearcher:
                 args=(output, pipeline, *args),
                 kwargs=kwargs
             )
-            LOGGER.info('Starting process %s', process.pid)
             self.subprocess = process
             process.daemon = True
             process.start()
@@ -311,7 +315,18 @@ class PipelineSearcher:
             'shuffle': json.dumps(shuffle),
         }
 
-        all_scores, all_results = self.evaluate(
+        # Some primitives crash with a core dump that kills everything.
+        # We want to isolate those.
+        primitives = [
+            step['primitive']['python_path']
+            for step in pipeline.to_json_structure()['steps']
+        ]
+        if any(primitive in SUBPROCESS_PRIMITIVES for primitive in primitives):
+            evaluate = self.subprocess_evaluate
+        else:
+            evaluate = d3m_evaluate
+
+        all_scores, all_results = evaluate(
             pipeline,
             self.data_pipeline,
             self.scoring_pipeline,

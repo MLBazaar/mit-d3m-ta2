@@ -19,6 +19,9 @@ steps:
     use_semantic_types:
       data: true
 - primitive: d3m.primitives.classification.xgboost_gbtree.DataFrameCommon
+  hyperparams:
+    n_jobs:
+      data: -1
   arguments:
     outputs:
       data: steps.1.produce

@@ -10,6 +10,9 @@ steps:
   arguments:
     outputs:
       data: steps.2.produce
+  hyperparams:
+    n_jobs:
+      data: -1
 - primitive: d3m.primitives.data_transformation.construct_predictions.DataFrameCommon
   arguments:
     reference:
