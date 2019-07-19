@@ -21,7 +21,7 @@ steps:
       data: steps.6.produce
   hyperparams:
     n_jobs:
-      data: -1
+      data: 1
 - primitive: d3m.primitives.data_transformation.construct_predictions.DataFrameCommon
   arguments:
     reference:

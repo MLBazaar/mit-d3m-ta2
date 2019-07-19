@@ -53,7 +53,7 @@ def search(dataset_root, problem, args):
         args.output,
         args.static,
         dump=True,
-        hard_timeout=True,
+        hard_timeout=args.hard,
     )
 
     return pps.search(problem, args.timeout, args.budget, args.template)
@@ -331,6 +331,8 @@ def parse_args():
                              help='Path to a directory with static files required by primitives')
     search_args.add_argument('-t', '--timeout', type=int,
                              help='Maximum time allowed for the tuning, in number of seconds')
+    search_args.add_argument('-st', '--soft-timeout', action='store_false', dest='hard',
+                             help='Use a soft timeout instead of hard.')
 
     # TA3-TA2 Common Args
     ta3_args = argparse.ArgumentParser(add_help=False)

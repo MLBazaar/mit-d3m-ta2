@@ -37,7 +37,7 @@ steps:
       data: steps.3.produce
   hyperparams:
     n_jobs:
-      data: -1
+      data: 1
     return_result:
       data: new
     add_index_columns:

@@ -265,22 +265,40 @@ class PipelineSearcher:
         self.fallback = self._load_pipeline(FALLBACK_PIPELINE)
 
     @staticmethod
-    def _evaluate(out, *args, **kwargs):
-        out.extend(evaluate(*args, **kwargs))
+    def _evaluate(out, pipeline, *args, **kwargs):
+        LOGGER.info('Running d3m.runtime.evalute on pipeline %s', pipeline.id)
+        results = evaluate(pipeline, *args, **kwargs)
 
-    def evaluate(self, *args, **kwargs):
+        LOGGER.info('Returning results for %s', pipeline.id)
+        out.extend(results)
+
+    def evaluate(self, pipeline, *args, **kwargs):
+        LOGGER.info('Evaluating pipeline %s', pipeline.id)
         with Manager() as manager:
             output = manager.list()
-            self.subprocess = Process(target=self._evaluate, args=(output, *args), kwargs=kwargs)
-            self.subprocess.start()
-            self.subprocess.join()
-            self.subprocess.terminate()
+            process = Process(
+                target=self._evaluate,
+                args=(output, pipeline, *args),
+                kwargs=kwargs
+            )
+            LOGGER.info('Starting process %s', process.pid)
+            self.subprocess = process
+            process.daemon = True
+            process.start()
+
+            LOGGER.info('Joining process %s', process.pid)
+            process.join()
+
+            LOGGER.info('Terminating process %s', process.pid)
+            process.terminate()
             self.subprocess = None
 
-            if not output:
-                raise Exception("Evaluate crashed")
+            result = tuple(output) if output else None
 
-            return tuple(output)
+        if not result:
+            raise Exception("Evaluate crashed")
+
+        return result
 
     def score_pipeline(self, dataset, problem, pipeline, metrics=None, random_seed=0,
                        folds=5, stratified=False, shuffle=False):
@@ -394,13 +412,12 @@ class PipelineSearcher:
 
     def stop(self):
         self._stop = True
-        if self.subprocess:
-            LOGGER.info('Killing subprocess: %s', self.subprocess.pid)
-            self.subprocess.terminate()
-            self.subprocess = None
+        # if self.subprocess:
+        #     LOGGER.info('Terminating subprocess: %s', self.subprocess.pid)
+        #     self.subprocess.terminate()
+        #     self.subprocess = None
 
     def _timeout(self, *args, **kwargs):
-        self.stop()
         raise KeyboardInterrupt()
 
     def setup_search(self):
