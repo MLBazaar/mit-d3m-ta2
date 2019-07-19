@@ -154,7 +154,7 @@ def test_pipelinesearcher_load_pipeline(json_loader_mock, yaml_loader_mock):
     assert json_loader_mock.call_count == 2
 
 
-@patch('ta2.search.PipelineSearcher.evaluate')
+@patch('ta2.search.d3m_evaluate')
 def test_pipelinesearcher_score_pipeline(evaluate_mock):
     instance = PipelineSearcher()
     expected_scores = [MagicMock(value=[1])]
