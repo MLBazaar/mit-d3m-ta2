@@ -270,6 +270,8 @@
 
     <span class="c1"># SINGLE TABLE REGRESSION</span>
     <span class="n">SINGLE_TABLE_REGRESSION_XGB</span> <span class="o">=</span> <span class="s1">&#39;single_table_regression_xgb.yml&#39;</span>
+    <span class="n">SINGLE_TABLE_REGRESSION_SC_XGB</span> <span class="o">=</span> <span class="s1">&#39;single_table_regression_scale_xgb.yml&#39;</span>
+    <span class="n">SINGLE_TABLE_REGRESSION_ENC_XGB</span> <span class="o">=</span> <span class="s1">&#39;single_table_regression_encoding_xgb.yml&#39;</span>
     <span class="c1"># SINGLE_TABLE_REGRESSION_DFS_XGB = &#39;single_table_regression_dfs_xgb.yml&#39;</span>
     <span class="c1"># SINGLE_TABLE_REGRESSION_GB = &#39;single_table_regression_gradient_boosting.yml&#39;</span>
 
@@ -411,14 +413,20 @@
             <span class="k">elif</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskType</span><span class="o">.</span><span class="n">REGRESSION</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
                 <span class="n">templates</span> <span class="o">=</span> <span class="p">[</span>
                     <span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_REGRESSION_XGB</span><span class="p">,</span>
+                    <span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_REGRESSION_SC_XGB</span><span class="p">,</span>
+                    <span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_REGRESSION_ENC_XGB</span><span class="p">,</span>
                 <span class="p">]</span>
             <span class="k">elif</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskType</span><span class="o">.</span><span class="n">COLLABORATIVE_FILTERING</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
                 <span class="n">templates</span> <span class="o">=</span> <span class="p">[</span>
                     <span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_REGRESSION_XGB</span><span class="p">,</span>
+                    <span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_REGRESSION_SC_XGB</span><span class="p">,</span>
+                    <span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_REGRESSION_ENC_XGB</span><span class="p">,</span>
                 <span class="p">]</span>
             <span class="k">elif</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskType</span><span class="o">.</span><span class="n">TIME_SERIES_FORECASTING</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
                 <span class="n">templates</span> <span class="o">=</span> <span class="p">[</span>
                     <span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_REGRESSION_XGB</span><span class="p">,</span>
+                    <span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_REGRESSION_SC_XGB</span><span class="p">,</span>
+                    <span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_REGRESSION_ENC_XGB</span><span class="p">,</span>
                 <span class="p">]</span>
             <span class="k">elif</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskType</span><span class="o">.</span><span class="n">SEMISUPERVISED_CLASSIFICATION</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
                 <span class="n">templates</span> <span class="o">=</span> <span class="p">[</span><span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_SEMI_CLASSIFICATION</span><span class="p">]</span>
@@ -674,6 +682,13 @@
         <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Timeout: </span><span class="si">%s</span><span class="s2"> (Hard: </span><span class="si">%s</span><span class="s2">); Max end: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">hard_timeout</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_end_time</span><span class="p">)</span></div>
 
+<div class="viewcode-block" id="PipelineSearcher.get_data_augmentation"><a class="viewcode-back" href="../../api/ta2.search.html#ta2.search.PipelineSearcher.get_data_augmentation">[docs]</a>    <span class="k">def</span> <span class="nf">get_data_augmentation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">problem</span><span class="p">):</span>
+        <span class="c1"># TODO: Replace this with the real DataMart query</span>
+        <span class="k">if</span> <span class="n">problem</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;DA_ny_taxi_demand_problem_TRAIN&#39;</span><span class="p">:</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;DATA AUGMENTATION!!!!!!&#39;</span><span class="p">)</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">BASE_DIR</span><span class="p">,</span> <span class="s1">&#39;da.json&#39;</span><span class="p">))</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span></div>
+
 <div class="viewcode-block" id="PipelineSearcher.search"><a class="viewcode-back" href="../../api/ta2.search.html#ta2.search.PipelineSearcher.search">[docs]</a>    <span class="k">def</span> <span class="nf">search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">problem</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">budget</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">template_names</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span> <span class="o">=</span> <span class="n">timeout</span>
@@ -696,6 +711,8 @@
         <span class="n">data_modality</span> <span class="o">=</span> <span class="n">detect_data_modality</span><span class="p">(</span><span class="n">dataset_path</span><span class="p">[</span><span class="mi">7</span><span class="p">:])</span>
         <span class="n">task_type</span> <span class="o">=</span> <span class="n">problem</span><span class="p">[</span><span class="s1">&#39;problem&#39;</span><span class="p">][</span><span class="s1">&#39;task_type&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
         <span class="n">task_subtype</span> <span class="o">=</span> <span class="n">problem</span><span class="p">[</span><span class="s1">&#39;problem&#39;</span><span class="p">][</span><span class="s1">&#39;task_subtype&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+        <span class="n">data_augmentation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data_augmentation</span><span class="p">(</span><span class="n">problem</span><span class="p">)</span>
 
         <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Searching dataset </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
                     <span class="n">dataset_name</span><span class="p">,</span> <span class="n">data_modality</span><span class="p">,</span> <span class="n">task_type</span><span class="p">,</span> <span class="n">task_subtype</span><span class="p">)</span>
@@ -723,7 +740,7 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">iterator</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>   <span class="c1"># infinite range</span>
 
-            <span class="n">selector_tuner</span> <span class="o">=</span> <span class="n">SelectorTuner</span><span class="p">(</span><span class="n">template_names</span><span class="p">)</span>
+            <span class="n">selector_tuner</span> <span class="o">=</span> <span class="n">SelectorTuner</span><span class="p">(</span><span class="n">template_names</span><span class="p">,</span> <span class="n">data_augmentation</span><span class="p">)</span>
 
             <span class="k">for</span> <span class="n">iteration</span> <span class="ow">in</span> <span class="n">iterator</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">check_stop</span><span class="p">()</span>

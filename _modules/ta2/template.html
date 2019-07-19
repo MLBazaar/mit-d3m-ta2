@@ -222,6 +222,7 @@
   <h1>Source code for ta2.template</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">argparse</span>
 <span class="kn">import</span> <span class="nn">importlib</span>
+<span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
@@ -242,6 +243,8 @@
 <span class="n">LOGGER</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
+
+<span class="n">DATA_AUGMENTATION</span> <span class="o">=</span> <span class="s1">&#39;d3m.primitives.data_augmentation.datamart_augmentation.Common&#39;</span>
 
 
 <div class="viewcode-block" id="extract_pipeline_tunables"><a class="viewcode-back" href="../../api/ta2.template.html#ta2.template.extract_pipeline_tunables">[docs]</a><span class="k">def</span> <span class="nf">extract_pipeline_tunables</span><span class="p">(</span><span class="n">pipeline</span><span class="p">):</span>
@@ -332,7 +335,7 @@
     <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">tunable_hyperparameters</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="load_template"><a class="viewcode-back" href="../../api/ta2.template.html#ta2.template.load_template">[docs]</a><span class="k">def</span> <span class="nf">load_template</span><span class="p">(</span><span class="n">template_name</span><span class="p">):</span>
+<div class="viewcode-block" id="load_template"><a class="viewcode-back" href="../../api/ta2.template.html#ta2.template.load_template">[docs]</a><span class="k">def</span> <span class="nf">load_template</span><span class="p">(</span><span class="n">template_name</span><span class="p">,</span> <span class="n">data_augmentation</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;load a simplified version of a yaml pipeline, with hyperparameters.&quot;&quot;&quot;</span>
 
     <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">template_name</span><span class="p">):</span>
@@ -349,9 +352,24 @@
     <span class="n">pipeline</span> <span class="o">=</span> <span class="n">Pipeline</span><span class="p">()</span>
     <span class="n">pipeline</span><span class="o">.</span><span class="n">add_input</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;inputs&#39;</span><span class="p">)</span>
 
+    <span class="k">if</span> <span class="n">data_augmentation</span><span class="p">:</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Adding Data Augmentation Step&#39;</span><span class="p">)</span>
+        <span class="n">step_0</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;primitive&#39;</span><span class="p">:</span> <span class="n">DATA_AUGMENTATION</span><span class="p">,</span>
+            <span class="s1">&#39;hyperparams&#39;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s1">&#39;system_identifier&#39;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="s1">&#39;NYU&#39;</span>
+                <span class="p">},</span>
+                <span class="s1">&#39;search_result&#39;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data_augmentation</span><span class="p">)</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="n">steps</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">step_0</span><span class="p">)</span>
+
     <span class="k">for</span> <span class="n">step_num</span><span class="p">,</span> <span class="n">primitive_config</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">steps</span><span class="p">):</span>
         <span class="n">primitive_name</span> <span class="o">=</span> <span class="n">primitive_config</span><span class="p">[</span><span class="s1">&#39;primitive&#39;</span><span class="p">]</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Loading primitive </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">primitive_name</span><span class="p">))</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Loading primitive </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">primitive_name</span><span class="p">))</span>
         <span class="n">primitive</span> <span class="o">=</span> <span class="n">index</span><span class="o">.</span><span class="n">get_primitive</span><span class="p">(</span><span class="n">primitive_name</span><span class="p">)</span>
         <span class="n">step</span> <span class="o">=</span> <span class="n">PrimitiveStep</span><span class="p">(</span><span class="n">primitive</span><span class="o">=</span><span class="n">primitive</span><span class="p">)</span>
 
@@ -361,6 +379,14 @@
             <span class="n">data_reference</span> <span class="o">=</span> <span class="s1">&#39;steps.</span><span class="si">{}</span><span class="s1">.produce&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">step_num</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
 
         <span class="n">arguments</span> <span class="o">=</span> <span class="n">primitive_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;arguments&#39;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">())</span>
+        <span class="k">if</span> <span class="n">data_augmentation</span> <span class="ow">and</span> <span class="n">arguments</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">argument</span> <span class="ow">in</span> <span class="n">arguments</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="n">argument</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">data</span> <span class="ow">and</span> <span class="s1">&#39;step&#39;</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+                    <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+                    <span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+                    <span class="n">argument</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;.&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="s1">&#39;inputs&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">arguments</span><span class="p">:</span>
             <span class="n">arguments</span><span class="p">[</span><span class="s1">&#39;inputs&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
                 <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="n">data_reference</span><span class="p">,</span>
@@ -409,7 +435,13 @@
         <span class="c1"># tunables, defaults = extract_pipeline_tunables(pipeline)</span>
         <span class="n">tunable_hyperparameters</span> <span class="o">=</span> <span class="n">extract_pipeline_tunables</span><span class="p">(</span><span class="n">pipeline</span><span class="p">)</span>
 
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Pipeline </span><span class="si">{}</span><span class="s2"> loaded&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pipeline</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">data_augmentation</span><span class="p">:</span>
+        <span class="n">tunable_hyperparameters</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span> <span class="n">value</span>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">tunable_hyperparameters</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="p">}</span>
+
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Pipeline </span><span class="si">%s</span><span class="s2"> loaded&quot;</span><span class="p">,</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">pipeline</span><span class="p">,</span> <span class="n">tunable_hyperparameters</span></div>
 
 
