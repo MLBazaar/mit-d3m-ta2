@@ -48,6 +48,8 @@ class Templates(Enum):
 
     # SINGLE TABLE REGRESSION
     SINGLE_TABLE_REGRESSION_XGB = 'single_table_regression_xgb.yml'
+    SINGLE_TABLE_REGRESSION_SC_XGB = 'single_table_regression_scale_xgb.yml'
+    SINGLE_TABLE_REGRESSION_ENC_XGB = 'single_table_regression_encoding_xgb.yml'
     # SINGLE_TABLE_REGRESSION_DFS_XGB = 'single_table_regression_dfs_xgb.yml'
     # SINGLE_TABLE_REGRESSION_GB = 'single_table_regression_gradient_boosting.yml'
 
@@ -189,14 +191,20 @@ class PipelineSearcher:
             elif task_type == TaskType.REGRESSION.name.lower():
                 templates = [
                     Templates.SINGLE_TABLE_REGRESSION_XGB,
+                    Templates.SINGLE_TABLE_REGRESSION_SC_XGB,
+                    Templates.SINGLE_TABLE_REGRESSION_ENC_XGB,
                 ]
             elif task_type == TaskType.COLLABORATIVE_FILTERING.name.lower():
                 templates = [
                     Templates.SINGLE_TABLE_REGRESSION_XGB,
+                    Templates.SINGLE_TABLE_REGRESSION_SC_XGB,
+                    Templates.SINGLE_TABLE_REGRESSION_ENC_XGB,
                 ]
             elif task_type == TaskType.TIME_SERIES_FORECASTING.name.lower():
                 templates = [
                     Templates.SINGLE_TABLE_REGRESSION_XGB,
+                    Templates.SINGLE_TABLE_REGRESSION_SC_XGB,
+                    Templates.SINGLE_TABLE_REGRESSION_ENC_XGB,
                 ]
             elif task_type == TaskType.SEMISUPERVISED_CLASSIFICATION.name.lower():
                 templates = [Templates.SINGLE_TABLE_SEMI_CLASSIFICATION]
@@ -452,6 +460,13 @@ class PipelineSearcher:
         LOGGER.info("Timeout: %s (Hard: %s); Max end: %s",
                     self.timeout, self.hard_timeout, self.max_end_time)
 
+    def get_data_augmentation(self, problem):
+        # TODO: Replace this with the real DataMart query
+        if problem['id'] == 'DA_ny_taxi_demand_problem_TRAIN':
+            LOGGER.info('DATA AUGMENTATION!!!!!!')
+            with open(os.path.join(BASE_DIR, 'da.json')) as f:
+                return json.load(f)
+
     def search(self, problem, timeout=None, budget=None, template_names=None):
 
         self.timeout = timeout
@@ -474,6 +489,8 @@ class PipelineSearcher:
         data_modality = detect_data_modality(dataset_path[7:])
         task_type = problem['problem']['task_type'].name.lower()
         task_subtype = problem['problem']['task_subtype'].name.lower()
+
+        data_augmentation = self.get_data_augmentation(problem)
 
         LOGGER.info("Searching dataset %s: %s/%s/%s",
                     dataset_name, data_modality, task_type, task_subtype)
@@ -501,7 +518,7 @@ class PipelineSearcher:
             else:
                 iterator = itertools.count()   # infinite range
 
-            selector_tuner = SelectorTuner(template_names)
+            selector_tuner = SelectorTuner(template_names, data_augmentation)
 
             for iteration in iterator:
                 self.check_stop()

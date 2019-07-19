@@ -1,0 +1,124 @@
+{
+    "augmentation": {
+        "left_columns": [
+            [
+                1
+            ]
+        ],
+        "left_columns_names": [
+            "tpep_pickup_datetime"
+        ],
+        "right_columns": [
+            [
+                0
+            ]
+        ],
+        "type": "join"
+    },
+    "id": "datamart.url.a3943fd7892d5d219012f889327c6661",
+    "metadata": {
+        "columns": [
+            {
+                "coverage": [
+                    {
+                        "range": {
+                            "gte": 1451610000.0,
+                            "lte": 1540252800.0
+                        }
+                    }
+                ],
+                "mean": 1495931400.0,
+                "name": "DATE",
+                "semantic_types": [
+                    "http://schema.org/DateTime"
+                ],
+                "stddev": 25590011.431395352,
+                "structural_type": "http://schema.org/Text"
+            },
+            {
+                "name": "HOURLYSKYCONDITIONS",
+                "semantic_types": [],
+                "structural_type": "http://schema.org/Text"
+            },
+            {
+                "coverage": [
+                    {
+                        "range": {
+                            "gte": -17.2,
+                            "lte": 37.8
+                        }
+                    }
+                ],
+                "mean": 14.666224009096823,
+                "name": "HOURLYDRYBULBTEMPC",
+                "semantic_types": [],
+                "stddev": 9.973788193915643,
+                "structural_type": "http://schema.org/Float"
+            },
+            {
+                "coverage": [
+                    {
+                        "range": {
+                            "gte": 11.0,
+                            "lte": 100.0
+                        }
+                    }
+                ],
+                "mean": 60.70849577647823,
+                "name": "HOURLYRelativeHumidity",
+                "semantic_types": [],
+                "stddev": 18.42048051096981,
+                "structural_type": "http://schema.org/Float"
+            },
+            {
+                "coverage": [
+                    {
+                        "range": {
+                            "gte": 0.0,
+                            "lte": 41.0
+                        }
+                    }
+                ],
+                "mean": 10.68859649122807,
+                "name": "HOURLYWindSpeed",
+                "semantic_types": [],
+                "stddev": 5.539675475162907,
+                "structural_type": "http://schema.org/Float"
+            },
+            {
+                "name": "HOURLYWindDirection",
+                "semantic_types": [],
+                "structural_type": "http://schema.org/Text"
+            },
+            {
+                "coverage": [
+                    {
+                        "range": {
+                            "gte": 28.89,
+                            "lte": 30.81
+                        }
+                    }
+                ],
+                "mean": 29.90760315139694,
+                "name": "HOURLYStationPressure",
+                "semantic_types": [
+                    "https://metadata.datadrivendiscovery.org/types/PhoneNumber"
+                ],
+                "stddev": 0.24584097919742368,
+                "structural_type": "http://schema.org/Float"
+            }
+        ],
+        "date": "2019-01-22T01:54:58.281183Z",
+        "description": "This data contains weather information for NY city around LaGuardia Airport from 2016 to 2018; weath...",
+        "materialize": {
+            "direct_url": "https://drive.google.com/uc?export=download&id=1jRwzZwEGMICE3n6-nwmVxMD2c0QCHad4",
+            "identifier": "datamart.url"
+        },
+        "name": "Newyork Weather Data around Airport 2016-18",
+        "nb_rows": 24624,
+        "size": 1523693
+    },
+    "score": 1.0,
+    "supplied_id": "DA_ny_taxi_demand_dataset_TRAIN",
+    "supplied_resource_id": "learningData"
+}

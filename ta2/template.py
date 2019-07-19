@@ -1,5 +1,6 @@
 import argparse
 import importlib
+import json
 import logging
 import os
 import warnings
@@ -20,6 +21,8 @@ TUNING_PARAMETER = 'https://metadata.datadrivendiscovery.org/types/TuningParamet
 LOGGER = logging.getLogger(__name__)
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
+
+DATA_AUGMENTATION = 'd3m.primitives.data_augmentation.datamart_augmentation.Common'
 
 
 def extract_pipeline_tunables(pipeline):
@@ -110,7 +113,7 @@ def get_tunable_hyperparameters(tunables, defaults):
     return dict(tunable_hyperparameters)
 
 
-def load_template(template_name):
+def load_template(template_name, data_augmentation=None):
     """load a simplified version of a yaml pipeline, with hyperparameters."""
 
     if os.path.exists(template_name):
@@ -127,9 +130,24 @@ def load_template(template_name):
     pipeline = Pipeline()
     pipeline.add_input(name='inputs')
 
+    if data_augmentation:
+        LOGGER.info('Adding Data Augmentation Step')
+        step_0 = {
+            'primitive': DATA_AUGMENTATION,
+            'hyperparams': {
+                'system_identifier': {
+                    'data': 'NYU'
+                },
+                'search_result': {
+                    'data': json.dumps(data_augmentation)
+                }
+            }
+        }
+        steps.insert(0, step_0)
+
     for step_num, primitive_config in enumerate(steps):
         primitive_name = primitive_config['primitive']
-        print("Loading primitive {}".format(primitive_name))
+        LOGGER.info("Loading primitive {}".format(primitive_name))
         primitive = index.get_primitive(primitive_name)
         step = PrimitiveStep(primitive=primitive)
 
@@ -139,6 +157,14 @@ def load_template(template_name):
             data_reference = 'steps.{}.produce'.format(step_num - 1)
 
         arguments = primitive_config.get('arguments', dict())
+        if data_augmentation and arguments:
+            for argument in arguments.values():
+                data = argument.get('data')
+                if data and 'step' in data:
+                    data = data.split('.')
+                    data[1] = str(int(data[1]) + 1)
+                    argument['data'] = '.'.join(data)
+
         if 'inputs' not in arguments:
             arguments['inputs'] = {
                 'data': data_reference,
@@ -187,7 +213,13 @@ def load_template(template_name):
         # tunables, defaults = extract_pipeline_tunables(pipeline)
         tunable_hyperparameters = extract_pipeline_tunables(pipeline)
 
-    print("Pipeline {} loaded".format(pipeline.id))
+    if data_augmentation:
+        tunable_hyperparameters = {
+            str(int(key) + 1): value
+            for key, value in tunable_hyperparameters.items()
+        }
+
+    LOGGER.info("Pipeline %s loaded", pipeline.id)
     return pipeline, tunable_hyperparameters
 
 

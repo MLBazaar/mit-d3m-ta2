@@ -3,16 +3,27 @@ steps:
 - primitive: d3m.primitives.data_transformation.dataset_to_dataframe.Common
 - primitive: d3m.primitives.data_transformation.column_parser.DataFrameCommon
 - primitive: d3m.primitives.data_transformation.extract_columns_by_semantic_types.DataFrameCommon
+  hyperparams:
+    semantic_types:
+      data:
+      - https://metadata.datadrivendiscovery.org/types/Target
+      - https://metadata.datadrivendiscovery.org/types/TrueTarget
+      - https://metadata.datadrivendiscovery.org/types/SuggestedTarget
+- primitive: d3m.primitives.data_transformation.extract_columns_by_semantic_types.DataFrameCommon
+  arguments:
+    inputs:
+      data: steps.2.produce
 - primitive: d3m.primitives.data_cleaning.imputer.SKlearn
   hyperparams:
     return_result:
       data: replace
     use_semantic_types:
       data: true
+- primitive: d3m.primitives.data_preprocessing.robust_scaler.SKlearn
 - primitive: d3m.primitives.regression.xgboost_gbtree.DataFrameCommon
   arguments:
     outputs:
-      data: steps.1.produce
+      data: steps.3.produce
   hyperparams:
     n_jobs:
       data: -1
@@ -25,12 +36,12 @@ steps:
     reference:
       data: steps.2.produce
 tunable_hyperparameters:
-  '4':
+  '5':
     strategy:
       default: mean
       range: [median, most_frequent, mean]
       type: string
-  '5':
+  '7':
     n_estimators:
       default: 100
       range: [10, 1000]
