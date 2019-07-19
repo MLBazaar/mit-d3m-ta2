@@ -487,22 +487,40 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">fallback</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_pipeline</span><span class="p">(</span><span class="n">FALLBACK_PIPELINE</span><span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_evaluate</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="n">out</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">evaluate</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
+    <span class="k">def</span> <span class="nf">_evaluate</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">pipeline</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Running d3m.runtime.evalute on pipeline </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="n">evaluate</span><span class="p">(</span><span class="n">pipeline</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
-<div class="viewcode-block" id="PipelineSearcher.evaluate"><a class="viewcode-back" href="../../api/ta2.search.html#ta2.search.PipelineSearcher.evaluate">[docs]</a>    <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Returning results for </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="n">out</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+
+<div class="viewcode-block" id="PipelineSearcher.evaluate"><a class="viewcode-back" href="../../api/ta2.search.html#ta2.search.PipelineSearcher.evaluate">[docs]</a>    <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pipeline</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Evaluating pipeline </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
         <span class="k">with</span> <span class="n">Manager</span><span class="p">()</span> <span class="k">as</span> <span class="n">manager</span><span class="p">:</span>
             <span class="n">output</span> <span class="o">=</span> <span class="n">manager</span><span class="o">.</span><span class="n">list</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span> <span class="o">=</span> <span class="n">Process</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_evaluate</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">),</span> <span class="n">kwargs</span><span class="o">=</span><span class="n">kwargs</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
+            <span class="n">process</span> <span class="o">=</span> <span class="n">Process</span><span class="p">(</span>
+                <span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_evaluate</span><span class="p">,</span>
+                <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">pipeline</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">),</span>
+                <span class="n">kwargs</span><span class="o">=</span><span class="n">kwargs</span>
+            <span class="p">)</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Starting process </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">process</span><span class="o">.</span><span class="n">pid</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span> <span class="o">=</span> <span class="n">process</span>
+            <span class="n">process</span><span class="o">.</span><span class="n">daemon</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">process</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Joining process </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">process</span><span class="o">.</span><span class="n">pid</span><span class="p">)</span>
+            <span class="n">process</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Terminating process </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">process</span><span class="o">.</span><span class="n">pid</span><span class="p">)</span>
+            <span class="n">process</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span> <span class="o">=</span> <span class="kc">None</span>
 
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">output</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Evaluate crashed&quot;</span><span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">output</span><span class="p">)</span> <span class="k">if</span> <span class="n">output</span> <span class="k">else</span> <span class="kc">None</span>
 
-            <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">output</span><span class="p">)</span></div>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">result</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Evaluate crashed&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">result</span></div>
 
 <div class="viewcode-block" id="PipelineSearcher.score_pipeline"><a class="viewcode-back" href="../../api/ta2.search.html#ta2.search.PipelineSearcher.score_pipeline">[docs]</a>    <span class="k">def</span> <span class="nf">score_pipeline</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">problem</span><span class="p">,</span> <span class="n">pipeline</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">random_seed</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
                        <span class="n">folds</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">stratified</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
@@ -615,14 +633,13 @@
             <span class="k">raise</span> <span class="ne">KeyboardInterrupt</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="PipelineSearcher.stop"><a class="viewcode-back" href="../../api/ta2.search.html#ta2.search.PipelineSearcher.stop">[docs]</a>    <span class="k">def</span> <span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_stop</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="p">:</span>
-            <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Killing subprocess: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">pid</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span> <span class="o">=</span> <span class="kc">None</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stop</span> <span class="o">=</span> <span class="kc">True</span></div>
+        <span class="c1"># if self.subprocess:</span>
+        <span class="c1">#     LOGGER.info(&#39;Terminating subprocess: %s&#39;, self.subprocess.pid)</span>
+        <span class="c1">#     self.subprocess.terminate()</span>
+        <span class="c1">#     self.subprocess = None</span>
 
     <span class="k">def</span> <span class="nf">_timeout</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
         <span class="k">raise</span> <span class="ne">KeyboardInterrupt</span><span class="p">()</span>
 
 <div class="viewcode-block" id="PipelineSearcher.setup_search"><a class="viewcode-back" href="../../api/ta2.search.html#ta2.search.PipelineSearcher.setup_search">[docs]</a>    <span class="k">def</span> <span class="nf">setup_search</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
