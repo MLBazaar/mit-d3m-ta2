@@ -240,6 +240,8 @@
 <span class="kn">from</span> <span class="nn">d3m.metadata.problem</span> <span class="k">import</span> <span class="n">TaskType</span>
 <span class="kn">from</span> <span class="nn">d3m.runtime</span> <span class="k">import</span> <span class="n">DEFAULT_SCORING_PIPELINE_PATH</span>
 <span class="kn">from</span> <span class="nn">d3m.runtime</span> <span class="k">import</span> <span class="n">evaluate</span> <span class="k">as</span> <span class="n">d3m_evaluate</span>
+<span class="kn">from</span> <span class="nn">datamart</span> <span class="k">import</span> <span class="n">DatamartQuery</span>
+<span class="kn">from</span> <span class="nn">datamart_rest</span> <span class="k">import</span> <span class="n">RESTDatamart</span>
 
 <span class="kn">from</span> <span class="nn">ta2.tuning</span> <span class="k">import</span> <span class="n">SelectorTuner</span>
 <span class="kn">from</span> <span class="nn">ta2.utils</span> <span class="k">import</span> <span class="n">dump_pipeline</span>
@@ -248,6 +250,8 @@
 <span class="n">PIPELINES_DIR</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">BASE_DIR</span><span class="p">,</span> <span class="s1">&#39;pipelines&#39;</span><span class="p">)</span>
 <span class="n">TEMPLATES_DIR</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">BASE_DIR</span><span class="p">,</span> <span class="s1">&#39;templates&#39;</span><span class="p">)</span>
 <span class="n">FALLBACK_PIPELINE</span> <span class="o">=</span> <span class="s1">&#39;fallback_pipeline.yml&#39;</span>
+
+<span class="n">DATAMART_URL</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;DATAMART_URL_NYU&#39;</span><span class="p">,</span> <span class="s1">&#39;https://datamart.d3m.vida-nyu.org&#39;</span><span class="p">)</span>
 
 <span class="n">TUNING_PARAMETER</span> <span class="o">=</span> <span class="s1">&#39;https://metadata.datadrivendiscovery.org/types/TuningParameter&#39;</span>
 
@@ -682,12 +686,29 @@
         <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Timeout: </span><span class="si">%s</span><span class="s2"> (Hard: </span><span class="si">%s</span><span class="s2">); Max end: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">hard_timeout</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_end_time</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="PipelineSearcher.get_data_augmentation"><a class="viewcode-back" href="../../api/ta2.search.html#ta2.search.PipelineSearcher.get_data_augmentation">[docs]</a>    <span class="k">def</span> <span class="nf">get_data_augmentation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">problem</span><span class="p">):</span>
+<div class="viewcode-block" id="PipelineSearcher.get_data_augmentation"><a class="viewcode-back" href="../../api/ta2.search.html#ta2.search.PipelineSearcher.get_data_augmentation">[docs]</a>    <span class="k">def</span> <span class="nf">get_data_augmentation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">problem</span><span class="p">):</span>
+        <span class="n">datamart</span> <span class="o">=</span> <span class="n">RESTDatamart</span><span class="p">(</span><span class="n">DATAMART_URL</span><span class="p">)</span>
+        <span class="n">data_augmentation</span> <span class="o">=</span> <span class="n">problem</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;data_augmentation&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">data_augmentation</span><span class="p">:</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;DATA AUGMENTATION: Querying DataMart&quot;</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">keywords</span> <span class="o">=</span> <span class="n">data_augmentation</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;keywords&#39;</span><span class="p">]</span>
+                <span class="n">query</span> <span class="o">=</span> <span class="n">DatamartQuery</span><span class="p">(</span><span class="n">keywords</span><span class="o">=</span><span class="n">keywords</span><span class="p">)</span>
+                <span class="n">cursor</span> <span class="o">=</span> <span class="n">datamart</span><span class="o">.</span><span class="n">search_with_data</span><span class="p">(</span><span class="n">query</span><span class="o">=</span><span class="n">query</span><span class="p">,</span> <span class="n">supplied_data</span><span class="o">=</span><span class="n">dataset</span><span class="p">)</span>
+                <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;DATA AUGMENTATION: Getting next page&quot;</span><span class="p">)</span>
+                <span class="n">page</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">get_next_page</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">page</span><span class="p">:</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="n">page</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">serialize</span><span class="p">()</span>
+
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="n">LOGGER</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;DATA AUGMENTATION ERROR&quot;</span><span class="p">)</span></div>
+
         <span class="c1"># TODO: Replace this with the real DataMart query</span>
-        <span class="k">if</span> <span class="n">problem</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;DA_ny_taxi_demand_problem_TRAIN&#39;</span><span class="p">:</span>
-            <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;DATA AUGMENTATION!!!!!!&#39;</span><span class="p">)</span>
-            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">BASE_DIR</span><span class="p">,</span> <span class="s1">&#39;da.json&#39;</span><span class="p">))</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span></div>
+        <span class="c1"># if problem[&#39;id&#39;] == &#39;DA_ny_taxi_demand_problem_TRAIN&#39;:</span>
+        <span class="c1">#     LOGGER.info(&#39;DATA AUGMENTATION!!!!!!&#39;)</span>
+        <span class="c1">#     with open(os.path.join(BASE_DIR, &#39;da.json&#39;)) as f:</span>
+        <span class="c1">#         return json.dumps(json.load(f))</span>
 
 <div class="viewcode-block" id="PipelineSearcher.search"><a class="viewcode-back" href="../../api/ta2.search.html#ta2.search.PipelineSearcher.search">[docs]</a>    <span class="k">def</span> <span class="nf">search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">problem</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">budget</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">template_names</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 
@@ -712,7 +733,7 @@
         <span class="n">task_type</span> <span class="o">=</span> <span class="n">problem</span><span class="p">[</span><span class="s1">&#39;problem&#39;</span><span class="p">][</span><span class="s1">&#39;task_type&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
         <span class="n">task_subtype</span> <span class="o">=</span> <span class="n">problem</span><span class="p">[</span><span class="s1">&#39;problem&#39;</span><span class="p">][</span><span class="s1">&#39;task_subtype&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
 
-        <span class="n">data_augmentation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data_augmentation</span><span class="p">(</span><span class="n">problem</span><span class="p">)</span>
+        <span class="n">data_augmentation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data_augmentation</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">problem</span><span class="p">)</span>
 
         <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Searching dataset </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
                     <span class="n">dataset_name</span><span class="p">,</span> <span class="n">data_modality</span><span class="p">,</span> <span class="n">task_type</span><span class="p">,</span> <span class="n">task_subtype</span><span class="p">)</span>
@@ -761,7 +782,8 @@
                     <span class="k">if</span> <span class="n">defaults</span><span class="p">:</span>
                         <span class="n">error</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">ex</span><span class="p">)</span>
                         <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">error</span><span class="p">)</span>
-                        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">errors</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">template_names</span><span class="p">),</span> <span class="n">budget</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">):</span>
+                        <span class="n">max_errors</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">selector_tuner</span><span class="o">.</span><span class="n">template_names</span><span class="p">),</span> <span class="n">budget</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">errors</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">max_errors</span><span class="p">:</span>
                             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">errors</span><span class="p">)</span>
 
                     <span class="n">pipeline</span><span class="o">.</span><span class="n">score</span> <span class="o">=</span> <span class="kc">None</span>
