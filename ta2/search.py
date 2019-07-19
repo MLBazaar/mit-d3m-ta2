@@ -18,6 +18,8 @@ from d3m.metadata.pipeline import Pipeline, PrimitiveStep
 from d3m.metadata.problem import TaskType
 from d3m.runtime import DEFAULT_SCORING_PIPELINE_PATH
 from d3m.runtime import evaluate as d3m_evaluate
+from datamart import DatamartQuery
+from datamart_rest import RESTDatamart
 
 from ta2.tuning import SelectorTuner
 from ta2.utils import dump_pipeline
@@ -26,6 +28,8 @@ BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 PIPELINES_DIR = os.path.join(BASE_DIR, 'pipelines')
 TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')
 FALLBACK_PIPELINE = 'fallback_pipeline.yml'
+
+DATAMART_URL = os.getenv('DATAMART_URL_NYU', 'https://datamart.d3m.vida-nyu.org')
 
 TUNING_PARAMETER = 'https://metadata.datadrivendiscovery.org/types/TuningParameter'
 
@@ -460,12 +464,29 @@ class PipelineSearcher:
         LOGGER.info("Timeout: %s (Hard: %s); Max end: %s",
                     self.timeout, self.hard_timeout, self.max_end_time)
 
-    def get_data_augmentation(self, problem):
+    def get_data_augmentation(self, dataset, problem):
+        datamart = RESTDatamart(DATAMART_URL)
+        data_augmentation = problem.get('data_augmentation')
+        if data_augmentation:
+            LOGGER.info("DATA AUGMENTATION: Querying DataMart")
+            try:
+                keywords = data_augmentation[0]['keywords']
+                query = DatamartQuery(keywords=keywords)
+                cursor = datamart.search_with_data(query=query, supplied_data=dataset)
+                LOGGER.info("DATA AUGMENTATION: Getting next page")
+                page = cursor.get_next_page()
+                if page:
+                    result = page[0]
+                    return result.serialize()
+
+            except Exception:
+                LOGGER.exception("DATA AUGMENTATION ERROR")
+
         # TODO: Replace this with the real DataMart query
-        if problem['id'] == 'DA_ny_taxi_demand_problem_TRAIN':
-            LOGGER.info('DATA AUGMENTATION!!!!!!')
-            with open(os.path.join(BASE_DIR, 'da.json')) as f:
-                return json.load(f)
+        # if problem['id'] == 'DA_ny_taxi_demand_problem_TRAIN':
+        #     LOGGER.info('DATA AUGMENTATION!!!!!!')
+        #     with open(os.path.join(BASE_DIR, 'da.json')) as f:
+        #         return json.dumps(json.load(f))
 
     def search(self, problem, timeout=None, budget=None, template_names=None):
 
@@ -490,7 +511,7 @@ class PipelineSearcher:
         task_type = problem['problem']['task_type'].name.lower()
         task_subtype = problem['problem']['task_subtype'].name.lower()
 
-        data_augmentation = self.get_data_augmentation(problem)
+        data_augmentation = self.get_data_augmentation(dataset, problem)
 
         LOGGER.info("Searching dataset %s: %s/%s/%s",
                     dataset_name, data_modality, task_type, task_subtype)
@@ -539,7 +560,8 @@ class PipelineSearcher:
                     if defaults:
                         error = '{}: {}'.format(type(ex).__name__, ex)
                         errors.append(error)
-                        if len(errors) >= min(len(template_names), budget or np.inf):
+                        max_errors = min(len(selector_tuner.template_names), budget or np.inf)
+                        if len(errors) >= max_errors:
                             raise Exception(errors)
 
                     pipeline.score = None

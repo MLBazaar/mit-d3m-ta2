@@ -1,6 +1,5 @@
 import argparse
 import importlib
-import json
 import logging
 import os
 import warnings
@@ -139,7 +138,7 @@ def load_template(template_name, data_augmentation=None):
                     'data': 'NYU'
                 },
                 'search_result': {
-                    'data': json.dumps(data_augmentation)
+                    'data': data_augmentation
                 }
             }
         }

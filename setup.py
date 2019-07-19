@@ -13,6 +13,7 @@ install_requires = [
     'sri-d3m==1.5.5',
     'rpi_d3m_primitives==0.1.6',
     'Cython==0.29.7',
+    'datamart-rest==0.2.1',
 ]
 
 

@@ -10,6 +10,13 @@ from ta2.template import load_template
 class SelectorTuner:
 
     def __init__(self, templates, data_augmentation):
+        if data_augmentation:
+            data_augmentation_templates = [
+                template + '#DA'
+                for template in templates
+            ]
+            templates.extend(data_augmentation_templates)
+
         self.template_names = templates
         self.templates = dict()
         self.selector = UCB1(templates)
@@ -40,8 +47,13 @@ class SelectorTuner:
     def propose(self):
         if len(self.templates) < len(self.template_names):
             template_name = self.template_names[len(self.templates)]
-            template, tunable_hyperparameters = load_template(
-                template_name, self.data_augmentation)
+            if template_name.endswith('#DA'):
+                template_name = template_name[:-3]
+                template, tunable_hyperparameters = load_template(
+                    template_name, self.data_augmentation)
+            else:
+                template, tunable_hyperparameters = load_template(template_name)
+
             tunables, proposal = self._get_tunables(tunable_hyperparameters)
             self.templates[template_name] = template, GP(tunables)
             default = True
