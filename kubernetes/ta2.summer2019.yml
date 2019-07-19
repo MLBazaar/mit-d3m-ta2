@@ -28,10 +28,8 @@ spec:
       value: "600"
     - name: D3MCONTEXT
       value: "TESTING"
-    - name: DATAMART_NYU_URL
+    - name: DATAMART_URL_NYU
       value: "https://datamart.d3m.vida-nyu.org/"
-    - name: DATAMART_ISI_URL
-      value: "http://dsbox02.isi.edu:9000"
     volumeMounts:
       - name: input-data
         mountPath: /input

@@ -227,8 +227,8 @@ build: ## build the mit-d3m-ta2 docker image
 
 .PHONY: submit
 submit: login build ## push to TA2 submission registry
-	docker tag mit-d3m-ta2:latest registry.datadrivendiscovery.org/ta2-submissions/ta2-mit/june2019
-	docker push registry.datadrivendiscovery.org/ta2-submissions/ta2-mit/june2019
+	docker tag mit-d3m-ta2:latest registry.datadrivendiscovery.org/ta2-submissions/ta2-mit/summer2019
+	docker push registry.datadrivendiscovery.org/ta2-submissions/ta2-mit/summer2019
 
 .PHONY: submit-ci
 submit-ci: login build ## push to TA2 submission registry
