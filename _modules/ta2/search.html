@@ -238,7 +238,8 @@
 <span class="kn">from</span> <span class="nn">d3m.metadata.base</span> <span class="k">import</span> <span class="n">ArgumentType</span><span class="p">,</span> <span class="n">Context</span>
 <span class="kn">from</span> <span class="nn">d3m.metadata.pipeline</span> <span class="k">import</span> <span class="n">Pipeline</span><span class="p">,</span> <span class="n">PrimitiveStep</span>
 <span class="kn">from</span> <span class="nn">d3m.metadata.problem</span> <span class="k">import</span> <span class="n">TaskType</span>
-<span class="kn">from</span> <span class="nn">d3m.runtime</span> <span class="k">import</span> <span class="n">DEFAULT_SCORING_PIPELINE_PATH</span><span class="p">,</span> <span class="n">evaluate</span>
+<span class="kn">from</span> <span class="nn">d3m.runtime</span> <span class="k">import</span> <span class="n">DEFAULT_SCORING_PIPELINE_PATH</span>
+<span class="kn">from</span> <span class="nn">d3m.runtime</span> <span class="k">import</span> <span class="n">evaluate</span> <span class="k">as</span> <span class="n">d3m_evaluate</span>
 
 <span class="kn">from</span> <span class="nn">ta2.tuning</span> <span class="k">import</span> <span class="n">SelectorTuner</span>
 <span class="kn">from</span> <span class="nn">ta2.utils</span> <span class="k">import</span> <span class="n">dump_pipeline</span>
@@ -249,6 +250,10 @@
 <span class="n">FALLBACK_PIPELINE</span> <span class="o">=</span> <span class="s1">&#39;fallback_pipeline.yml&#39;</span>
 
 <span class="n">TUNING_PARAMETER</span> <span class="o">=</span> <span class="s1">&#39;https://metadata.datadrivendiscovery.org/types/TuningParameter&#39;</span>
+
+<span class="n">SUBPROCESS_PRIMITIVES</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">&#39;d3m.primitives.natural_language_processing.lda.Fastlvm&#39;</span>
+<span class="p">]</span>
 
 <span class="n">LOGGER</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -489,13 +494,13 @@
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_evaluate</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">pipeline</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Running d3m.runtime.evalute on pipeline </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
-        <span class="n">results</span> <span class="o">=</span> <span class="n">evaluate</span><span class="p">(</span><span class="n">pipeline</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="n">d3m_evaluate</span><span class="p">(</span><span class="n">pipeline</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
         <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Returning results for </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
         <span class="n">out</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
 
-<div class="viewcode-block" id="PipelineSearcher.evaluate"><a class="viewcode-back" href="../../api/ta2.search.html#ta2.search.PipelineSearcher.evaluate">[docs]</a>    <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pipeline</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Evaluating pipeline </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+<div class="viewcode-block" id="PipelineSearcher.subprocess_evaluate"><a class="viewcode-back" href="../../api/ta2.search.html#ta2.search.PipelineSearcher.subprocess_evaluate">[docs]</a>    <span class="k">def</span> <span class="nf">subprocess_evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pipeline</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Evaluating pipeline </span><span class="si">%s</span><span class="s1"> in a subprocess&#39;</span><span class="p">,</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
         <span class="k">with</span> <span class="n">Manager</span><span class="p">()</span> <span class="k">as</span> <span class="n">manager</span><span class="p">:</span>
             <span class="n">output</span> <span class="o">=</span> <span class="n">manager</span><span class="o">.</span><span class="n">list</span><span class="p">()</span>
             <span class="n">process</span> <span class="o">=</span> <span class="n">Process</span><span class="p">(</span>
@@ -503,7 +508,6 @@
                 <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">pipeline</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">),</span>
                 <span class="n">kwargs</span><span class="o">=</span><span class="n">kwargs</span>
             <span class="p">)</span>
-            <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Starting process </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">process</span><span class="o">.</span><span class="n">pid</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span> <span class="o">=</span> <span class="n">process</span>
             <span class="n">process</span><span class="o">.</span><span class="n">daemon</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="n">process</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
@@ -533,7 +537,18 @@
             <span class="s1">&#39;shuffle&#39;</span><span class="p">:</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">shuffle</span><span class="p">),</span>
         <span class="p">}</span>
 
-        <span class="n">all_scores</span><span class="p">,</span> <span class="n">all_results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span>
+        <span class="c1"># Some primitives crash with a core dump that kills everything.</span>
+        <span class="c1"># We want to isolate those.</span>
+        <span class="n">primitives</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">step</span><span class="p">[</span><span class="s1">&#39;primitive&#39;</span><span class="p">][</span><span class="s1">&#39;python_path&#39;</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">to_json_structure</span><span class="p">()[</span><span class="s1">&#39;steps&#39;</span><span class="p">]</span>
+        <span class="p">]</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">primitive</span> <span class="ow">in</span> <span class="n">SUBPROCESS_PRIMITIVES</span> <span class="k">for</span> <span class="n">primitive</span> <span class="ow">in</span> <span class="n">primitives</span><span class="p">):</span>
+            <span class="n">evaluate</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subprocess_evaluate</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">evaluate</span> <span class="o">=</span> <span class="n">d3m_evaluate</span>
+
+        <span class="n">all_scores</span><span class="p">,</span> <span class="n">all_results</span> <span class="o">=</span> <span class="n">evaluate</span><span class="p">(</span>
             <span class="n">pipeline</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">data_pipeline</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">scoring_pipeline</span><span class="p">,</span>
