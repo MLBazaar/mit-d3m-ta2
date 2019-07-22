@@ -9,8 +9,10 @@ EXPOSE $D3MPORT
 RUN mkdir -p /user_dev && \
     mkdir -p /user_dev/output && \
     mkdir -p /user_dev/input && \
+    mkdir -p /user_dev/static && \
     ln -s /user_dev/output /output && \
-    ln -s /user_dev/input /input
+    ln -s /user_dev/input /input && \
+    ln -s /user_dev/static /static
 
 # Install requirements
 COPY docker_requirements.txt /user_dev/
