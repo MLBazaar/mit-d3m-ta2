@@ -5,7 +5,8 @@ python:
 
 # Command to install dependencies
 install:
-   - pip install -U tox-travis codecov
+  - sudo apt-get install build-essential
+  - pip install -U tox-travis codecov
 
 # Command to run tests
 script: tox
