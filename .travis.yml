@@ -5,7 +5,7 @@ python:
 
 # Command to install dependencies
 install:
-  - sudo apt-get install build-essential
+  - sudo apt-get install libgnutls28-dev
   - pip install -U tox-travis codecov
 
 # Command to run tests
