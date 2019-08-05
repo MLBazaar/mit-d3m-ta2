@@ -14,6 +14,7 @@ install_requires = [
     'rpi_d3m_primitives==0.1.6',
     'Cython==0.29.7',
     'datamart-rest==0.2.1',
+    'ta3ta2-api @ git+https://gitlab.com/datadrivendiscovery/ta3ta2-api.git@04e7da41580942ebade8154512ff41db1c624a65#egg=ta3ta2-api',
 ]
 
 
