@@ -6,7 +6,6 @@ from unittest.mock import MagicMock, call, mock_open, patch
 import numpy as np
 import pytest
 from d3m.metadata.base import Context
-from d3m.metadata.pipeline import Pipeline
 
 from ta2.search import PIPELINES_DIR, PipelineSearcher, to_dicts
 
@@ -42,8 +41,9 @@ def test_to_dicts():
     assert result == expected_hyperparams
 
 
+@patch('ta2.search.Pipeline.from_yaml')
 @patch('ta2.search.os.makedirs')
-def test_pipelinesearcher_defaults(makedirs_mock):
+def test_pipelinesearcher_defaults(makedirs_mock, from_yaml_mock):
     instance = PipelineSearcher()
 
     expected_calls = [
@@ -59,12 +59,13 @@ def test_pipelinesearcher_defaults(makedirs_mock):
     assert instance.ranked_dir == 'output/pipelines_ranked'
     assert instance.scored_dir == 'output/pipelines_scored'
     assert instance.searched_dir == 'output/pipelines_searched'
-    assert isinstance(instance.data_pipeline, Pipeline)
-    assert isinstance(instance.scoring_pipeline, Pipeline)
+    assert instance.data_pipeline == from_yaml_mock.return_value
+    assert instance.scoring_pipeline == from_yaml_mock.return_value
 
 
+@patch('ta2.search.Pipeline.from_yaml')
 @patch('ta2.search.os.makedirs')
-def test_pipelinesearcher(makedirs_mock):
+def test_pipelinesearcher(makedirs_mock, from_yaml_mock):
     instance = PipelineSearcher(input_dir='new-input', output_dir='new-output', dump=True)
 
     expected_calls = [
@@ -80,9 +81,8 @@ def test_pipelinesearcher(makedirs_mock):
     assert instance.ranked_dir == 'new-output/pipelines_ranked'
     assert instance.scored_dir == 'new-output/pipelines_scored'
     assert instance.searched_dir == 'new-output/pipelines_searched'
-    assert isinstance(instance.data_pipeline, Pipeline)
-    assert isinstance(instance.scoring_pipeline, Pipeline)
-    assert instance.datasets == {}
+    assert instance.data_pipeline == from_yaml_mock.return_value
+    assert instance.scoring_pipeline == from_yaml_mock.return_value
 
 
 @pytest.mark.skip(reason="this needs to be fixed")
@@ -155,6 +155,7 @@ def test_pipelinesearcher_load_pipeline(json_loader_mock, yaml_loader_mock):
 
 
 @patch('ta2.search.d3m_evaluate')
+@patch('ta2.search.Pipeline.from_yaml', new=MagicMock())
 def test_pipelinesearcher_score_pipeline(evaluate_mock):
     instance = PipelineSearcher()
     expected_scores = [MagicMock(value=[1])]
@@ -227,6 +228,7 @@ def test_pipelinesearcher_score_pipeline(evaluate_mock):
 
 
 @patch('ta2.search.datetime')
+@patch('ta2.search.Pipeline.from_yaml', new=MagicMock())
 def test_pipelinesearcher_check_stop(datetime_mock):
     datetime_mock.now = MagicMock(return_value=10)
 
@@ -252,6 +254,7 @@ def test_pipelinesearcher_check_stop(datetime_mock):
         instance.check_stop()
 
 
+@patch('ta2.search.Pipeline.from_yaml', new=MagicMock())
 def test_pipelinesearcher_stop():
     instance = PipelineSearcher()
 
@@ -262,8 +265,8 @@ def test_pipelinesearcher_stop():
     assert instance._stop
 
 
-@patch('ta2.search.LOGGER.info')
-def test_pipelinesearcher_setup_search(logger_mock):
+@patch('ta2.search.Pipeline.from_yaml', new=MagicMock())
+def test_pipelinesearcher_setup_search():
     instance = PipelineSearcher()
 
     assert hasattr(instance, 'solutions')
@@ -283,7 +286,6 @@ def test_pipelinesearcher_setup_search(logger_mock):
     assert hasattr(instance, 'start_time')
     assert instance.timeout is None
     assert instance.max_end_time is None
-    assert logger_mock.call_count == 1
 
     # with timeout
     instance.timeout = 0.5
@@ -291,4 +293,3 @@ def test_pipelinesearcher_setup_search(logger_mock):
 
     assert instance.timeout == 0.5
     assert instance.max_end_time == instance.start_time + timedelta(seconds=0.5)
-    assert logger_mock.call_count == 2
