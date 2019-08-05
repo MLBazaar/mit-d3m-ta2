@@ -19,7 +19,7 @@ from d3m.runtime import DEFAULT_SCORING_PIPELINE_PATH, Runtime, score
 from ta2.search import PipelineSearcher, get_dataset_details
 from ta2.ta3.client import TA3APIClient
 from ta2.ta3.server import serve
-from ta2.utils import ensure_downloaded, logging_setup
+from ta2.utils import logging_setup
 
 LOGGER = logging.getLogger(__name__)
 
@@ -103,7 +103,6 @@ def box_print(message, strong=False):
 
 def get_datasets(args):
     for dataset_name in args.dataset:
-        ensure_downloaded(dataset_name, args.input)
         dataset_root = os.path.join(args.input, dataset_name)
         dataset_path = os.path.join(dataset_root, 'TRAIN', 'dataset_TRAIN', 'datasetDoc.json')
 
@@ -275,7 +274,6 @@ def _ta3_test(args):
 
     for dataset in args.dataset:
         try:
-            ensure_downloaded(dataset, args.input)
             _ta3_test_dataset(client, dataset, args.timeout / 60)
         except Exception as e:
             print('An error occurred trying to process the dataset {}, produced by {}'.format(dataset, e))

@@ -149,23 +149,65 @@ EDGE_LIST = 'https://metadata.datadrivendiscovery.org/types/EdgeList'
 
 class PipelineSearcher:
 
-    @staticmethod
-    def _find_datasets(input_dir):
-        search_path = os.path.join(input_dir, '**', 'datasetDoc.json')
-        dataset_docs = glob.glob(search_path, recursive=True)
+    def _find_dataset(self, dataset_id):
+        train = 'TRAIN' in dataset_id
+        for dataset_name in os.scandir(self.input):
+            dataset_root = os.path.join(self.input, dataset_name)
+            if train:
+                dataset_doc_dir = os.path.join(dataset_root, 'TRAIN', 'dataset_TRAIN')
+            else:
+                dataset_doc_dir = os.path.join(dataset_root, dataset_name + '_dataset')
 
-        datasets = dict()
-        for dataset_doc_path in dataset_docs:
+            dataset_doc_path = os.path.join(dataset_doc_dir, 'datasetDoc.json')
+
+            LOGGER.info('Loading datasetDoc from %s', dataset_doc_path)
             with open(dataset_doc_path, 'r') as dataset_doc_file:
                 dataset_doc = json.load(dataset_doc_file)
 
-            dataset_id = dataset_doc['about']['datasetID']
-            dataset_name = os.path.basename(
-                os.path.realpath(os.path.join(dataset_doc_path, *[os.pardir] * 3))
-            )
-            datasets[dataset_id] = dataset_name, 'file://' + os.path.abspath(dataset_doc_path)
+            if dataset_doc['about']['datasetID'] == dataset_id:
+                LOGGER.info('Dataset_id %s found!', dataset_id)
+                dataset_path = 'file://' + os.path.abspath(dataset_doc_path)
 
-        return datasets
+                return dataset_name, dataset_path
+
+        raise ValueError('Cannot find dataset {}'.format(dataset_id))
+
+    def _get_dataset_details(self, problem):
+        dataset_id = problem['inputs'][0]['dataset_id']
+        problem_paths = problem.get('location_uris')
+        dataset_root = None
+        if problem_paths:
+            problem_path = problem_paths[0].replace('file://', '')
+
+            # /path/to/dataset_name/TRAIN/problem_TRAIN/problemDoc.json
+            dataset_root = os.path.realpath(os.path.join(
+                os.path.dirname(problem_path),
+                os.path.pardir,
+            ))
+            dataset_name = os.path.basename(
+                os.path.realpath(os.path.join(dataset_root, os.pardir)))
+
+        elif 'TRAIN' in dataset_id:
+            dataset_name = dataset_id.replace('_dataset_TRAIN', '')
+            dataset_root = os.path.join(self.input, dataset_name, 'TRAIN')
+
+        if dataset_root:
+            # /path/to/dataset_name/TRAIN
+            dataset_path = os.path.join(dataset_root, 'dataset_TRAIN', 'datasetDoc.json')
+
+            if os.path.exists(dataset_path):
+                with open(dataset_path, 'r') as dataset_doc_file:
+                    dataset_doc = json.load(dataset_doc_file)
+
+                if dataset_doc['about']['datasetID'] == dataset_id:
+                    dataset_name = os.path.basename(
+                        os.path.realpath(os.path.join(dataset_root, os.pardir)))
+                    dataset_path = 'file://' + dataset_path
+
+                    return dataset_name, dataset_path
+
+        LOGGER.warn('Dataset ID not found. Searching inside the input dir')
+        return self._find_dataset(dataset_id)
 
     def _load_pipeline(self, pipeline):
         if pipeline.endswith('.yml'):
@@ -276,7 +318,6 @@ class PipelineSearcher:
         os.makedirs(self.searched_dir, exist_ok=True)
 
         self.solutions = list()
-        self.datasets = self._find_datasets(input_dir)
         self.data_pipeline = self._load_pipeline('kfold_pipeline.yml')
         self.scoring_pipeline = self._load_pipeline(DEFAULT_SCORING_PIPELINE_PATH)
         self.fallback = self._load_pipeline(FALLBACK_PIPELINE)
@@ -502,8 +543,7 @@ class PipelineSearcher:
         iteration = 0
         errors = list()
 
-        dataset_id = problem['inputs'][0]['dataset_id']
-        dataset_name, dataset_path = self.datasets[dataset_id]
+        dataset_name, dataset_path = self._get_dataset_details(problem)
         dataset = Dataset.load(dataset_path)
         metric = problem['problem']['performance_metrics'][0]['metric']
 
