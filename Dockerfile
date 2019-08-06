@@ -15,8 +15,8 @@ RUN mkdir -p /user_dev && \
     ln -s /user_dev/static /static
 
 # Install requirements
-COPY docker_requirements.txt /user_dev/
-RUN pip3 install -r /user_dev/docker_requirements.txt
+COPY requirements.txt /user_dev/
+RUN pip3 install -r /user_dev/requirements.txt
 
 # Copy code
 COPY setup.py MANIFEST.in /user_dev/
