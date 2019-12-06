@@ -55,8 +55,10 @@ def search(dataset_root, problem, args):
         dump=True,
         hard_timeout=args.hard,
     )
+    dataset_root = os.path.abspath(dataset_root)
+    dataset_path = 'file://{}/TRAIN/dataset_TRAIN/datasetDoc.json'.format(dataset_root)
 
-    return pps.search(problem, args.timeout, args.budget, args.template)
+    return pps.search(dataset_path, problem, args.timeout, args.budget, args.template)
 
 
 def score_pipeline(dataset_root, problem, pipeline_path, static=None):

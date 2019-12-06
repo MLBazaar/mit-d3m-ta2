@@ -850,10 +850,13 @@ class CoreServicer(core_pb2_grpc.CoreServicer):
 
         searcher = PipelineSearcher(self.input_dir, self.output_dir, self.static_dir)
 
+        dataset_doc = inputs[0].dataset_uri
+
         self._start_session(
             search_id,
             'search',
             searcher.search,
+            dataset_doc,
             problem,
             timeout,
             searcher=searcher,
