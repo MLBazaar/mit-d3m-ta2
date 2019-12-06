@@ -229,7 +229,6 @@ class PipelineSearcher:
             if task_type == TaskKeyword.CLASSIFICATION.name.lower():
                 templates = [
                     Templates.SINGLE_TABLE_CLASSIFICATION_ENC_XGB,
-                    Templates.SINGLE_TABLE_CLASSIFICATION_AR_RF,
                     Templates.SINGLE_TABLE_CLASSIFICATION_DFS_ROBUST_XGB,
                 ]
             elif task_type == TaskKeyword.REGRESSION.name.lower():
@@ -252,8 +251,6 @@ class PipelineSearcher:
                 ]
             elif task_type == TaskKeyword.SEMISUPERVISED_CLASSIFICATION.name.lower():
                 templates = [Templates.SINGLE_TABLE_SEMI_CLASSIFICATION]
-            elif task_type == TaskKeyword.CLUSTERING.name.lower():
-                templates = [Templates.SINGLE_TABLE_CLUSTERING]
 
         if data_modality == 'multi_table':
             if task_type == TaskKeyword.CLASSIFICATION.name.lower():
@@ -290,10 +287,6 @@ class PipelineSearcher:
         if data_modality == 'graph':
             if task_type == TaskKeyword.COMMUNITY_DETECTION.name.lower():
                 templates = [Templates.GRAPH_COMMUNITY_DETECTION]
-            elif task_type == TaskKeyword.LINK_PREDICTION.name.lower():
-                templates = [Templates.GRAPH_LINK_PREDICTION]
-            elif task_type == TaskKeyword.GRAPH_MATCHING.name.lower():
-                templates = [Templates.GRAPH_MATCHING]
             elif task_type == TaskKeyword.VERTEX_CLASSIFICATION.name.lower():
                 templates = [Templates.SINGLE_TABLE_CLASSIFICATION_ENC_XGB]
 
