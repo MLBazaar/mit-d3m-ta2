@@ -83,7 +83,7 @@ install-develop: clean-build clean-pyc ## install the package in editable mode a
 
 .PHONY: install-primitives
 install-primitives: clean-build clean-pyc ## install the primitive packages to the active Python's site-packages
-	pip install -r primitives_requirements.txt
+	pip install -r primitive_requirements.txt
 
 .PHONY: install-system
 install-system: ## install system requirements
@@ -231,8 +231,8 @@ build: ## build the mit-d3m-ta2 docker image
 
 .PHONY: submit
 submit: login build ## push to TA2 submission registry
-	docker tag mit-d3m-ta2:latest registry.datadrivendiscovery.org/ta2-submissions/ta2-mit/summer2019
-	docker push registry.datadrivendiscovery.org/ta2-submissions/ta2-mit/summer2019
+	docker tag mit-d3m-ta2:latest registry.datadrivendiscovery.org/ta2-submissions/ta2-mit/december2019
+	docker push registry.datadrivendiscovery.org/ta2-submissions/ta2-mit/december2019
 
 .PHONY: submit-ci
 submit-ci: login build ## push to TA2 submission registry
