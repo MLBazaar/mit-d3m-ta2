@@ -2,8 +2,6 @@
 -e git+https://gitlab.com/datadrivendiscovery/common-primitives.git@0ba892a20a83e9aae89accd34df67991385faa8c#egg=common_primitives
 -e git+https://gitlab.com/datadrivendiscovery/tests-data.git@e6299dfefcdfdc309dac0dc28b9bbf3eb9193cae#egg=test_primitives&subdirectory=primitives
 -e git+https://github.com/Featuretools/ta1-primitives.git@b3e0d1447ca0a7a4941c87adf69bf217446edba5#egg=featuretools_ta1
--e git+https://github.com/Featuretools/featuretools.git@0257f523870ee9321720d01195598de92fc4e92c#egg=featuretools
 -e git+https://github.com/usc-isi-i2/dsbox-primitives@ec325d9a555c64aa0d1668b2375d18a6992b622f#egg=dsbox-primitives
 -e git+https://github.com/uncharted-distil/distil-primitives.git@e0e37bc1aeb905388ffe7f601efabdb925825188#egg=distil-primitives
 -e git+https://github.com/autonlab/autonbox.git@2ff6af3ed0ddb5ccfe2859e75ce3231b258aba99#egg=autonbox
--e git+https://github.com/dvdmjohnson/d3m_michigan_primitives.git@aa14dd2ad88b7d580779f42eec8a7d0a9632f4c4#egg=spider
