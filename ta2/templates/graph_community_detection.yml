@@ -1,3 +1,0 @@
-steps:
-- primitive: d3m.primitives.community_detection.community_detection_parser.CommunityDetectionParser
-- primitive: d3m.primitives.classification.community_detection.CommunityDetection

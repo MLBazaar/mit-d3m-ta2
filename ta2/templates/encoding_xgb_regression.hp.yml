@@ -1,15 +1,15 @@
 steps:
 - primitive: d3m.primitives.data_transformation.denormalize.Common
 - primitive: d3m.primitives.data_transformation.dataset_to_dataframe.Common
-- primitive: d3m.primitives.data_transformation.column_parser.DataFrameCommon
-- primitive: d3m.primitives.data_transformation.extract_columns_by_semantic_types.DataFrameCommon
+- primitive: d3m.primitives.data_transformation.column_parser.Common
+- primitive: d3m.primitives.data_transformation.extract_columns_by_semantic_types.Common
   hyperparams:
     semantic_types:
       data:
       - https://metadata.datadrivendiscovery.org/types/Target
       - https://metadata.datadrivendiscovery.org/types/TrueTarget
       - https://metadata.datadrivendiscovery.org/types/SuggestedTarget
-- primitive: d3m.primitives.data_transformation.extract_columns_by_semantic_types.DataFrameCommon
+- primitive: d3m.primitives.data_transformation.extract_columns_by_semantic_types.Common
   arguments:
     inputs:
       data: steps.2.produce
@@ -25,7 +25,7 @@ steps:
       data: steps.3.produce
 - primitive: d3m.primitives.data_transformation.one_hot_encoder.DistilOneHotEncoder
 - primitive: d3m.primitives.data_preprocessing.robust_scaler.SKlearn
-- primitive: d3m.primitives.regression.xgboost_gbtree.DataFrameCommon
+- primitive: d3m.primitives.regression.xgboost_gbtree.Common
   arguments:
     outputs:
       data: steps.3.produce
@@ -36,7 +36,7 @@ steps:
       data: new
     add_index_columns:
       data: true
-- primitive: d3m.primitives.data_transformation.construct_predictions.DataFrameCommon
+- primitive: d3m.primitives.data_transformation.construct_predictions.Common
   arguments:
     reference:
       data: steps.2.produce

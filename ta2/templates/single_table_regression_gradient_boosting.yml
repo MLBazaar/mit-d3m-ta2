@@ -1,7 +1,7 @@
 steps:
 - primitive: d3m.primitives.data_transformation.denormalize.Common
 - primitive: d3m.primitives.data_transformation.dataset_to_dataframe.Common
-- primitive: d3m.primitives.data_transformation.column_parser.DataFrameCommon
+- primitive: d3m.primitives.data_transformation.column_parser.Common
 - primitive: d3m.primitives.data_cleaning.imputer.SKlearn
   hyperparams:
     use_semantic_types:
@@ -21,7 +21,7 @@ steps:
       data: true
     return_result:
       data: replace
-- primitive: d3m.primitives.data_transformation.construct_predictions.DataFrameCommon
+- primitive: d3m.primitives.data_transformation.construct_predictions.Common
   arguments:
     inputs:
       type: CONTAINER

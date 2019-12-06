@@ -1,13 +1,13 @@
 steps:
 - primitive: d3m.primitives.data_transformation.denormalize.Common
 - primitive: d3m.primitives.data_transformation.dataset_to_dataframe.Common
-- primitive: d3m.primitives.data_transformation.extract_columns_by_semantic_types.DataFrameCommon
+- primitive: d3m.primitives.data_transformation.extract_columns_by_semantic_types.Common
   hyperparams:
     semantic_types:
       data:
         - https://metadata.datadrivendiscovery.org/types/PrimaryMultiKey
         - https://metadata.datadrivendiscovery.org/types/FileName
-- primitive: d3m.primitives.data_transformation.extract_columns_by_semantic_types.DataFrameCommon
+- primitive: d3m.primitives.data_transformation.extract_columns_by_semantic_types.Common
   arguments:
     inputs:
       data: steps.1.produce
