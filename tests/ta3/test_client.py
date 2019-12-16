@@ -394,26 +394,6 @@ def test_apiclient_solution_export(solution_export_request_mock, logger_mock):
 
 
 @patch('ta2.ta3.client.LOGGER.debug')
-@patch('ta2.ta3.client.core_pb2.UpdateProblemRequest')
-def test_apiclient_update_problem(update_problem_request_mock, logger_mock):
-    instance = TA3APIClient(port=9999)
-    search_id = 'search-id'
-    expected_response = 'response'
-
-    # mocks
-    update_problem_request_mock.return_value = 'request'
-    instance.stub.UpdateProblem = MagicMock(return_value=expected_response)
-
-    return_value = instance.update_problem(search_id)
-
-    assert return_value == expected_response
-    assert logger_mock.call_count == 2
-
-    update_problem_request_mock.assert_called_once_with(search_id=search_id)
-    instance.stub.UpdateProblem.called_once_with('request')
-
-
-@patch('ta2.ta3.client.LOGGER.debug')
 @patch('ta2.ta3.client.core_pb2.ListPrimitivesRequest')
 def test_apiclient_list_primitives(list_primitives_request_mock, logger_mock):
     instance = TA3APIClient(port=9999)

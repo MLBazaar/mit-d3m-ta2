@@ -361,19 +361,6 @@ class TA3APIClient(object):
 
         return response
 
-    def update_problem(self, search_id):
-        request = core_pb2.UpdateProblemRequest(
-            search_id=search_id,
-        )
-
-        LOGGER.debug("%s: %s", request.__class__.__name__, request)
-
-        response = self.stub.UpdateProblem(request)
-
-        LOGGER.debug("%s: %s", response.__class__.__name__, response)
-
-        return response
-
     def list_primitives(self):
         request = core_pb2.ListPrimitivesRequest()
 

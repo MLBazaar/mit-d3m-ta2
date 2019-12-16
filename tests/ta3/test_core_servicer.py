@@ -145,6 +145,7 @@ def test_core_servicer_searchsolutions(searcher_mock, pipeline_searcher_mock, de
     instance._start_session = MagicMock()
     expected_result = 'result'
     searcher_mock.return_value = expected_result
+    inputs = [MagicMock(dataset_uri=1)]
 
     # wrong version
     request = MagicMock(version='fake-version')
@@ -159,7 +160,6 @@ def test_core_servicer_searchsolutions(searcher_mock, pipeline_searcher_mock, de
         instance.SearchSolutions(request, None)  # context (None) is not used
 
     # correct parameters
-    inputs = [1]
     problem = MagicMock(inputs=inputs)
     request = MagicMock(version='2019.12.4', inputs=inputs, problem=problem)
 
