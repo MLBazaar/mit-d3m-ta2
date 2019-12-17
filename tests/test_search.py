@@ -185,13 +185,13 @@ def test_pipelinesearcher_score_pipeline(evaluate_mock):
     )
 
     evaluate_mock.assert_called_with(
-        pipeline_mock,
-        instance.data_pipeline,
-        instance.scoring_pipeline,
-        problem,
-        [dataset],
-        data_params,            # folds, stratified, shuffle
-        metrics,                # custom metrics
+        pipeline=pipeline_mock,
+        inputs=[dataset],
+        data_pipeline=instance.data_pipeline,
+        scoring_pipeline=instance.scoring_pipeline,
+        problem_description=problem,
+        data_params=data_params,            # folds, stratified, shuffle
+        metrics=metrics,                    # custom metrics
         context=Context.TESTING,
         random_seed=random_seed,
         data_random_seed=random_seed,
@@ -210,13 +210,13 @@ def test_pipelinesearcher_score_pipeline(evaluate_mock):
     )
 
     evaluate_mock.assert_called_with(
-        pipeline_mock,
-        instance.data_pipeline,
-        instance.scoring_pipeline,
-        problem,
-        [dataset],
-        data_params,                               # folds, stratified, shuffle
-        problem['problem']['performance_metrics'],  # problem metrics
+        pipeline=pipeline_mock,
+        inputs=[dataset],
+        data_pipeline=instance.data_pipeline,
+        scoring_pipeline=instance.scoring_pipeline,
+        problem_description=problem,
+        data_params=data_params,                            # folds, stratified, shuffle
+        metrics=problem['problem']['performance_metrics'],  # custom metrics
         context=Context.TESTING,
         random_seed=random_seed,
         data_random_seed=random_seed,

@@ -1,9 +1,9 @@
 steps:
 - primitive: d3m.primitives.data_transformation.dataset_to_dataframe.Common
-- primitive: d3m.primitives.data_transformation.column_parser.DataFrameCommon
-- primitive: d3m.primitives.data_transformation.extract_columns_by_semantic_types.DataFrameCommon
+- primitive: d3m.primitives.data_transformation.column_parser.Common
+- primitive: d3m.primitives.data_transformation.extract_columns_by_semantic_types.Common
 - primitive: d3m.primitives.data_cleaning.imputer.SKlearn
-- primitive: d3m.primitives.data_transformation.extract_columns_by_semantic_types.DataFrameCommon
+- primitive: d3m.primitives.data_transformation.extract_columns_by_semantic_types.Common
   arguments:
     inputs:
       data: steps.1.produce
@@ -17,7 +17,7 @@ steps:
       data: steps.3.produce
     outputs:
       data: steps.4.produce
-- primitive: d3m.primitives.data_transformation.construct_predictions.DataFrameCommon
+- primitive: d3m.primitives.data_transformation.construct_predictions.Common
   arguments:
     reference:
       data: steps.1.produce

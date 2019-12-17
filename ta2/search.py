@@ -14,7 +14,7 @@ import numpy as np
 from d3m.container.dataset import Dataset
 from d3m.metadata.base import ArgumentType, Context
 from d3m.metadata.pipeline import Pipeline, PrimitiveStep
-from d3m.metadata.problem import TaskType
+from d3m.metadata.problem import TaskKeyword
 from d3m.runtime import DEFAULT_SCORING_PIPELINE_PATH
 from d3m.runtime import evaluate as d3m_evaluate
 from datamart import DatamartQuery
@@ -44,7 +44,7 @@ warnings.filterwarnings("ignore", category=DeprecationWarning)
 class Templates(Enum):
     # SINGLE TABLE CLASSIFICATION
     SINGLE_TABLE_CLASSIFICATION_ENC_XGB = 'single_table_classification_encoding_xgb.yml'
-    SINGLE_TABLE_CLASSIFICATION_AR_RF = 'single_table_classification_autorpi_rf.yml'
+    # SINGLE_TABLE_CLASSIFICATION_AR_RF = 'single_table_classification_autorpi_rf.yml'
     SINGLE_TABLE_CLASSIFICATION_DFS_ROBUST_XGB = 'single_table_classification_dfs_robust_xgb.yml'
     # SINGLE_TABLE_CLASSIFICATION_DFS_XGB = 'single_table_classification_dfs_xgb.yml'
     # SINGLE_TABLE_CLASSIFICATION_GB = 'single_table_classification_gradient_boosting.yml'
@@ -58,7 +58,7 @@ class Templates(Enum):
 
     # MISC
     SINGLE_TABLE_SEMI_CLASSIFICATION = 'single_table_semi_classification_autonbox.yml'
-    SINGLE_TABLE_CLUSTERING = 'single_table_clustering_ekss.yml'
+    # SINGLE_TABLE_CLUSTERING = 'single_table_clustering_ekss.yml'
 
     # MULTI TABLE
     MULTI_TABLE_CLASSIFICATION_DFS_XGB = 'multi_table_classification_dfs_xgb.yml'
@@ -82,10 +82,9 @@ class Templates(Enum):
     TEXT_REGRESSION = 'text_regression_encoding_xgb.yml'
 
     # GRAPH
-    GRAPH_COMMUNITY_DETECTION = 'graph_community_detection.yml'
     # GRAPH_COMMUNITY_DETECTION_DISTIL = 'graph_community_detection_distil.yml'
-    GRAPH_LINK_PREDICTION = 'graph_link_prediction_distil.yml'
-    GRAPH_MATCHING = 'graph_matching.yml'
+    # GRAPH_LINK_PREDICTION = 'graph_link_prediction_distil.yml'
+    # GRAPH_MATCHING = 'graph_matching.yml'
     # GRAPH_MATCHING_JHU = 'graph_matching_jhu.yml'
 
 
@@ -111,8 +110,8 @@ def detect_data_modality(dataset_doc_path):
 
 def get_dataset_details(dataset, problem):
     data_modality = detect_data_modality(dataset)
-    task_type = problem['problem']['task_type'].name.lower()
-    task_subtype = problem['problem']['task_subtype'].name.lower()
+    task_type = problem['problem']['task_keywords'][0].name.lower()
+    task_subtype = problem['problem']['task_keywords'][1].name.lower()
 
     return data_modality, task_type, task_subtype
 
@@ -148,66 +147,6 @@ EDGE_LIST = 'https://metadata.datadrivendiscovery.org/types/EdgeList'
 
 class PipelineSearcher:
 
-    def _find_dataset(self, dataset_id):
-        train = 'TRAIN' in dataset_id
-        for dataset_name in os.scandir(self.input):
-            dataset_root = os.path.join(self.input, dataset_name)
-            if train:
-                dataset_doc_dir = os.path.join(dataset_root, 'TRAIN', 'dataset_TRAIN')
-            else:
-                dataset_doc_dir = os.path.join(dataset_root, dataset_name + '_dataset')
-
-            dataset_doc_path = os.path.join(dataset_doc_dir, 'datasetDoc.json')
-
-            LOGGER.info('Loading datasetDoc from %s', dataset_doc_path)
-            with open(dataset_doc_path, 'r') as dataset_doc_file:
-                dataset_doc = json.load(dataset_doc_file)
-
-            if dataset_doc['about']['datasetID'] == dataset_id:
-                LOGGER.info('Dataset_id %s found!', dataset_id)
-                dataset_path = 'file://' + os.path.abspath(dataset_doc_path)
-
-                return dataset_name, dataset_path
-
-        raise ValueError('Cannot find dataset {}'.format(dataset_id))
-
-    def _get_dataset_details(self, problem):
-        dataset_id = problem['inputs'][0]['dataset_id']
-        problem_paths = problem.get('location_uris')
-        dataset_root = None
-        if problem_paths:
-            problem_path = problem_paths[0].replace('file://', '')
-
-            # /path/to/dataset_name/TRAIN/problem_TRAIN/problemDoc.json
-            dataset_root = os.path.realpath(os.path.join(
-                os.path.dirname(problem_path),
-                os.path.pardir,
-            ))
-            dataset_name = os.path.basename(
-                os.path.realpath(os.path.join(dataset_root, os.pardir)))
-
-        elif 'TRAIN' in dataset_id:
-            dataset_name = dataset_id.replace('_dataset_TRAIN', '')
-            dataset_root = os.path.join(self.input, dataset_name, 'TRAIN')
-
-        if dataset_root:
-            # /path/to/dataset_name/TRAIN
-            dataset_path = os.path.join(dataset_root, 'dataset_TRAIN', 'datasetDoc.json')
-
-            if os.path.exists(dataset_path):
-                with open(dataset_path, 'r') as dataset_doc_file:
-                    dataset_doc = json.load(dataset_doc_file)
-
-                if dataset_doc['about']['datasetID'] == dataset_id:
-                    dataset_name = os.path.basename(
-                        os.path.realpath(os.path.join(dataset_root, os.pardir)))
-                    dataset_path = 'file://' + dataset_path
-
-                    return dataset_name, dataset_path
-
-        LOGGER.warn('Dataset ID not found. Searching inside the input dir')
-        return self._find_dataset(dataset_id)
-
     def _load_pipeline(self, pipeline):
         if pipeline.endswith('.yml'):
             loader = Pipeline.from_yaml
@@ -227,47 +166,44 @@ class PipelineSearcher:
         templates = [Templates.SINGLE_TABLE_CLASSIFICATION_ENC_XGB]
 
         if data_modality == 'single_table':
-            if task_type == TaskType.CLASSIFICATION.name.lower():
+            if task_type == TaskKeyword.CLASSIFICATION.name.lower():
                 templates = [
                     Templates.SINGLE_TABLE_CLASSIFICATION_ENC_XGB,
-                    Templates.SINGLE_TABLE_CLASSIFICATION_AR_RF,
                     Templates.SINGLE_TABLE_CLASSIFICATION_DFS_ROBUST_XGB,
                 ]
-            elif task_type == TaskType.REGRESSION.name.lower():
+            elif task_type == TaskKeyword.REGRESSION.name.lower():
                 templates = [
                     Templates.SINGLE_TABLE_REGRESSION_XGB,
                     Templates.SINGLE_TABLE_REGRESSION_SC_XGB,
                     Templates.SINGLE_TABLE_REGRESSION_ENC_XGB,
                 ]
-            elif task_type == TaskType.COLLABORATIVE_FILTERING.name.lower():
+            elif task_type == TaskKeyword.COLLABORATIVE_FILTERING.name.lower():
                 templates = [
                     Templates.SINGLE_TABLE_REGRESSION_XGB,
                     Templates.SINGLE_TABLE_REGRESSION_SC_XGB,
                     Templates.SINGLE_TABLE_REGRESSION_ENC_XGB,
                 ]
-            elif task_type == TaskType.TIME_SERIES_FORECASTING.name.lower():
+            elif task_type == TaskKeyword.TIME_SERIES_FORECASTING.name.lower():
                 templates = [
                     Templates.SINGLE_TABLE_REGRESSION_XGB,
                     Templates.SINGLE_TABLE_REGRESSION_SC_XGB,
                     Templates.SINGLE_TABLE_REGRESSION_ENC_XGB,
                 ]
-            elif task_type == TaskType.SEMISUPERVISED_CLASSIFICATION.name.lower():
+            elif task_type == TaskKeyword.SEMISUPERVISED_CLASSIFICATION.name.lower():
                 templates = [Templates.SINGLE_TABLE_SEMI_CLASSIFICATION]
-            elif task_type == TaskType.CLUSTERING.name.lower():
-                templates = [Templates.SINGLE_TABLE_CLUSTERING]
 
         if data_modality == 'multi_table':
-            if task_type == TaskType.CLASSIFICATION.name.lower():
+            if task_type == TaskKeyword.CLASSIFICATION.name.lower():
                 templates = [
                     Templates.MULTI_TABLE_CLASSIFICATION_LDA_LOGREG,
                     Templates.MULTI_TABLE_CLASSIFICATION_DFS_XGB,
                 ]
-            elif task_type == TaskType.REGRESSION.name.lower():
+            elif task_type == TaskKeyword.REGRESSION.name.lower():
                 templates = [Templates.MULTI_TABLE_REGRESSION]
         elif data_modality == 'text':
-            if task_type == TaskType.CLASSIFICATION.name.lower():
+            if task_type == TaskKeyword.CLASSIFICATION.name.lower():
                 templates = [Templates.TEXT_CLASSIFICATION]
-            elif task_type == TaskType.REGRESSION.name.lower():
+            elif task_type == TaskKeyword.REGRESSION.name.lower():
                 templates = [Templates.TEXT_REGRESSION]
 
         if data_modality == 'timeseries':
@@ -276,26 +212,22 @@ class PipelineSearcher:
                 Templates.TIMESERIES_CLASSIFICATION_DSBOX_LR,
                 Templates.TIMESERIES_CLASSIFICATION_LSTM_FCN
             ]
-            # if task_type == TaskType.CLASSIFICATION.name.lower():
+            # if task_type == TaskKeyword.CLASSIFICATION.name.lower():
             #     template = Templates.TIMESERIES_CLASSIFICATION
-            # elif task_type == TaskType.REGRESSION.name.lower():
+            # elif task_type == TaskKeyword.REGRESSION.name.lower():
             #     template = Templates.TIMESERIES_REGRESSION
         elif data_modality == 'image':
-            if task_type == TaskType.CLASSIFICATION.name.lower():
+            if task_type == TaskKeyword.CLASSIFICATION.name.lower():
                 templates = [Templates.IMAGE_CLASSIFICATION]
-            elif task_type == TaskType.REGRESSION.name.lower():
+            elif task_type == TaskKeyword.REGRESSION.name.lower():
                 templates = [Templates.IMAGE_REGRESSION]
-            elif task_type == TaskType.OBJECT_DETECTION.name.lower():
+            elif task_type == TaskKeyword.OBJECT_DETECTION.name.lower():
                 templates = [Templates.IMAGE_OBJECT_DETECTION]
 
         if data_modality == 'graph':
-            if task_type == TaskType.COMMUNITY_DETECTION.name.lower():
+            if task_type == TaskKeyword.COMMUNITY_DETECTION.name.lower():
                 templates = [Templates.GRAPH_COMMUNITY_DETECTION]
-            elif task_type == TaskType.LINK_PREDICTION.name.lower():
-                templates = [Templates.GRAPH_LINK_PREDICTION]
-            elif task_type == TaskType.GRAPH_MATCHING.name.lower():
-                templates = [Templates.GRAPH_MATCHING]
-            elif task_type == TaskType.VERTEX_CLASSIFICATION.name.lower():
+            elif task_type == TaskKeyword.VERTEX_CLASSIFICATION.name.lower():
                 templates = [Templates.SINGLE_TABLE_CLASSIFICATION_ENC_XGB]
 
         return [template.value for template in templates]
@@ -379,13 +311,13 @@ class PipelineSearcher:
             evaluate = d3m_evaluate
 
         all_scores, all_results = evaluate(
-            pipeline,
-            self.data_pipeline,
-            self.scoring_pipeline,
-            problem,
-            [dataset],
-            data_params,
-            metrics,
+            pipeline=pipeline,
+            inputs=[dataset],
+            data_pipeline=self.data_pipeline,
+            scoring_pipeline=self.scoring_pipeline,
+            problem_description=problem,
+            data_params=data_params,
+            metrics=metrics,
             context=Context.TESTING,
             random_seed=random_seed,
             data_random_seed=random_seed,
@@ -528,7 +460,7 @@ class PipelineSearcher:
         #     with open(os.path.join(BASE_DIR, 'da.json')) as f:
         #         return json.dumps(json.load(f))
 
-    def search(self, problem, timeout=None, budget=None, template_names=None):
+    def search(self, dataset_path, problem, timeout=None, budget=None, template_names=None):
 
         self.timeout = timeout
         best_pipeline = None
@@ -542,13 +474,16 @@ class PipelineSearcher:
         iteration = 0
         errors = list()
 
-        dataset_name, dataset_path = self._get_dataset_details(problem)
+        dataset_name = problem['inputs'][0]['dataset_id']
+        if dataset_name.endswith('_dataset'):
+            dataset_name = dataset_name[:-len('_dataset')]
+
         dataset = Dataset.load(dataset_path)
         metric = problem['problem']['performance_metrics'][0]['metric']
 
         data_modality = detect_data_modality(dataset_path[7:])
-        task_type = problem['problem']['task_type'].name.lower()
-        task_subtype = problem['problem']['task_subtype'].name.lower()
+        task_type = problem['problem']['task_keywords'][0].name.lower()
+        task_subtype = problem['problem']['task_keywords'][1].name.lower()
 
         data_augmentation = self.get_data_augmentation(dataset, problem)
 

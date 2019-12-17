@@ -4,15 +4,15 @@ steps:
   arguments:
     outputs:
       data: steps.0.produce
-- primitive: d3m.primitives.data_transformation.column_parser.DataFrameCommon
-- primitive: d3m.primitives.classification.xgboost_gbtree.DataFrameCommon
+- primitive: d3m.primitives.data_transformation.column_parser.Common
+- primitive: d3m.primitives.classification.xgboost_gbtree.Common
   hyperparams:
     n_jobs:
       data: -1
   arguments:
     outputs:
       data: steps.1.produce
-- primitive: d3m.primitives.data_transformation.construct_predictions.DataFrameCommon
+- primitive: d3m.primitives.data_transformation.construct_predictions.Common
   arguments:
       reference:
         type: CONTAINER

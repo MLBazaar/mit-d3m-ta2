@@ -6,7 +6,7 @@ steps:
   hyperparams:
     generate_metadata:
       data: true
-- primitive: d3m.primitives.regression.xgboost_gbtree.DataFrameCommon
+- primitive: d3m.primitives.regression.xgboost_gbtree.Common
   arguments:
     outputs:
       data: steps.1.produce

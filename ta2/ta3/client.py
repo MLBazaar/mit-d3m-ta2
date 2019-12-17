@@ -53,7 +53,7 @@ class TA3APIClient(object):
 
         request = core_pb2.SearchSolutionsRequest(
             user_agent='ta3_api_test.py',
-            version='2019.7.9',
+            version='2019.12.4',
             time_bound_search=time_bound_search,
             priority=0.,
             allowed_value_types=[
@@ -356,19 +356,6 @@ class TA3APIClient(object):
         LOGGER.debug("%s: %s", request.__class__.__name__, request)
 
         response = self.stub.SolutionExport(request)
-
-        LOGGER.debug("%s: %s", response.__class__.__name__, response)
-
-        return response
-
-    def update_problem(self, search_id):
-        request = core_pb2.UpdateProblemRequest(
-            search_id=search_id,
-        )
-
-        LOGGER.debug("%s: %s", request.__class__.__name__, request)
-
-        response = self.stub.UpdateProblem(request)
 
         LOGGER.debug("%s: %s", response.__class__.__name__, response)
 

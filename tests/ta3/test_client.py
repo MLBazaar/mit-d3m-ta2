@@ -54,7 +54,7 @@ def test_apiclient_search_solutions(search_solutions_request_mock, logger_mock):
 
     search_solutions_request_mock.assert_called_once_with(
         user_agent='ta3_api_test.py',
-        version='2019.7.9',
+        version='2019.12.4',
         time_bound_search=1.,
         priority=0.,
         allowed_value_types=[
@@ -391,26 +391,6 @@ def test_apiclient_solution_export(solution_export_request_mock, logger_mock):
 
     solution_export_request_mock.assert_called_once_with(solution_id=solution_id, rank=rank)
     instance.stub.SolutionExport.called_once_with('request')
-
-
-@patch('ta2.ta3.client.LOGGER.debug')
-@patch('ta2.ta3.client.core_pb2.UpdateProblemRequest')
-def test_apiclient_update_problem(update_problem_request_mock, logger_mock):
-    instance = TA3APIClient(port=9999)
-    search_id = 'search-id'
-    expected_response = 'response'
-
-    # mocks
-    update_problem_request_mock.return_value = 'request'
-    instance.stub.UpdateProblem = MagicMock(return_value=expected_response)
-
-    return_value = instance.update_problem(search_id)
-
-    assert return_value == expected_response
-    assert logger_mock.call_count == 2
-
-    update_problem_request_mock.assert_called_once_with(search_id=search_id)
-    instance.stub.UpdateProblem.called_once_with('request')
 
 
 @patch('ta2.ta3.client.LOGGER.debug')

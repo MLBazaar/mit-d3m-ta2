@@ -55,8 +55,10 @@ def search(dataset_root, problem, args):
         dump=True,
         hard_timeout=args.hard,
     )
+    dataset_root = os.path.abspath(dataset_root)
+    dataset_path = 'file://{}/TRAIN/dataset_TRAIN/datasetDoc.json'.format(dataset_root)
 
-    return pps.search(problem, args.timeout, args.budget, args.template)
+    return pps.search(dataset_path, problem, args.timeout, args.budget, args.template)
 
 
 def score_pipeline(dataset_root, problem, pipeline_path, static=None):
@@ -87,8 +89,13 @@ def score_pipeline(dataset_root, problem, pipeline_path, static=None):
     LOGGER.info("Computing the score")
     scoring_pipeline = load_pipeline(DEFAULT_SCORING_PIPELINE_PATH)
     scores, scoring_pipeline_run = score(
-        scoring_pipeline, problem, predictions, [test_dataset], metrics,
-        context=Context.TESTING, random_seed=0,
+        scoring_pipeline=scoring_pipeline,
+        problem_description=problem,
+        predictions=predictions,
+        score_inputs=[test_dataset],
+        metrics=metrics,
+        context=Context.TESTING,
+        random_seed=0,
     )
     return scores.iloc[0].value
 
