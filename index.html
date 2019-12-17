@@ -274,7 +274,7 @@ git checkout stable
 </pre></div>
 </div>
 <p>Once done, make sure to having created and activated your virtalenv and then simply execute:</p>
-<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span><span class="n">make</span> <span class="n">install</span>
+<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span>make install
 </pre></div>
 </div>
 </div>
@@ -447,7 +447,7 @@ allowed for the tuning (<code class="docutils literal notranslate"><span class="
 arguments as well as either a budget. <code class="docutils literal notranslate"><span class="pre">-b</span></code>, or a timeout, <code class="docutils literal notranslate"><span class="pre">-t</span></code>.</p>
 <p>For example, in order to process the datasets <code class="docutils literal notranslate"><span class="pre">185_baseball</span></code> and <code class="docutils literal notranslate"><span class="pre">196_autoMpg</span></code> during 60 seconds
 each, the following command would be used:</p>
-<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span><span class="n">ta2</span> <span class="n">test</span> <span class="o">-</span><span class="n">t60</span> <span class="mi">185</span><span class="n">_baseball</span> <span class="mi">196</span><span class="n">_autoMpg</span>
+<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span>ta2 test -t60 185_baseball 196_autoMpg
 </pre></div>
 </div>
 <p>This will start searching and tuning the best pipeline possible for each dataset during a maximum
@@ -470,7 +470,7 @@ of 60 seconds and, at the end, print a table with all the results on stdout.</p>
 <p>The TA2-TA3 API mode can be executed using the <code class="docutils literal notranslate"><span class="pre">ta2</span> <span class="pre">server</span></code> command, as well as any of the
 optional named arguments required.</p>
 <p>This will start a ta2 server in the background ready to serve requests from a ta3 client.</p>
-<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span><span class="n">ta2</span> <span class="n">server</span>
+<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span>ta2 server
 </pre></div>
 </div>
 <p>For a full description of the script options, execute <code class="docutils literal notranslate"><span class="pre">ta2</span> <span class="pre">server</span> <span class="pre">--help</span></code>.</p>
@@ -484,7 +484,7 @@ TA2-TA3 Server.</p>
 arguments, as well as any of the optional arguments.</p>
 <p>For example, in order to process the datasets <code class="docutils literal notranslate"><span class="pre">185_baseball</span></code> and <code class="docutils literal notranslate"><span class="pre">196_autoMpg</span></code> during 60 seconds
 each, the following command would be used:</p>
-<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span><span class="n">ta2</span> <span class="n">ta3</span> <span class="o">-</span><span class="n">t60</span> <span class="mi">185</span><span class="n">_baseball</span> <span class="mi">196</span><span class="n">_autoMpg</span>
+<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span>ta2 ta3 -t60 185_baseball 196_autoMpg
 </pre></div>
 </div>
 <p><strong>NOTE</strong>: In order to be able to execute this command, a <code class="docutils literal notranslate"><span class="pre">ta2</span> <span class="pre">server</span></code> process must be already
@@ -501,12 +501,12 @@ possible for each dataset during a maximum of 60 seconds.</p>
 execute the <code class="docutils literal notranslate"><span class="pre">run_docker.sh</span></code> script.
 After that, in a different console, you can run the <code class="docutils literal notranslate"><span class="pre">ta3</span></code> script passing it the
 <code class="docutils literal notranslate"><span class="pre">--docker</span></code> flag to adapt the input paths accordingly:</p>
-<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span><span class="n">make</span> <span class="n">build</span>
-<span class="p">.</span><span class="o">/</span><span class="n">run_docker</span><span class="p">.</span><span class="n">sh</span>
+<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span>make build
+./run_docker.sh
 </pre></div>
 </div>
 <p>And, in a different terminal:</p>
-<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span><span class="n">ta2</span> <span class="n">ta3</span> <span class="c1">--docker &lt;OPTIONS&gt;</span>
+<div class="highlight-guess notranslate"><div class="highlight"><pre><span></span>ta2 ta3 --docker &lt;OPTIONS&gt;
 </pre></div>
 </div>
 </div>

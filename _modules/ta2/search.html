@@ -229,23 +229,23 @@
 <span class="kn">import</span> <span class="nn">random</span>
 <span class="kn">import</span> <span class="nn">signal</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">defaultdict</span>
-<span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
-<span class="kn">from</span> <span class="nn">enum</span> <span class="k">import</span> <span class="n">Enum</span>
-<span class="kn">from</span> <span class="nn">multiprocessing</span> <span class="k">import</span> <span class="n">Manager</span><span class="p">,</span> <span class="n">Process</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
+<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
+<span class="kn">from</span> <span class="nn">multiprocessing</span> <span class="kn">import</span> <span class="n">Manager</span><span class="p">,</span> <span class="n">Process</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">d3m.container.dataset</span> <span class="k">import</span> <span class="n">Dataset</span>
-<span class="kn">from</span> <span class="nn">d3m.metadata.base</span> <span class="k">import</span> <span class="n">ArgumentType</span><span class="p">,</span> <span class="n">Context</span>
-<span class="kn">from</span> <span class="nn">d3m.metadata.pipeline</span> <span class="k">import</span> <span class="n">Pipeline</span><span class="p">,</span> <span class="n">PrimitiveStep</span>
-<span class="kn">from</span> <span class="nn">d3m.metadata.problem</span> <span class="k">import</span> <span class="n">TaskType</span>
-<span class="kn">from</span> <span class="nn">d3m.runtime</span> <span class="k">import</span> <span class="n">DEFAULT_SCORING_PIPELINE_PATH</span>
-<span class="kn">from</span> <span class="nn">d3m.runtime</span> <span class="k">import</span> <span class="n">evaluate</span> <span class="k">as</span> <span class="n">d3m_evaluate</span>
-<span class="kn">from</span> <span class="nn">datamart</span> <span class="k">import</span> <span class="n">DatamartQuery</span>
-<span class="kn">from</span> <span class="nn">datamart_rest</span> <span class="k">import</span> <span class="n">RESTDatamart</span>
+<span class="kn">from</span> <span class="nn">d3m.container.dataset</span> <span class="kn">import</span> <span class="n">Dataset</span>
+<span class="kn">from</span> <span class="nn">d3m.metadata.base</span> <span class="kn">import</span> <span class="n">ArgumentType</span><span class="p">,</span> <span class="n">Context</span>
+<span class="kn">from</span> <span class="nn">d3m.metadata.pipeline</span> <span class="kn">import</span> <span class="n">Pipeline</span><span class="p">,</span> <span class="n">PrimitiveStep</span>
+<span class="kn">from</span> <span class="nn">d3m.metadata.problem</span> <span class="kn">import</span> <span class="n">TaskKeyword</span>
+<span class="kn">from</span> <span class="nn">d3m.runtime</span> <span class="kn">import</span> <span class="n">DEFAULT_SCORING_PIPELINE_PATH</span>
+<span class="kn">from</span> <span class="nn">d3m.runtime</span> <span class="kn">import</span> <span class="n">evaluate</span> <span class="k">as</span> <span class="n">d3m_evaluate</span>
+<span class="kn">from</span> <span class="nn">datamart</span> <span class="kn">import</span> <span class="n">DatamartQuery</span>
+<span class="kn">from</span> <span class="nn">datamart_rest</span> <span class="kn">import</span> <span class="n">RESTDatamart</span>
 
-<span class="kn">from</span> <span class="nn">ta2.tuning</span> <span class="k">import</span> <span class="n">SelectorTuner</span>
-<span class="kn">from</span> <span class="nn">ta2.utils</span> <span class="k">import</span> <span class="n">dump_pipeline</span>
+<span class="kn">from</span> <span class="nn">ta2.tuning</span> <span class="kn">import</span> <span class="n">SelectorTuner</span>
+<span class="kn">from</span> <span class="nn">ta2.utils</span> <span class="kn">import</span> <span class="n">dump_pipeline</span>
 
 <span class="n">BASE_DIR</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span>
 <span class="n">PIPELINES_DIR</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">BASE_DIR</span><span class="p">,</span> <span class="s1">&#39;pipelines&#39;</span><span class="p">)</span>
@@ -268,7 +268,7 @@
 <div class="viewcode-block" id="Templates"><a class="viewcode-back" href="../../api/ta2.search.html#ta2.search.Templates">[docs]</a><span class="k">class</span> <span class="nc">Templates</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
     <span class="c1"># SINGLE TABLE CLASSIFICATION</span>
     <span class="n">SINGLE_TABLE_CLASSIFICATION_ENC_XGB</span> <span class="o">=</span> <span class="s1">&#39;single_table_classification_encoding_xgb.yml&#39;</span>
-    <span class="n">SINGLE_TABLE_CLASSIFICATION_AR_RF</span> <span class="o">=</span> <span class="s1">&#39;single_table_classification_autorpi_rf.yml&#39;</span>
+    <span class="c1"># SINGLE_TABLE_CLASSIFICATION_AR_RF = &#39;single_table_classification_autorpi_rf.yml&#39;</span>
     <span class="n">SINGLE_TABLE_CLASSIFICATION_DFS_ROBUST_XGB</span> <span class="o">=</span> <span class="s1">&#39;single_table_classification_dfs_robust_xgb.yml&#39;</span>
     <span class="c1"># SINGLE_TABLE_CLASSIFICATION_DFS_XGB = &#39;single_table_classification_dfs_xgb.yml&#39;</span>
     <span class="c1"># SINGLE_TABLE_CLASSIFICATION_GB = &#39;single_table_classification_gradient_boosting.yml&#39;</span>
@@ -282,7 +282,7 @@
 
     <span class="c1"># MISC</span>
     <span class="n">SINGLE_TABLE_SEMI_CLASSIFICATION</span> <span class="o">=</span> <span class="s1">&#39;single_table_semi_classification_autonbox.yml&#39;</span>
-    <span class="n">SINGLE_TABLE_CLUSTERING</span> <span class="o">=</span> <span class="s1">&#39;single_table_clustering_ekss.yml&#39;</span>
+    <span class="c1"># SINGLE_TABLE_CLUSTERING = &#39;single_table_clustering_ekss.yml&#39;</span>
 
     <span class="c1"># MULTI TABLE</span>
     <span class="n">MULTI_TABLE_CLASSIFICATION_DFS_XGB</span> <span class="o">=</span> <span class="s1">&#39;multi_table_classification_dfs_xgb.yml&#39;</span>
@@ -303,13 +303,12 @@
 
     <span class="c1"># TEXT</span>
     <span class="n">TEXT_CLASSIFICATION</span> <span class="o">=</span> <span class="s1">&#39;text_classification_encoding_xgb.yml&#39;</span>
-    <span class="n">TEXT_REGRESSION</span> <span class="o">=</span> <span class="s1">&#39;text_regression_encoding_xgb.yml&#39;</span>
+    <span class="n">TEXT_REGRESSION</span> <span class="o">=</span> <span class="s1">&#39;text_regression_encoding_xgb.yml&#39;</span></div>
 
     <span class="c1"># GRAPH</span>
-    <span class="n">GRAPH_COMMUNITY_DETECTION</span> <span class="o">=</span> <span class="s1">&#39;graph_community_detection.yml&#39;</span>
     <span class="c1"># GRAPH_COMMUNITY_DETECTION_DISTIL = &#39;graph_community_detection_distil.yml&#39;</span>
-    <span class="n">GRAPH_LINK_PREDICTION</span> <span class="o">=</span> <span class="s1">&#39;graph_link_prediction_distil.yml&#39;</span>
-    <span class="n">GRAPH_MATCHING</span> <span class="o">=</span> <span class="s1">&#39;graph_matching.yml&#39;</span></div>
+    <span class="c1"># GRAPH_LINK_PREDICTION = &#39;graph_link_prediction_distil.yml&#39;</span>
+    <span class="c1"># GRAPH_MATCHING = &#39;graph_matching.yml&#39;</span>
     <span class="c1"># GRAPH_MATCHING_JHU = &#39;graph_matching_jhu.yml&#39;</span>
 
 
@@ -335,8 +334,8 @@
 
 <div class="viewcode-block" id="get_dataset_details"><a class="viewcode-back" href="../../api/ta2.search.html#ta2.search.get_dataset_details">[docs]</a><span class="k">def</span> <span class="nf">get_dataset_details</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">problem</span><span class="p">):</span>
     <span class="n">data_modality</span> <span class="o">=</span> <span class="n">detect_data_modality</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
-    <span class="n">task_type</span> <span class="o">=</span> <span class="n">problem</span><span class="p">[</span><span class="s1">&#39;problem&#39;</span><span class="p">][</span><span class="s1">&#39;task_type&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
-    <span class="n">task_subtype</span> <span class="o">=</span> <span class="n">problem</span><span class="p">[</span><span class="s1">&#39;problem&#39;</span><span class="p">][</span><span class="s1">&#39;task_subtype&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+    <span class="n">task_type</span> <span class="o">=</span> <span class="n">problem</span><span class="p">[</span><span class="s1">&#39;problem&#39;</span><span class="p">][</span><span class="s1">&#39;task_keywords&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+    <span class="n">task_subtype</span> <span class="o">=</span> <span class="n">problem</span><span class="p">[</span><span class="s1">&#39;problem&#39;</span><span class="p">][</span><span class="s1">&#39;task_keywords&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
 
     <span class="k">return</span> <span class="n">data_modality</span><span class="p">,</span> <span class="n">task_type</span><span class="p">,</span> <span class="n">task_subtype</span></div>
 
@@ -372,66 +371,6 @@
 
 <div class="viewcode-block" id="PipelineSearcher"><a class="viewcode-back" href="../../api/ta2.search.html#ta2.search.PipelineSearcher">[docs]</a><span class="k">class</span> <span class="nc">PipelineSearcher</span><span class="p">:</span>
 
-    <span class="k">def</span> <span class="nf">_find_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset_id</span><span class="p">):</span>
-        <span class="n">train</span> <span class="o">=</span> <span class="s1">&#39;TRAIN&#39;</span> <span class="ow">in</span> <span class="n">dataset_id</span>
-        <span class="k">for</span> <span class="n">dataset_name</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">scandir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input</span><span class="p">):</span>
-            <span class="n">dataset_root</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input</span><span class="p">,</span> <span class="n">dataset_name</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">train</span><span class="p">:</span>
-                <span class="n">dataset_doc_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dataset_root</span><span class="p">,</span> <span class="s1">&#39;TRAIN&#39;</span><span class="p">,</span> <span class="s1">&#39;dataset_TRAIN&#39;</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">dataset_doc_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dataset_root</span><span class="p">,</span> <span class="n">dataset_name</span> <span class="o">+</span> <span class="s1">&#39;_dataset&#39;</span><span class="p">)</span>
-
-            <span class="n">dataset_doc_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dataset_doc_dir</span><span class="p">,</span> <span class="s1">&#39;datasetDoc.json&#39;</span><span class="p">)</span>
-
-            <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Loading datasetDoc from </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">dataset_doc_path</span><span class="p">)</span>
-            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">dataset_doc_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">dataset_doc_file</span><span class="p">:</span>
-                <span class="n">dataset_doc</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">dataset_doc_file</span><span class="p">)</span>
-
-            <span class="k">if</span> <span class="n">dataset_doc</span><span class="p">[</span><span class="s1">&#39;about&#39;</span><span class="p">][</span><span class="s1">&#39;datasetID&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">dataset_id</span><span class="p">:</span>
-                <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Dataset_id </span><span class="si">%s</span><span class="s1"> found!&#39;</span><span class="p">,</span> <span class="n">dataset_id</span><span class="p">)</span>
-                <span class="n">dataset_path</span> <span class="o">=</span> <span class="s1">&#39;file://&#39;</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">dataset_doc_path</span><span class="p">)</span>
-
-                <span class="k">return</span> <span class="n">dataset_name</span><span class="p">,</span> <span class="n">dataset_path</span>
-
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Cannot find dataset </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dataset_id</span><span class="p">))</span>
-
-    <span class="k">def</span> <span class="nf">_get_dataset_details</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">problem</span><span class="p">):</span>
-        <span class="n">dataset_id</span> <span class="o">=</span> <span class="n">problem</span><span class="p">[</span><span class="s1">&#39;inputs&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;dataset_id&#39;</span><span class="p">]</span>
-        <span class="n">problem_paths</span> <span class="o">=</span> <span class="n">problem</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;location_uris&#39;</span><span class="p">)</span>
-        <span class="n">dataset_root</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">if</span> <span class="n">problem_paths</span><span class="p">:</span>
-            <span class="n">problem_path</span> <span class="o">=</span> <span class="n">problem_paths</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;file://&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
-
-            <span class="c1"># /path/to/dataset_name/TRAIN/problem_TRAIN/problemDoc.json</span>
-            <span class="n">dataset_root</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">problem_path</span><span class="p">),</span>
-                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">pardir</span><span class="p">,</span>
-            <span class="p">))</span>
-            <span class="n">dataset_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span>
-                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dataset_root</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">pardir</span><span class="p">)))</span>
-
-        <span class="k">elif</span> <span class="s1">&#39;TRAIN&#39;</span> <span class="ow">in</span> <span class="n">dataset_id</span><span class="p">:</span>
-            <span class="n">dataset_name</span> <span class="o">=</span> <span class="n">dataset_id</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;_dataset_TRAIN&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
-            <span class="n">dataset_root</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input</span><span class="p">,</span> <span class="n">dataset_name</span><span class="p">,</span> <span class="s1">&#39;TRAIN&#39;</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">dataset_root</span><span class="p">:</span>
-            <span class="c1"># /path/to/dataset_name/TRAIN</span>
-            <span class="n">dataset_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dataset_root</span><span class="p">,</span> <span class="s1">&#39;dataset_TRAIN&#39;</span><span class="p">,</span> <span class="s1">&#39;datasetDoc.json&#39;</span><span class="p">)</span>
-
-            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">dataset_path</span><span class="p">):</span>
-                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">dataset_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">dataset_doc_file</span><span class="p">:</span>
-                    <span class="n">dataset_doc</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">dataset_doc_file</span><span class="p">)</span>
-
-                <span class="k">if</span> <span class="n">dataset_doc</span><span class="p">[</span><span class="s1">&#39;about&#39;</span><span class="p">][</span><span class="s1">&#39;datasetID&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">dataset_id</span><span class="p">:</span>
-                    <span class="n">dataset_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span>
-                        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dataset_root</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">pardir</span><span class="p">)))</span>
-                    <span class="n">dataset_path</span> <span class="o">=</span> <span class="s1">&#39;file://&#39;</span> <span class="o">+</span> <span class="n">dataset_path</span>
-
-                    <span class="k">return</span> <span class="n">dataset_name</span><span class="p">,</span> <span class="n">dataset_path</span>
-
-        <span class="n">LOGGER</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Dataset ID not found. Searching inside the input dir&#39;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_dataset</span><span class="p">(</span><span class="n">dataset_id</span><span class="p">)</span>
-
     <span class="k">def</span> <span class="nf">_load_pipeline</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pipeline</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.yml&#39;</span><span class="p">):</span>
             <span class="n">loader</span> <span class="o">=</span> <span class="n">Pipeline</span><span class="o">.</span><span class="n">from_yaml</span>
@@ -451,47 +390,44 @@
         <span class="n">templates</span> <span class="o">=</span> <span class="p">[</span><span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_CLASSIFICATION_ENC_XGB</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="n">data_modality</span> <span class="o">==</span> <span class="s1">&#39;single_table&#39;</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskType</span><span class="o">.</span><span class="n">CLASSIFICATION</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskKeyword</span><span class="o">.</span><span class="n">CLASSIFICATION</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
                 <span class="n">templates</span> <span class="o">=</span> <span class="p">[</span>
                     <span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_CLASSIFICATION_ENC_XGB</span><span class="p">,</span>
-                    <span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_CLASSIFICATION_AR_RF</span><span class="p">,</span>
                     <span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_CLASSIFICATION_DFS_ROBUST_XGB</span><span class="p">,</span>
                 <span class="p">]</span>
-            <span class="k">elif</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskType</span><span class="o">.</span><span class="n">REGRESSION</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+            <span class="k">elif</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskKeyword</span><span class="o">.</span><span class="n">REGRESSION</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
                 <span class="n">templates</span> <span class="o">=</span> <span class="p">[</span>
                     <span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_REGRESSION_XGB</span><span class="p">,</span>
                     <span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_REGRESSION_SC_XGB</span><span class="p">,</span>
                     <span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_REGRESSION_ENC_XGB</span><span class="p">,</span>
                 <span class="p">]</span>
-            <span class="k">elif</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskType</span><span class="o">.</span><span class="n">COLLABORATIVE_FILTERING</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+            <span class="k">elif</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskKeyword</span><span class="o">.</span><span class="n">COLLABORATIVE_FILTERING</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
                 <span class="n">templates</span> <span class="o">=</span> <span class="p">[</span>
                     <span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_REGRESSION_XGB</span><span class="p">,</span>
                     <span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_REGRESSION_SC_XGB</span><span class="p">,</span>
                     <span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_REGRESSION_ENC_XGB</span><span class="p">,</span>
                 <span class="p">]</span>
-            <span class="k">elif</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskType</span><span class="o">.</span><span class="n">TIME_SERIES_FORECASTING</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+            <span class="k">elif</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskKeyword</span><span class="o">.</span><span class="n">TIME_SERIES_FORECASTING</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
                 <span class="n">templates</span> <span class="o">=</span> <span class="p">[</span>
                     <span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_REGRESSION_XGB</span><span class="p">,</span>
                     <span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_REGRESSION_SC_XGB</span><span class="p">,</span>
                     <span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_REGRESSION_ENC_XGB</span><span class="p">,</span>
                 <span class="p">]</span>
-            <span class="k">elif</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskType</span><span class="o">.</span><span class="n">SEMISUPERVISED_CLASSIFICATION</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+            <span class="k">elif</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskKeyword</span><span class="o">.</span><span class="n">SEMISUPERVISED_CLASSIFICATION</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
                 <span class="n">templates</span> <span class="o">=</span> <span class="p">[</span><span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_SEMI_CLASSIFICATION</span><span class="p">]</span>
-            <span class="k">elif</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskType</span><span class="o">.</span><span class="n">CLUSTERING</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
-                <span class="n">templates</span> <span class="o">=</span> <span class="p">[</span><span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_CLUSTERING</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="n">data_modality</span> <span class="o">==</span> <span class="s1">&#39;multi_table&#39;</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskType</span><span class="o">.</span><span class="n">CLASSIFICATION</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskKeyword</span><span class="o">.</span><span class="n">CLASSIFICATION</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
                 <span class="n">templates</span> <span class="o">=</span> <span class="p">[</span>
                     <span class="n">Templates</span><span class="o">.</span><span class="n">MULTI_TABLE_CLASSIFICATION_LDA_LOGREG</span><span class="p">,</span>
                     <span class="n">Templates</span><span class="o">.</span><span class="n">MULTI_TABLE_CLASSIFICATION_DFS_XGB</span><span class="p">,</span>
                 <span class="p">]</span>
-            <span class="k">elif</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskType</span><span class="o">.</span><span class="n">REGRESSION</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+            <span class="k">elif</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskKeyword</span><span class="o">.</span><span class="n">REGRESSION</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
                 <span class="n">templates</span> <span class="o">=</span> <span class="p">[</span><span class="n">Templates</span><span class="o">.</span><span class="n">MULTI_TABLE_REGRESSION</span><span class="p">]</span>
         <span class="k">elif</span> <span class="n">data_modality</span> <span class="o">==</span> <span class="s1">&#39;text&#39;</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskType</span><span class="o">.</span><span class="n">CLASSIFICATION</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskKeyword</span><span class="o">.</span><span class="n">CLASSIFICATION</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
                 <span class="n">templates</span> <span class="o">=</span> <span class="p">[</span><span class="n">Templates</span><span class="o">.</span><span class="n">TEXT_CLASSIFICATION</span><span class="p">]</span>
-            <span class="k">elif</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskType</span><span class="o">.</span><span class="n">REGRESSION</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+            <span class="k">elif</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskKeyword</span><span class="o">.</span><span class="n">REGRESSION</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
                 <span class="n">templates</span> <span class="o">=</span> <span class="p">[</span><span class="n">Templates</span><span class="o">.</span><span class="n">TEXT_REGRESSION</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="n">data_modality</span> <span class="o">==</span> <span class="s1">&#39;timeseries&#39;</span><span class="p">:</span>
@@ -500,31 +436,27 @@
                 <span class="n">Templates</span><span class="o">.</span><span class="n">TIMESERIES_CLASSIFICATION_DSBOX_LR</span><span class="p">,</span>
                 <span class="n">Templates</span><span class="o">.</span><span class="n">TIMESERIES_CLASSIFICATION_LSTM_FCN</span>
             <span class="p">]</span>
-            <span class="c1"># if task_type == TaskType.CLASSIFICATION.name.lower():</span>
+            <span class="c1"># if task_type == TaskKeyword.CLASSIFICATION.name.lower():</span>
             <span class="c1">#     template = Templates.TIMESERIES_CLASSIFICATION</span>
-            <span class="c1"># elif task_type == TaskType.REGRESSION.name.lower():</span>
+            <span class="c1"># elif task_type == TaskKeyword.REGRESSION.name.lower():</span>
             <span class="c1">#     template = Templates.TIMESERIES_REGRESSION</span>
         <span class="k">elif</span> <span class="n">data_modality</span> <span class="o">==</span> <span class="s1">&#39;image&#39;</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskType</span><span class="o">.</span><span class="n">CLASSIFICATION</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskKeyword</span><span class="o">.</span><span class="n">CLASSIFICATION</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
                 <span class="n">templates</span> <span class="o">=</span> <span class="p">[</span><span class="n">Templates</span><span class="o">.</span><span class="n">IMAGE_CLASSIFICATION</span><span class="p">]</span>
-            <span class="k">elif</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskType</span><span class="o">.</span><span class="n">REGRESSION</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+            <span class="k">elif</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskKeyword</span><span class="o">.</span><span class="n">REGRESSION</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
                 <span class="n">templates</span> <span class="o">=</span> <span class="p">[</span><span class="n">Templates</span><span class="o">.</span><span class="n">IMAGE_REGRESSION</span><span class="p">]</span>
-            <span class="k">elif</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskType</span><span class="o">.</span><span class="n">OBJECT_DETECTION</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+            <span class="k">elif</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskKeyword</span><span class="o">.</span><span class="n">OBJECT_DETECTION</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
                 <span class="n">templates</span> <span class="o">=</span> <span class="p">[</span><span class="n">Templates</span><span class="o">.</span><span class="n">IMAGE_OBJECT_DETECTION</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="n">data_modality</span> <span class="o">==</span> <span class="s1">&#39;graph&#39;</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskType</span><span class="o">.</span><span class="n">COMMUNITY_DETECTION</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskKeyword</span><span class="o">.</span><span class="n">COMMUNITY_DETECTION</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
                 <span class="n">templates</span> <span class="o">=</span> <span class="p">[</span><span class="n">Templates</span><span class="o">.</span><span class="n">GRAPH_COMMUNITY_DETECTION</span><span class="p">]</span>
-            <span class="k">elif</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskType</span><span class="o">.</span><span class="n">LINK_PREDICTION</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
-                <span class="n">templates</span> <span class="o">=</span> <span class="p">[</span><span class="n">Templates</span><span class="o">.</span><span class="n">GRAPH_LINK_PREDICTION</span><span class="p">]</span>
-            <span class="k">elif</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskType</span><span class="o">.</span><span class="n">GRAPH_MATCHING</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
-                <span class="n">templates</span> <span class="o">=</span> <span class="p">[</span><span class="n">Templates</span><span class="o">.</span><span class="n">GRAPH_MATCHING</span><span class="p">]</span>
-            <span class="k">elif</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskType</span><span class="o">.</span><span class="n">VERTEX_CLASSIFICATION</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+            <span class="k">elif</span> <span class="n">task_type</span> <span class="o">==</span> <span class="n">TaskKeyword</span><span class="o">.</span><span class="n">VERTEX_CLASSIFICATION</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
                 <span class="n">templates</span> <span class="o">=</span> <span class="p">[</span><span class="n">Templates</span><span class="o">.</span><span class="n">SINGLE_TABLE_CLASSIFICATION_ENC_XGB</span><span class="p">]</span>
 
         <span class="k">return</span> <span class="p">[</span><span class="n">template</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">template</span> <span class="ow">in</span> <span class="n">templates</span><span class="p">]</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_dir</span><span class="o">=</span><span class="s1">&#39;input&#39;</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;output&#39;</span><span class="p">,</span> <span class="n">static_dir</span><span class="o">=</span><span class="s1">&#39;static&#39;</span><span class="p">,</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_dir</span><span class="o">=</span><span class="s1">&#39;input&#39;</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;output&#39;</span><span class="p">,</span> <span class="n">static_dir</span><span class="o">=</span><span class="s1">&#39;static&#39;</span><span class="p">,</span>
                  <span class="n">dump</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">hard_timeout</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">input</span> <span class="o">=</span> <span class="n">input_dir</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">output</span> <span class="o">=</span> <span class="n">output_dir</span>
@@ -603,13 +535,13 @@
             <span class="n">evaluate</span> <span class="o">=</span> <span class="n">d3m_evaluate</span>
 
         <span class="n">all_scores</span><span class="p">,</span> <span class="n">all_results</span> <span class="o">=</span> <span class="n">evaluate</span><span class="p">(</span>
-            <span class="n">pipeline</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">data_pipeline</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">scoring_pipeline</span><span class="p">,</span>
-            <span class="n">problem</span><span class="p">,</span>
-            <span class="p">[</span><span class="n">dataset</span><span class="p">],</span>
-            <span class="n">data_params</span><span class="p">,</span>
-            <span class="n">metrics</span><span class="p">,</span>
+            <span class="n">pipeline</span><span class="o">=</span><span class="n">pipeline</span><span class="p">,</span>
+            <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">dataset</span><span class="p">],</span>
+            <span class="n">data_pipeline</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data_pipeline</span><span class="p">,</span>
+            <span class="n">scoring_pipeline</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">scoring_pipeline</span><span class="p">,</span>
+            <span class="n">problem_description</span><span class="o">=</span><span class="n">problem</span><span class="p">,</span>
+            <span class="n">data_params</span><span class="o">=</span><span class="n">data_params</span><span class="p">,</span>
+            <span class="n">metrics</span><span class="o">=</span><span class="n">metrics</span><span class="p">,</span>
             <span class="n">context</span><span class="o">=</span><span class="n">Context</span><span class="o">.</span><span class="n">TESTING</span><span class="p">,</span>
             <span class="n">random_seed</span><span class="o">=</span><span class="n">random_seed</span><span class="p">,</span>
             <span class="n">data_random_seed</span><span class="o">=</span><span class="n">random_seed</span><span class="p">,</span>
@@ -752,7 +684,7 @@
         <span class="c1">#     with open(os.path.join(BASE_DIR, &#39;da.json&#39;)) as f:</span>
         <span class="c1">#         return json.dumps(json.load(f))</span>
 
-<div class="viewcode-block" id="PipelineSearcher.search"><a class="viewcode-back" href="../../api/ta2.search.html#ta2.search.PipelineSearcher.search">[docs]</a>    <span class="k">def</span> <span class="nf">search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">problem</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">budget</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">template_names</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="PipelineSearcher.search"><a class="viewcode-back" href="../../api/ta2.search.html#ta2.search.PipelineSearcher.search">[docs]</a>    <span class="k">def</span> <span class="nf">search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset_path</span><span class="p">,</span> <span class="n">problem</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">budget</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">template_names</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span> <span class="o">=</span> <span class="n">timeout</span>
         <span class="n">best_pipeline</span> <span class="o">=</span> <span class="kc">None</span>
@@ -766,13 +698,16 @@
         <span class="n">iteration</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">errors</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
 
-        <span class="n">dataset_name</span><span class="p">,</span> <span class="n">dataset_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_dataset_details</span><span class="p">(</span><span class="n">problem</span><span class="p">)</span>
+        <span class="n">dataset_name</span> <span class="o">=</span> <span class="n">problem</span><span class="p">[</span><span class="s1">&#39;inputs&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;dataset_id&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">dataset_name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;_dataset&#39;</span><span class="p">):</span>
+            <span class="n">dataset_name</span> <span class="o">=</span> <span class="n">dataset_name</span><span class="p">[:</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="s1">&#39;_dataset&#39;</span><span class="p">)]</span>
+
         <span class="n">dataset</span> <span class="o">=</span> <span class="n">Dataset</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">dataset_path</span><span class="p">)</span>
         <span class="n">metric</span> <span class="o">=</span> <span class="n">problem</span><span class="p">[</span><span class="s1">&#39;problem&#39;</span><span class="p">][</span><span class="s1">&#39;performance_metrics&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;metric&#39;</span><span class="p">]</span>
 
         <span class="n">data_modality</span> <span class="o">=</span> <span class="n">detect_data_modality</span><span class="p">(</span><span class="n">dataset_path</span><span class="p">[</span><span class="mi">7</span><span class="p">:])</span>
-        <span class="n">task_type</span> <span class="o">=</span> <span class="n">problem</span><span class="p">[</span><span class="s1">&#39;problem&#39;</span><span class="p">][</span><span class="s1">&#39;task_type&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
-        <span class="n">task_subtype</span> <span class="o">=</span> <span class="n">problem</span><span class="p">[</span><span class="s1">&#39;problem&#39;</span><span class="p">][</span><span class="s1">&#39;task_subtype&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="n">task_type</span> <span class="o">=</span> <span class="n">problem</span><span class="p">[</span><span class="s1">&#39;problem&#39;</span><span class="p">][</span><span class="s1">&#39;task_keywords&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="n">task_subtype</span> <span class="o">=</span> <span class="n">problem</span><span class="p">[</span><span class="s1">&#39;problem&#39;</span><span class="p">][</span><span class="s1">&#39;task_keywords&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
 
         <span class="n">data_augmentation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data_augmentation</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">problem</span><span class="p">)</span>
 

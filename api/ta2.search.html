@@ -252,7 +252,7 @@
 
 <dl class="method">
 <dt id="ta2.search.PipelineSearcher.search">
-<code class="sig-name descname">search</code><span class="sig-paren">(</span><em class="sig-param">problem</em>, <em class="sig-param">timeout=None</em>, <em class="sig-param">budget=None</em>, <em class="sig-param">template_names=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ta2/search.html#PipelineSearcher.search"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ta2.search.PipelineSearcher.search" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search</code><span class="sig-paren">(</span><em class="sig-param">dataset_path</em>, <em class="sig-param">problem</em>, <em class="sig-param">timeout=None</em>, <em class="sig-param">budget=None</em>, <em class="sig-param">template_names=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ta2/search.html#PipelineSearcher.search"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ta2.search.PipelineSearcher.search" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -277,21 +277,6 @@
 <em class="property">class </em><code class="sig-prename descclassname">ta2.search.</code><code class="sig-name descname">Templates</code><a class="reference internal" href="../_modules/ta2/search.html#Templates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ta2.search.Templates" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></p>
 <p>An enumeration.</p>
-<dl class="attribute">
-<dt id="ta2.search.Templates.GRAPH_COMMUNITY_DETECTION">
-<code class="sig-name descname">GRAPH_COMMUNITY_DETECTION</code><em class="property"> = 'graph_community_detection.yml'</em><a class="headerlink" href="#ta2.search.Templates.GRAPH_COMMUNITY_DETECTION" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="ta2.search.Templates.GRAPH_LINK_PREDICTION">
-<code class="sig-name descname">GRAPH_LINK_PREDICTION</code><em class="property"> = 'graph_link_prediction_distil.yml'</em><a class="headerlink" href="#ta2.search.Templates.GRAPH_LINK_PREDICTION" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="ta2.search.Templates.GRAPH_MATCHING">
-<code class="sig-name descname">GRAPH_MATCHING</code><em class="property"> = 'graph_matching.yml'</em><a class="headerlink" href="#ta2.search.Templates.GRAPH_MATCHING" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 <dl class="attribute">
 <dt id="ta2.search.Templates.IMAGE_CLASSIFICATION">
 <code class="sig-name descname">IMAGE_CLASSIFICATION</code><em class="property"> = 'image_classification_resnet50_xgb.yml'</em><a class="headerlink" href="#ta2.search.Templates.IMAGE_CLASSIFICATION" title="Permalink to this definition">¶</a></dt>
@@ -323,11 +308,6 @@
 <dd></dd></dl>
 
 <dl class="attribute">
-<dt id="ta2.search.Templates.SINGLE_TABLE_CLASSIFICATION_AR_RF">
-<code class="sig-name descname">SINGLE_TABLE_CLASSIFICATION_AR_RF</code><em class="property"> = 'single_table_classification_autorpi_rf.yml'</em><a class="headerlink" href="#ta2.search.Templates.SINGLE_TABLE_CLASSIFICATION_AR_RF" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
 <dt id="ta2.search.Templates.SINGLE_TABLE_CLASSIFICATION_DFS_ROBUST_XGB">
 <code class="sig-name descname">SINGLE_TABLE_CLASSIFICATION_DFS_ROBUST_XGB</code><em class="property"> = 'single_table_classification_dfs_robust_xgb.yml'</em><a class="headerlink" href="#ta2.search.Templates.SINGLE_TABLE_CLASSIFICATION_DFS_ROBUST_XGB" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -335,11 +315,6 @@
 <dl class="attribute">
 <dt id="ta2.search.Templates.SINGLE_TABLE_CLASSIFICATION_ENC_XGB">
 <code class="sig-name descname">SINGLE_TABLE_CLASSIFICATION_ENC_XGB</code><em class="property"> = 'single_table_classification_encoding_xgb.yml'</em><a class="headerlink" href="#ta2.search.Templates.SINGLE_TABLE_CLASSIFICATION_ENC_XGB" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="ta2.search.Templates.SINGLE_TABLE_CLUSTERING">
-<code class="sig-name descname">SINGLE_TABLE_CLUSTERING</code><em class="property"> = 'single_table_clustering_ekss.yml'</em><a class="headerlink" href="#ta2.search.Templates.SINGLE_TABLE_CLUSTERING" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
