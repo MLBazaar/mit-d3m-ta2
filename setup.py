@@ -6,7 +6,6 @@ from setuptools import setup, find_packages
 
 install_requires = [
     'd3m==2019.11.10',
-    'baytune==0.2.4',
     'tabulate>=0.8.3,<0.9',
     'numpy==1.17.3',
     'scikit-learn[alldeps]==0.21.0',
