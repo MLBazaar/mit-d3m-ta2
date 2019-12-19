@@ -98,11 +98,11 @@ def sanitize_hyperparameters(hyperparams):
 
     for tunable_hp in sanitized.values():
         if tunable_hp['type'] == 'string':
-            tunable_hp['type'] == 'str'
+            tunable_hp['type'] = 'str'
         if tunable_hp['type'] == 'integer':
-            tunable_hp['type'] == 'int'
+            tunable_hp['type'] = 'int'
         if tunable_hp['type'] == 'boolean':
-            tunable_hp['type'] == 'bool'
+            tunable_hp['type'] = 'bool'
 
     return sanitized
 
@@ -487,7 +487,8 @@ class PipelineSearcher:
             pipeline = self._new_pipeline(templates[template_name], proposal)
             params = '\n'.join('{}: {}'.format(k, v) for k, v in proposal.items())
 
-            LOGGER.warn('Scoring pipeline %s - %s: %s\n%s', self.iterations, pipeline.id, params)
+            LOGGER.warn('Scoring pipeline %s - %s: %s\n%s',
+                        self.iterations, template_name, pipeline.id, params)
 
             try:
                 self.score_pipeline(dataset, problem, pipeline)
@@ -538,6 +539,8 @@ class PipelineSearcher:
             templates[template_name] = template
             tunables[template_name] = Tunable.from_dict(sanitize_hyperparameters(tunable_hp))
 
+        return tunables, templates
+
     def search(self, dataset_path, problem, timeout=None, budget=None, template_names=None):
         self.timeout = timeout
         self.budget = budget
@@ -586,7 +589,7 @@ class PipelineSearcher:
             if not template_names:
                 template_names = self._get_templates(data_modality, task_type)
 
-            tunables, templates = self.get_tunables_templates(template_names)
+            tunables, templates = self._get_tunables_templates(template_names)
             btb_scorer = self.make_btb_scorer(dataset_name, dataset, problem, templates, metric)
 
             session = BTBSession(tunables, btb_scorer)
