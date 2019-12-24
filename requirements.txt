@@ -1,3 +1,1 @@
 -e git+https://gitlab.com/datadrivendiscovery/ta3ta2-api.git@0494c7088542c79c4d8eed0059d512bc08414e42#egg=ta3ta2-api
--e git+https://github.com/HDI-Project/BTB.git@issue_145_implement_btb_session#egg=baytune
-
