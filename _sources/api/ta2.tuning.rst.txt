@@ -1,7 +1,0 @@
-ta2.tuning module
-=================
-
-.. automodule:: ta2.tuning
-   :members:
-   :undoc-members:
-   :show-inheritance:

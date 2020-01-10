@@ -125,7 +125,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../../api/ta2.html#submodules">Submodules</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../api/ta2.search.html">ta2.search module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api/ta2.template.html">ta2.template module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../api/ta2.tuning.html">ta2.tuning module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api/ta2.utils.html">ta2.utils module</a></li>
 </ul>
 </li>
@@ -230,7 +229,6 @@
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
 
 <span class="kn">import</span> <span class="nn">yaml</span>
-<span class="kn">from</span> <span class="nn">btb</span> <span class="kn">import</span> <span class="n">HyperParameter</span>
 <span class="kn">from</span> <span class="nn">d3m</span> <span class="kn">import</span> <span class="n">index</span>
 <span class="kn">from</span> <span class="nn">d3m.metadata.base</span> <span class="kn">import</span> <span class="n">ArgumentType</span>
 <span class="kn">from</span> <span class="nn">d3m.metadata.hyperparams</span> <span class="kn">import</span> <span class="n">Union</span>
@@ -283,9 +281,6 @@
                 <span class="k">continue</span>
 
             <span class="k">try</span><span class="p">:</span>
-                <span class="c1"># Health-Check: Some configurations make HyperParameter crash</span>
-                <span class="n">HyperParameter</span><span class="p">(</span><span class="n">param_type</span><span class="p">,</span> <span class="n">param_range</span><span class="p">)</span>
-
                 <span class="c1"># If the line above did not crash, we are safe</span>
                 <span class="n">tunable_hyperparameters</span><span class="p">[</span><span class="n">step</span><span class="p">][</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
                     <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="n">param_type</span><span class="p">,</span>
@@ -298,27 +293,6 @@
                 <span class="k">continue</span>
 
     <span class="k">return</span> <span class="n">tunable_hyperparameters</span></div>
-
-
-<div class="viewcode-block" id="get_tunables"><a class="viewcode-back" href="../../api/ta2.template.html#ta2.template.get_tunables">[docs]</a><span class="k">def</span> <span class="nf">get_tunables</span><span class="p">(</span><span class="n">tunable_hyperparameters</span><span class="p">):</span>
-    <span class="n">tunables</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
-    <span class="n">defaults</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
-    <span class="k">for</span> <span class="n">block_name</span><span class="p">,</span> <span class="n">params</span> <span class="ow">in</span> <span class="n">tunable_hyperparameters</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="k">for</span> <span class="n">param_name</span><span class="p">,</span> <span class="n">param_details</span> <span class="ow">in</span> <span class="n">params</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">key</span> <span class="o">=</span> <span class="p">(</span><span class="n">block_name</span><span class="p">,</span> <span class="n">param_name</span><span class="p">)</span>
-            <span class="n">param_type</span> <span class="o">=</span> <span class="n">param_details</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span>
-            <span class="n">param_type</span> <span class="o">=</span> <span class="s1">&#39;string&#39;</span> <span class="k">if</span> <span class="n">param_type</span> <span class="o">==</span> <span class="s1">&#39;str&#39;</span> <span class="k">else</span> <span class="n">param_type</span>
-
-            <span class="k">if</span> <span class="n">param_type</span> <span class="o">==</span> <span class="s1">&#39;bool&#39;</span><span class="p">:</span>
-                <span class="n">param_range</span> <span class="o">=</span> <span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">]</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">param_range</span> <span class="o">=</span> <span class="n">param_details</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;range&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">param_details</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;values&#39;</span><span class="p">)</span>
-
-            <span class="n">value</span> <span class="o">=</span> <span class="n">HyperParameter</span><span class="p">(</span><span class="n">param_type</span><span class="p">,</span> <span class="n">param_range</span><span class="p">)</span>
-            <span class="n">tunables</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
-            <span class="n">defaults</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">param_details</span><span class="p">[</span><span class="s1">&#39;default&#39;</span><span class="p">]</span>
-
-    <span class="k">return</span> <span class="n">tunables</span><span class="p">,</span> <span class="n">defaults</span></div>
 
 
 <div class="viewcode-block" id="get_tunable_hyperparameters"><a class="viewcode-back" href="../../api/ta2.template.html#ta2.template.get_tunable_hyperparameters">[docs]</a><span class="k">def</span> <span class="nf">get_tunable_hyperparameters</span><span class="p">(</span><span class="n">tunables</span><span class="p">,</span> <span class="n">defaults</span><span class="p">):</span>
@@ -429,11 +403,9 @@
 
     <span class="k">if</span> <span class="s1">&#39;tunable_hyperparameters&#39;</span> <span class="ow">in</span> <span class="n">template</span><span class="p">:</span>
         <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Using predefined tunable hyperparameters&#39;</span><span class="p">)</span>
-        <span class="c1"># tunables, defaults = get_tunables(template[&#39;tunable_hyperparameters&#39;])</span>
         <span class="n">tunable_hyperparameters</span> <span class="o">=</span> <span class="n">template</span><span class="p">[</span><span class="s1">&#39;tunable_hyperparameters&#39;</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Extracting tunables from pipeline&#39;</span><span class="p">)</span>
-        <span class="c1"># tunables, defaults = extract_pipeline_tunables(pipeline)</span>
         <span class="n">tunable_hyperparameters</span> <span class="o">=</span> <span class="n">extract_pipeline_tunables</span><span class="p">(</span><span class="n">pipeline</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">data_augmentation</span><span class="p">:</span>
