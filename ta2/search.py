@@ -6,7 +6,6 @@ import signal
 import warnings
 from collections import defaultdict
 from datetime import datetime, timedelta
-from enum import Enum
 from multiprocessing import Manager, Process
 
 import numpy as np
@@ -16,13 +15,12 @@ from btb.tuning.tunable import Tunable
 from d3m.container.dataset import Dataset
 from d3m.metadata.base import ArgumentType, Context
 from d3m.metadata.pipeline import Pipeline, PrimitiveStep
-from d3m.metadata.problem import TaskKeyword
 from d3m.runtime import DEFAULT_SCORING_PIPELINE_PATH
 from d3m.runtime import evaluate as d3m_evaluate
 from datamart import DatamartQuery
 from datamart_rest import RESTDatamart
 
-from ta2.template import load_template
+from ta2.loader import load_d3m_pipeline
 from ta2.utils import dump_pipeline
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
@@ -32,8 +30,6 @@ FALLBACK_PIPELINE = 'fallback_pipeline.yml'
 
 DATAMART_URL = os.getenv('DATAMART_URL_NYU', 'https://datamart.d3m.vida-nyu.org')
 
-TUNING_PARAMETER = 'https://metadata.datadrivendiscovery.org/types/TuningParameter'
-
 SUBPROCESS_PRIMITIVES = [
     'd3m.primitives.natural_language_processing.lda.Fastlvm'
 ]
@@ -41,71 +37,6 @@ SUBPROCESS_PRIMITIVES = [
 LOGGER = logging.getLogger(__name__)
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
-
-
-class Templates(Enum):
-    # SINGLE TABLE CLASSIFICATION
-    SINGLE_TABLE_CLASSIFICATION_ENC_XGB = 'single_table_classification_encoding_xgb.yml'
-    # SINGLE_TABLE_CLASSIFICATION_AR_RF = 'single_table_classification_autorpi_rf.yml'
-    SINGLE_TABLE_CLASSIFICATION_DFS_ROBUST_XGB = 'single_table_classification_dfs_robust_xgb.yml'
-    # SINGLE_TABLE_CLASSIFICATION_DFS_XGB = 'single_table_classification_dfs_xgb.yml'
-    # SINGLE_TABLE_CLASSIFICATION_GB = 'single_table_classification_gradient_boosting.yml'
-
-    # SINGLE TABLE REGRESSION
-    SINGLE_TABLE_REGRESSION_XGB = 'single_table_regression_xgb.yml'
-    SINGLE_TABLE_REGRESSION_SC_XGB = 'single_table_regression_scale_xgb.yml'
-    SINGLE_TABLE_REGRESSION_ENC_XGB = 'single_table_regression_encoding_xgb.yml'
-    # SINGLE_TABLE_REGRESSION_DFS_XGB = 'single_table_regression_dfs_xgb.yml'
-    # SINGLE_TABLE_REGRESSION_GB = 'single_table_regression_gradient_boosting.yml'
-
-    # MISC
-    SINGLE_TABLE_SEMI_CLASSIFICATION = 'single_table_semi_classification_autonbox.yml'
-    # SINGLE_TABLE_CLUSTERING = 'single_table_clustering_ekss.yml'
-
-    # MULTI TABLE
-    MULTI_TABLE_CLASSIFICATION_DFS_XGB = 'multi_table_classification_dfs_xgb.yml'
-    MULTI_TABLE_CLASSIFICATION_LDA_LOGREG = 'multi_table_classification_lda_logreg.yml'
-    MULTI_TABLE_REGRESSION = 'multi_table_regression_dfs_xgb.yml'
-
-    # TIMESERIES CLASSIFICATION
-    TIMESERIES_CLASSIFICATION_KN = 'time_series_classification_k_neighbors_kn.yml'
-    TIMESERIES_CLASSIFICATION_DSBOX_LR = 'time_series_classification_dsbox_lr.yml'
-    TIMESERIES_CLASSIFICATION_LSTM_FCN = 'time_series_classification_lstm_fcn.yml'
-    # TIMESERIES_CLASSIFICATION_XGB = 'time_series_classification_xgb.yml'
-    # TIMESERIES_CLASSIFICATION_RF = 'time_series_classification_rf.yml'
-
-    # IMAGE
-    IMAGE_REGRESSION = 'image_regression_resnet50_xgb.yml'
-    IMAGE_CLASSIFICATION = 'image_classification_resnet50_xgb.yml'
-    IMAGE_OBJECT_DETECTION = 'image_object_detection_yolo.yml'
-
-    # TEXT
-    TEXT_CLASSIFICATION = 'text_classification_encoding_xgb.yml'
-    TEXT_REGRESSION = 'text_regression_encoding_xgb.yml'
-
-    # GRAPH
-    # GRAPH_COMMUNITY_DETECTION_DISTIL = 'graph_community_detection_distil.yml'
-    # GRAPH_LINK_PREDICTION = 'graph_link_prediction_distil.yml'
-    # GRAPH_MATCHING = 'graph_matching.yml'
-    # GRAPH_MATCHING_JHU = 'graph_matching_jhu.yml'
-
-
-def sanitize_hyperparameters(hyperparams):
-    sanitized = {
-        (step, name): value
-        for step, tunable_hp in hyperparams.items()
-        for name, value in tunable_hp.items()
-    }
-
-    for tunable_hp in sanitized.values():
-        if tunable_hp['type'] == 'string':
-            tunable_hp['type'] = 'str'
-        if tunable_hp['type'] == 'integer':
-            tunable_hp['type'] = 'int'
-        if tunable_hp['type'] == 'boolean':
-            tunable_hp['type'] = 'bool'
-
-    return sanitized
 
 
 def detect_data_modality(dataset_doc_path):
@@ -160,11 +91,6 @@ def to_dicts(hyperparameters):
     return params_tree
 
 
-FILE_COLLECTION = 'https://metadata.datadrivendiscovery.org/types/FilesCollection'
-GRAPH = 'https://metadata.datadrivendiscovery.org/types/Graph'
-EDGE_LIST = 'https://metadata.datadrivendiscovery.org/types/EdgeList'
-
-
 class PipelineSearcher:
 
     def _load_pipeline(self, pipeline):
@@ -183,74 +109,9 @@ class PipelineSearcher:
         LOGGER.info("Loading template for data modality %s and task type %s",
                     data_modality, task_type)
 
-        templates = [Templates.SINGLE_TABLE_CLASSIFICATION_ENC_XGB]
+        # TODO: Generate template lists
 
-        if data_modality == 'single_table':
-            if task_type == TaskKeyword.CLASSIFICATION.name.lower():
-                templates = [
-                    Templates.SINGLE_TABLE_CLASSIFICATION_ENC_XGB,
-                    Templates.SINGLE_TABLE_CLASSIFICATION_DFS_ROBUST_XGB,
-                ]
-            elif task_type == TaskKeyword.REGRESSION.name.lower():
-                templates = [
-                    Templates.SINGLE_TABLE_REGRESSION_XGB,
-                    Templates.SINGLE_TABLE_REGRESSION_SC_XGB,
-                    Templates.SINGLE_TABLE_REGRESSION_ENC_XGB,
-                ]
-            elif task_type == TaskKeyword.COLLABORATIVE_FILTERING.name.lower():
-                templates = [
-                    Templates.SINGLE_TABLE_REGRESSION_XGB,
-                    Templates.SINGLE_TABLE_REGRESSION_SC_XGB,
-                    Templates.SINGLE_TABLE_REGRESSION_ENC_XGB,
-                ]
-            elif task_type == TaskKeyword.TIME_SERIES_FORECASTING.name.lower():
-                templates = [
-                    Templates.SINGLE_TABLE_REGRESSION_XGB,
-                    Templates.SINGLE_TABLE_REGRESSION_SC_XGB,
-                    Templates.SINGLE_TABLE_REGRESSION_ENC_XGB,
-                ]
-            elif task_type == TaskKeyword.SEMISUPERVISED_CLASSIFICATION.name.lower():
-                templates = [Templates.SINGLE_TABLE_SEMI_CLASSIFICATION]
-
-        if data_modality == 'multi_table':
-            if task_type == TaskKeyword.CLASSIFICATION.name.lower():
-                templates = [
-                    Templates.MULTI_TABLE_CLASSIFICATION_LDA_LOGREG,
-                    Templates.MULTI_TABLE_CLASSIFICATION_DFS_XGB,
-                ]
-            elif task_type == TaskKeyword.REGRESSION.name.lower():
-                templates = [Templates.MULTI_TABLE_REGRESSION]
-        elif data_modality == 'text':
-            if task_type == TaskKeyword.CLASSIFICATION.name.lower():
-                templates = [Templates.TEXT_CLASSIFICATION]
-            elif task_type == TaskKeyword.REGRESSION.name.lower():
-                templates = [Templates.TEXT_REGRESSION]
-
-        if data_modality == 'timeseries':
-            templates = [
-                Templates.TIMESERIES_CLASSIFICATION_KN,
-                Templates.TIMESERIES_CLASSIFICATION_DSBOX_LR,
-                Templates.TIMESERIES_CLASSIFICATION_LSTM_FCN
-            ]
-            # if task_type == TaskKeyword.CLASSIFICATION.name.lower():
-            #     template = Templates.TIMESERIES_CLASSIFICATION
-            # elif task_type == TaskKeyword.REGRESSION.name.lower():
-            #     template = Templates.TIMESERIES_REGRESSION
-        elif data_modality == 'image':
-            if task_type == TaskKeyword.CLASSIFICATION.name.lower():
-                templates = [Templates.IMAGE_CLASSIFICATION]
-            elif task_type == TaskKeyword.REGRESSION.name.lower():
-                templates = [Templates.IMAGE_REGRESSION]
-            elif task_type == TaskKeyword.OBJECT_DETECTION.name.lower():
-                templates = [Templates.IMAGE_OBJECT_DETECTION]
-
-        if data_modality == 'graph':
-            if task_type == TaskKeyword.COMMUNITY_DETECTION.name.lower():
-                templates = [Templates.GRAPH_COMMUNITY_DETECTION]
-            elif task_type == TaskKeyword.VERTEX_CLASSIFICATION.name.lower():
-                templates = [Templates.SINGLE_TABLE_CLASSIFICATION_ENC_XGB]
-
-        return [template.value for template in templates]
+        return None
 
     def __init__(self, input_dir='input', output_dir='output', static_dir='static',
                  dump=False, hard_timeout=False):
@@ -535,9 +396,9 @@ class PipelineSearcher:
         templates = {}
 
         for template_name in template_names:
-            template, tunable_hp = load_template(template_name)
+            template, tunable_hp = load_d3m_pipeline(template_name)
             templates[template_name] = template
-            tunables[template_name] = Tunable.from_dict(sanitize_hyperparameters(tunable_hp))
+            tunables[template_name] = Tunable(tunable_hp)
 
         return tunables, templates
 
@@ -559,7 +420,7 @@ class PipelineSearcher:
 
         with open(fallback_pipeline) as pipeline:
             if fallback_pipeline.endswith('yml'):
-                data = yaml.load(pipeline)
+                data = yaml.safe_load(pipeline)
 
             else:
                 data = json.load(pipeline)
