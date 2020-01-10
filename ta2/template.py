@@ -6,7 +6,6 @@ import warnings
 from collections import defaultdict
 
 import yaml
-from btb import HyperParameter
 from d3m import index
 from d3m.metadata.base import ArgumentType
 from d3m.metadata.hyperparams import Union
@@ -59,9 +58,6 @@ def extract_pipeline_tunables(pipeline):
                 continue
 
             try:
-                # Health-Check: Some configurations make HyperParameter crash
-                HyperParameter(param_type, param_range)
-
                 # If the line above did not crash, we are safe
                 tunable_hyperparameters[step][name] = {
                     'type': param_type,
@@ -74,27 +70,6 @@ def extract_pipeline_tunables(pipeline):
                 continue
 
     return tunable_hyperparameters
-
-
-def get_tunables(tunable_hyperparameters):
-    tunables = list()
-    defaults = dict()
-    for block_name, params in tunable_hyperparameters.items():
-        for param_name, param_details in params.items():
-            key = (block_name, param_name)
-            param_type = param_details['type']
-            param_type = 'string' if param_type == 'str' else param_type
-
-            if param_type == 'bool':
-                param_range = [True, False]
-            else:
-                param_range = param_details.get('range') or param_details.get('values')
-
-            value = HyperParameter(param_type, param_range)
-            tunables.append((key, value))
-            defaults[key] = param_details['default']
-
-    return tunables, defaults
 
 
 def get_tunable_hyperparameters(tunables, defaults):
@@ -205,11 +180,9 @@ def load_template(template_name, data_augmentation=None):
 
     if 'tunable_hyperparameters' in template:
         LOGGER.info('Using predefined tunable hyperparameters')
-        # tunables, defaults = get_tunables(template['tunable_hyperparameters'])
         tunable_hyperparameters = template['tunable_hyperparameters']
     else:
         LOGGER.info('Extracting tunables from pipeline')
-        # tunables, defaults = extract_pipeline_tunables(pipeline)
         tunable_hyperparameters = extract_pipeline_tunables(pipeline)
 
     if data_augmentation:
