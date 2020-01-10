@@ -9,11 +9,10 @@ install_requires = [
     'd3m==2019.11.10',
     'tabulate>=0.8.3,<0.9',
     'numpy==1.17.3',
-    'scikit-learn[alldeps]==0.21.0',
-    'sri-d3m==1.5.5',
-    'rpi_d3m_primitives==0.1.6',
+    'scikit-learn[alldeps]==0.21.3',
     'Cython==0.29.7',
     'datamart-rest==0.2.3',
+    'PyYAML==5.1.2',
 ]
 
 

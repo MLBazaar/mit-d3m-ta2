@@ -10,6 +10,7 @@ from enum import Enum
 from multiprocessing import Manager, Process
 
 import numpy as np
+import yaml
 from btb.session import BTBSession
 from btb.tuning.tunable import Tunable
 from d3m.container.dataset import Dataset
@@ -270,7 +271,6 @@ class PipelineSearcher:
         self.solutions = list()
         self.data_pipeline = self._load_pipeline('kfold_pipeline.yml')
         self.scoring_pipeline = self._load_pipeline(DEFAULT_SCORING_PIPELINE_PATH)
-        self.fallback = self._load_pipeline(FALLBACK_PIPELINE)
 
     @staticmethod
     def _evaluate(out, pipeline, *args, **kwargs):
@@ -541,6 +541,31 @@ class PipelineSearcher:
 
         return tunables, templates
 
+    def _get_fallback_pipeline(self, data_modality, task_type):
+
+        fallback_name = '{}_{}_fallback'.format(data_modality, task_type)
+        fallback_path = os.path.dirname(os.path.abspath(__file__))
+        fallback_path = os.path.join(fallback_path, 'pipelines/fallback_pipelines')
+        fallback_pipeline = None
+
+        for pipeline in os.listdir(fallback_path):
+            if pipeline.startswith(fallback_name):
+                fallback_pipeline = os.path.join(fallback_path, pipeline)
+                break
+
+        if fallback_pipeline is None:
+            LOGGER.info('No fallback pipeline found for %s %s' % data_modality, task_type)
+            return None
+
+        with open(fallback_pipeline) as pipeline:
+            if fallback_pipeline.endswith('yml'):
+                data = yaml.load(pipeline)
+
+            else:
+                data = json.load(pipeline)
+
+        return Pipeline.from_json_structure(data)
+
     def search(self, dataset_path, problem, timeout=None, budget=None, template_names=None):
         self.timeout = timeout
         self.budget = budget
@@ -566,6 +591,8 @@ class PipelineSearcher:
         task_type = problem['problem']['task_keywords'][0].name.lower()
         task_subtype = problem['problem']['task_keywords'][1].name.lower()
 
+        self.fallback = self._get_fallback_pipeline(data_modality, task_type)
+
         # data_augmentation = self.get_data_augmentation(dataset, problem)
 
         LOGGER.info("Searching dataset %s: %s/%s/%s",
@@ -574,16 +601,18 @@ class PipelineSearcher:
         try:
             self.setup_search()
 
-            self.score_pipeline(dataset, problem, self.fallback)
-            self.fallback.normalized_score = metric.normalize(self.fallback.score)
-            self._save_pipeline(self.fallback)
-            self.best_pipeline = self.fallback.id
-            self.best_score = self.fallback.score
-            self.best_template_name = FALLBACK_PIPELINE
-            self.best_normalized = self.fallback.normalized_score
+            if self.fallback:
 
-            LOGGER.info("Fallback pipeline score: %s - %s",
-                        self.fallback.score, self.fallback.normalized_score)
+                self.score_pipeline(dataset, problem, self.fallback)
+                self.fallback.normalized_score = metric.normalize(self.fallback.score)
+                self._save_pipeline(self.fallback)
+                self.best_pipeline = self.fallback.id
+                self.best_score = self.fallback.score
+                self.best_template_name = FALLBACK_PIPELINE
+                self.best_normalized = self.fallback.normalized_score
+
+                LOGGER.warn("Fallback pipeline score: %s - %s",
+                            self.fallback.score, self.fallback.normalized_score)
 
             LOGGER.info("Loading the template and the tuner")
             if not template_names:

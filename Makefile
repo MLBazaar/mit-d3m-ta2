@@ -82,7 +82,7 @@ install-develop: clean-build clean-pyc ## install the package in editable mode a
 	pip install -e .[dev] && pip install -r requirements.txt
 
 .PHONY: install-primitives
-install-primitives: clean-build clean-pyc ## install the primitive packages to the active Python's site-packages
+install-primitives: ## install the primitive packages to the active Python's site-packages
 	pip install -r primitive_requirements.txt
 
 .PHONY: install-system
