@@ -1,0 +1,58 @@
+{
+    "id": "c2e15a96-af2d-4b9f-8544-832051851ce5",
+    "schema": "https://metadata.datadrivendiscovery.org/schemas/v0/pipeline.json",
+    "created": "2019-11-21T18:36:35.979502Z",
+    "inputs": [
+        {
+            "name": "inputs"
+        }
+    ],
+    "outputs": [
+        {
+            "data": "steps.1.produce",
+            "name": "Results"
+        }
+    ],
+    "steps": [
+        {
+            "type": "PRIMITIVE",
+            "primitive": {
+                "id": "a22f9bd3-818e-44e9-84a3-9592c5a85408",
+                "version": "1.6.8",
+                "python_path": "d3m.primitives.data_transformation.vertex_classification_parser.VertexClassificationParser",
+                "name": "Vertex Classification Parser"
+            },
+            "arguments": {
+                "inputs": {
+                    "type": "CONTAINER",
+                    "data": "inputs.0"
+                }
+            },
+            "outputs": [
+                {
+                    "id": "produce"
+                }
+            ]
+        },
+        {
+            "type": "PRIMITIVE",
+            "primitive": {
+                "id": "dca25a46-7a5f-48d9-ac9b-d14d4d671b0b",
+                "version": "1.6.8",
+                "python_path": "d3m.primitives.classification.vertex_nomination.VertexClassification",
+                "name": "Vertex Classification"
+            },
+            "arguments": {
+                "inputs": {
+                    "type": "CONTAINER",
+                    "data": "steps.0.produce"
+                }
+            },
+            "outputs": [
+                {
+                    "id": "produce"
+                }
+            ]
+        }
+    ]
+}

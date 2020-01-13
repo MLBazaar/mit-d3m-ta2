@@ -1,0 +1,193 @@
+{
+    "created": "2019-11-22T07:49:37.099295Z",
+    "digest": "93bbd87790112e23c974cf18177f163c9ac6702087d621560be6c2d487d336fe",
+    "id": "8e1615be-af2f-4459-9a36-2e55b0520a31",
+    "inputs": [
+        {
+            "name": "inputs"
+        }
+    ],
+    "outputs": [
+        {
+            "data": "steps.5.produce",
+            "name": "output predictions"
+        }
+    ],
+    "schema": "https://metadata.datadrivendiscovery.org/schemas/v0/pipeline.json",
+    "steps": [
+        {
+            "arguments": {
+                "inputs": {
+                    "data": "inputs.0",
+                    "type": "CONTAINER"
+                }
+            },
+            "outputs": [
+                {
+                    "id": "produce"
+                }
+            ],
+            "primitive": {
+                "digest": "bddea02d001c6633722c14643ec2a065fb4a977354ddbdf74282d076da77e530",
+                "id": "4b42ce1e-9b98-4a25-b68e-fad13311eb65",
+                "name": "Extract a DataFrame from a Dataset",
+                "python_path": "d3m.primitives.data_transformation.dataset_to_dataframe.Common",
+                "version": "0.3.0"
+            },
+            "type": "PRIMITIVE"
+        },
+        {
+            "arguments": {
+                "inputs": {
+                    "data": "steps.0.produce",
+                    "type": "CONTAINER"
+                }
+            },
+            "hyperparams": {
+                "columns": {
+                    "data": [
+                        11
+                    ],
+                    "type": "VALUE"
+                },
+                "semantic_types": {
+                    "data": [
+                        "https://metadata.datadrivendiscovery.org/types/Attribute"
+                    ],
+                    "type": "VALUE"
+                }
+            },
+            "outputs": [
+                {
+                    "id": "produce"
+                }
+            ],
+            "primitive": {
+                "digest": "bd1a17fce446bbf6a9c4331aa306b4d8f791510e515d8f4ae8084517ba444648",
+                "id": "3002bc5b-fa47-4a3d-882e-a8b5f3d756aa",
+                "name": "Remove semantic types from columns",
+                "python_path": "d3m.primitives.data_transformation.remove_semantic_types.Common",
+                "version": "0.1.0"
+            },
+            "type": "PRIMITIVE"
+        },
+        {
+            "arguments": {
+                "inputs": {
+                    "data": "steps.1.produce",
+                    "type": "CONTAINER"
+                }
+            },
+            "hyperparams": {
+                "semantic_types": {
+                    "data": [
+                        "https://metadata.datadrivendiscovery.org/types/Attribute"
+                    ],
+                    "type": "VALUE"
+                }
+            },
+            "outputs": [
+                {
+                    "id": "produce"
+                }
+            ],
+            "primitive": {
+                "digest": "465edb8a31169e414dc8ad5b37c8c0bc07625aae9dc72fbfdc385ea10ed6d36f",
+                "id": "4503a4c6-42f7-45a1-a1d4-ed69699cf5e1",
+                "name": "Extracts columns by semantic type",
+                "python_path": "d3m.primitives.data_transformation.extract_columns_by_semantic_types.Common",
+                "version": "0.3.0"
+            },
+            "type": "PRIMITIVE"
+        },
+        {
+            "arguments": {
+                "inputs": {
+                    "data": "steps.1.produce",
+                    "type": "CONTAINER"
+                }
+            },
+            "hyperparams": {
+                "semantic_types": {
+                    "data": [
+                        "https://metadata.datadrivendiscovery.org/types/TrueTarget"
+                    ],
+                    "type": "VALUE"
+                }
+            },
+            "outputs": [
+                {
+                    "id": "produce"
+                }
+            ],
+            "primitive": {
+                "digest": "465edb8a31169e414dc8ad5b37c8c0bc07625aae9dc72fbfdc385ea10ed6d36f",
+                "id": "4503a4c6-42f7-45a1-a1d4-ed69699cf5e1",
+                "name": "Extracts columns by semantic type",
+                "python_path": "d3m.primitives.data_transformation.extract_columns_by_semantic_types.Common",
+                "version": "0.3.0"
+            },
+            "type": "PRIMITIVE"
+        },
+        {
+            "arguments": {
+                "inputs": {
+                    "data": "steps.2.produce",
+                    "type": "CONTAINER"
+                },
+                "outputs": {
+                    "data": "steps.3.produce",
+                    "type": "CONTAINER"
+                }
+            },
+            "hyperparams": {
+                "N0": {
+                    "data": 2,
+                    "type": "VALUE"
+                },
+                "nbins": {
+                    "data": 14,
+                    "type": "VALUE"
+                }
+            },
+            "outputs": [
+                {
+                    "id": "produce"
+                }
+            ],
+            "primitive": {
+                "digest": "255b4cfbeb9f1e3177cda0a44005e14b61542cf1847f1f7ba047855a50f27b70",
+                "id": "2fa0afb2-1b7b-462d-a7c9-11b44efe9eb0",
+                "name": "Tree-Augmented Naive Bayes Classifier",
+                "python_path": "d3m.primitives.classification.tree_augmented_naive_bayes.BayesianInfRPI",
+                "version": "v2019.11.10"
+            },
+            "type": "PRIMITIVE"
+        },
+        {
+            "arguments": {
+                "inputs": {
+                    "data": "steps.4.produce",
+                    "type": "CONTAINER"
+                },
+                "reference": {
+                    "data": "steps.0.produce",
+                    "type": "CONTAINER"
+                }
+            },
+            "outputs": [
+                {
+                    "id": "produce"
+                }
+            ],
+            "primitive": {
+                "digest": "5144bad4fea16168f6667c991e137067721dd0573c68ab1bf172ead9e2c82869",
+                "id": "8d38b340-f83f-4877-baaa-162f8e551736",
+                "name": "Construct pipeline predictions output",
+                "python_path": "d3m.primitives.data_transformation.construct_predictions.Common",
+                "version": "0.3.0"
+            },
+            "type": "PRIMITIVE"
+        }
+    ]
+}

@@ -1,0 +1,72 @@
+{
+    "id": "082ba558-c2fb-4f75-bc36-19092f136a52",
+    "schema": "https://metadata.datadrivendiscovery.org/schemas/v0/pipeline.json",
+    "created": "2019-11-26T02:03:45.212015Z",
+    "inputs": [
+        {
+            "name": "inputs"
+        }
+    ],
+    "outputs": [
+        {
+            "data": "steps.1.produce",
+            "name": "output"
+        }
+    ],
+    "steps": [
+        {
+            "type": "PRIMITIVE",
+            "primitive": {
+                "id": "79012210-2463-4f94-9da6-11bdc5a7e6c4",
+                "version": "0.1.1",
+                "python_path": "d3m.primitives.data_transformation.load_single_graph.DistilSingleGraphLoader",
+                "name": "Load single graph and dataframe into a parseable object"
+            },
+            "arguments": {
+                "inputs": {
+                    "type": "CONTAINER",
+                    "data": "inputs.0"
+                }
+            },
+            "outputs": [
+                {
+                    "id": "produce"
+                },
+                {
+                    "id": "produce_target"
+                }
+            ]
+        },
+        {
+            "type": "PRIMITIVE",
+            "primitive": {
+                "id": "fc138210-c317-4528-81ae-5eed3a1a0267",
+                "version": "0.1.0",
+                "python_path": "d3m.primitives.link_prediction.link_prediction.DistilLinkPrediction",
+                "name": "LinkPrediction"
+            },
+            "arguments": {
+                "inputs": {
+                    "type": "CONTAINER",
+                    "data": "steps.0.produce"
+                },
+                "outputs": {
+                    "type": "CONTAINER",
+                    "data": "steps.0.produce_target"
+                }
+            },
+            "outputs": [
+                {
+                    "id": "produce"
+                }
+            ],
+            "hyperparams": {
+                "metric": {
+                    "type": "VALUE",
+                    "data": "accuracy"
+                }
+            }
+        }
+    ],
+    "digest": "12a02693d9326b979f0f09013863a7d8fe6e825f3bfd943afaff38601b4c47e0"
+}
