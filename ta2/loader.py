@@ -81,7 +81,7 @@ def extract_tunable_hyperparams(pipeline):
     return tunable_hyperparams
 
 
-def load_d3m_pipeline(path, tunable=True):
+def load_pipeline(path, tunable=True):
     """Load a d3m json or yaml pipeline."""
 
     if not os.path.exists(path):
