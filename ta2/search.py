@@ -1,3 +1,4 @@
+import glob
 import json
 import logging
 import os
@@ -9,7 +10,7 @@ from datetime import datetime, timedelta
 from multiprocessing import Manager, Process
 
 import numpy as np
-import yaml
+import pandas as pd
 from btb.session import BTBSession
 from btb.tuning.tunable import Tunable
 from d3m.container.dataset import Dataset
@@ -20,13 +21,13 @@ from d3m.runtime import evaluate as d3m_evaluate
 from datamart import DatamartQuery
 from datamart_rest import RESTDatamart
 
-from ta2.loader import load_d3m_pipeline
+from ta2.loader import load_pipeline
 from ta2.utils import dump_pipeline
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 PIPELINES_DIR = os.path.join(BASE_DIR, 'pipelines')
 TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')
-FALLBACK_PIPELINE = 'fallback_pipeline.yml'
+FALLBACK_PIPELINE = 'single_table_classification_fallback.json'
 
 DATAMART_URL = os.getenv('DATAMART_URL_NYU', 'https://datamart.d3m.vida-nyu.org')
 
@@ -105,13 +106,21 @@ class PipelineSearcher:
         with open(path, 'r') as pipeline_file:
             return loader(string_or_file=pipeline_file)
 
-    def _get_templates(self, data_modality, task_type):
+    def _get_templates(self, dataset_name, data_modality, task_type):
         LOGGER.info("Loading template for data modality %s and task type %s",
                     data_modality, task_type)
 
-        # TODO: Generate template lists
+        df = pd.read_csv(os.path.join(TEMPLATES_DIR, 'templates_z_score.csv'))
 
-        return None
+        templates = df[df['name'] == dataset_name].sort_values('z_score', ascending=False)
+        templates = templates.pipeline_id.values
+
+        if len(templates) < 1:
+            modality = '{}_{}'.format(data_modality, task_type)
+            templates = df[df['modality'] == modality].sort_values('z_score', ascending=False)
+            templates = df.pipeline_id.values
+
+        return templates
 
     def __init__(self, input_dir='input', output_dir='output', static_dir='static',
                  dump=False, hard_timeout=False):
@@ -396,36 +405,13 @@ class PipelineSearcher:
         templates = {}
 
         for template_name in template_names:
-            template, tunable_hp = load_d3m_pipeline(template_name)
+            name = os.path.join(TEMPLATES_DIR, template_name)
+            path = glob.glob(name + '*')[0]
+            template, tunable_hp = load_pipeline(path)
             templates[template_name] = template
             tunables[template_name] = Tunable(tunable_hp)
 
         return tunables, templates
-
-    def _get_fallback_pipeline(self, data_modality, task_type):
-
-        fallback_name = '{}_{}_fallback'.format(data_modality, task_type)
-        fallback_path = os.path.dirname(os.path.abspath(__file__))
-        fallback_path = os.path.join(fallback_path, 'pipelines/fallback_pipelines')
-        fallback_pipeline = None
-
-        for pipeline in os.listdir(fallback_path):
-            if pipeline.startswith(fallback_name):
-                fallback_pipeline = os.path.join(fallback_path, pipeline)
-                break
-
-        if fallback_pipeline is None:
-            LOGGER.info('No fallback pipeline found for %s %s' % data_modality, task_type)
-            return None
-
-        with open(fallback_pipeline) as pipeline:
-            if fallback_pipeline.endswith('yml'):
-                data = yaml.safe_load(pipeline)
-
-            else:
-                data = json.load(pipeline)
-
-        return Pipeline.from_json_structure(data)
 
     def search(self, dataset_path, problem, timeout=None, budget=None, template_names=None):
         self.timeout = timeout
@@ -452,7 +438,10 @@ class PipelineSearcher:
         task_type = problem['problem']['task_keywords'][0].name.lower()
         task_subtype = problem['problem']['task_keywords'][1].name.lower()
 
-        self.fallback = self._get_fallback_pipeline(data_modality, task_type)
+        self.fallback = load_pipeline(
+            FALLBACK_PIPELINE,
+            tunables=False
+        )
 
         # data_augmentation = self.get_data_augmentation(dataset, problem)
 
@@ -462,22 +451,20 @@ class PipelineSearcher:
         try:
             self.setup_search()
 
-            if self.fallback:
+            self.score_pipeline(dataset, problem, self.fallback)
+            self.fallback.normalized_score = metric.normalize(self.fallback.score)
+            self._save_pipeline(self.fallback)
+            self.best_pipeline = self.fallback.id
+            self.best_score = self.fallback.score
+            self.best_template_name = FALLBACK_PIPELINE
+            self.best_normalized = self.fallback.normalized_score
 
-                self.score_pipeline(dataset, problem, self.fallback)
-                self.fallback.normalized_score = metric.normalize(self.fallback.score)
-                self._save_pipeline(self.fallback)
-                self.best_pipeline = self.fallback.id
-                self.best_score = self.fallback.score
-                self.best_template_name = FALLBACK_PIPELINE
-                self.best_normalized = self.fallback.normalized_score
-
-                LOGGER.warn("Fallback pipeline score: %s - %s",
-                            self.fallback.score, self.fallback.normalized_score)
+            LOGGER.warn("Fallback pipeline score: %s - %s",
+                        self.fallback.score, self.fallback.normalized_score)
 
             LOGGER.info("Loading the template and the tuner")
             if not template_names:
-                template_names = self._get_templates(data_modality, task_type)
+                template_names = self._get_templates(dataset_name, data_modality, task_type)
 
             tunables, templates = self._get_tunables_templates(template_names)
             btb_scorer = self.make_btb_scorer(dataset_name, dataset, problem, templates, metric)

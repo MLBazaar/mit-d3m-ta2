@@ -81,11 +81,11 @@ def extract_tunable_hyperparams(pipeline):
     return tunable_hyperparams
 
 
-def load_pipeline(path, tunable=True):
+def load_pipeline(path, tunables=True):
     """Load a d3m json or yaml pipeline."""
 
     if not os.path.exists(path):
-        base_path = os.path.abspath(os.dirname(__file__))
+        base_path = os.path.abspath(os.path.dirname(__file__))
 
         path = os.path.join('templates', path)
         path = os.path.join(base_path, path)
@@ -102,7 +102,7 @@ def load_pipeline(path, tunable=True):
 
     pipeline = Pipeline.from_json_structure(data)
 
-    if tunable:
+    if tunables:
         # extract tunable hyperparameters
         tunable_hyperparameters = extract_tunable_hyperparams(pipeline)
 
