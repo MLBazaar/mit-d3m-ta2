@@ -120,7 +120,7 @@ class PipelineSearcher:
             templates = df[df['modality'] == modality].sort_values('z_score', ascending=False)
             templates = df.pipeline_id.values
 
-        return templates
+        return templates[:5]
 
     def __init__(self, input_dir='input', output_dir='output', static_dir='static',
                  dump=False, hard_timeout=False):
