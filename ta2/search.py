@@ -458,10 +458,13 @@ class PipelineSearcher:
             self.best_score = self.fallback.score
             self.best_template_name = FALLBACK_PIPELINE
             self.best_normalized = self.fallback.normalized_score
-
             LOGGER.warn("Fallback pipeline score: %s - %s",
                         self.fallback.score, self.fallback.normalized_score)
 
+        except Exception:
+            LOGGER.warn("Fallback pipeline faied.")
+
+        try:
             LOGGER.info("Loading the template and the tuner")
             if not template_names:
                 template_names = self._get_templates(dataset_name, data_modality, task_type)
