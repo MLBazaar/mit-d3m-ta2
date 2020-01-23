@@ -21,18 +21,20 @@ from d3m.runtime import evaluate as d3m_evaluate
 from datamart import DatamartQuery
 from datamart_rest import RESTDatamart
 
-from ta2.loader import load_pipeline
+from ta2.loader import get_default_pipeline_parameters, load_pipeline
 from ta2.utils import dump_pipeline
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 PIPELINES_DIR = os.path.join(BASE_DIR, 'pipelines')
-TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')
+TEMPLATES_DIR = os.path.join(BASE_DIR, 'new_templates')
 FALLBACK_PIPELINE = 'single_table_classification_fallback.json'
 
 DATAMART_URL = os.getenv('DATAMART_URL_NYU', 'https://datamart.d3m.vida-nyu.org')
 
 SUBPROCESS_PRIMITIVES = [
-    'd3m.primitives.natural_language_processing.lda.Fastlvm'
+    'd3m.primitives.natural_language_processing.lda.Fastlvm',
+    'd3m.primitives.feature_construction.sdne.DSBOX',
+    'd3m.primitives.feature_extraction.nk_sent2vec.Sent2Vec',
 ]
 
 LOGGER = logging.getLogger(__name__)
@@ -107,23 +109,24 @@ class PipelineSearcher:
             return loader(string_or_file=pipeline_file)
 
     def _get_templates(self, dataset_name, data_modality, task_type):
-        LOGGER.info("Loading template for data modality %s and task type %s",
-                    data_modality, task_type)
+        LOGGER.info('Loading template for dataset %s', dataset_name)
 
-        df = pd.read_csv(os.path.join(TEMPLATES_DIR, 'templates_z_score.csv'))
+        df = pd.read_csv(os.path.join(TEMPLATES_DIR, 'templates_with_z_score.csv'))
 
         templates = df[df['name'] == dataset_name].sort_values('z_score', ascending=False)
-        templates = templates.pipeline_id.values
 
-        if len(templates) < 1:
-            modality = '{}_{}'.format(data_modality, task_type)
-            templates = df[df['modality'] == modality].sort_values('z_score', ascending=False)
-            templates = df.pipeline_id.values
+        problem_type = '{}_{}'.format(data_modality, task_type)
+        df['match'] = df['name'] == dataset_name
+        templates = df[df['problem_type'] == problem_type]
+        templates = templates.sort_values(['match', 'z_score'], ascending=False)
+        templates = templates.drop_duplicates(subset=['pipeline_id'], keep='first')
 
-        return templates[:5]
+        self.found_by_name = df['match'].any()
+
+        return templates.pipeline_id.values
 
     def __init__(self, input_dir='input', output_dir='output', static_dir='static',
-                 dump=False, hard_timeout=False):
+                 dump=False, hard_timeout=False, ignore_errors=False):
         self.input = input_dir
         self.output = output_dir
         self.static = static_dir
@@ -141,6 +144,7 @@ class PipelineSearcher:
         self.solutions = list()
         self.data_pipeline = self._load_pipeline('kfold_pipeline.yml')
         self.scoring_pipeline = self._load_pipeline(DEFAULT_SCORING_PIPELINE_PATH)
+        self.ignore_errors = ignore_errors
 
     @staticmethod
     def _evaluate(out, pipeline, *args, **kwargs):
@@ -306,6 +310,8 @@ class PipelineSearcher:
         #     self.subprocess = None
 
     def _timeout(self, *args, **kwargs):
+        self.errors.append('STOP BY TIMEOUT')
+        self.timeout_kill = True
         raise KeyboardInterrupt()
 
     def setup_search(self):
@@ -352,61 +358,37 @@ class PipelineSearcher:
     def make_btb_scorer(self, dataset_name, dataset, problem, templates, metric):
         def btb_scorer(template_name, proposal):
             self.check_stop()
-            self.iterations += 1
 
             pipeline = self._new_pipeline(templates[template_name], proposal)
-            params = '\n'.join('{}: {}'.format(k, v) for k, v in proposal.items())
-
-            LOGGER.warn('Scoring pipeline %s - %s: %s\n%s',
-                        self.iterations, template_name, pipeline.id, params)
 
             try:
                 self.score_pipeline(dataset, problem, pipeline)
                 pipeline.normalized_score = metric.normalize(pipeline.score)
+                if pipeline.normalized_score > self.best_normalized:
+                    self.best_normalized = pipeline.normalized_score
+                    self.best_score = pipeline.score
+                    self.best_pipeline = pipeline.id
+                    self.best_template_name = template_name
 
-            except Exception as ex:
-                LOGGER.exception('Error scoring pipeline %s for dataset %s',
-                                 pipeline.id, dataset_name)
+                return pipeline.normalized_score
 
-                error = '{}: {}'.format(type(ex).__name__, ex)
-                self.errors.append(error)
-                max_errors = min(len(templates), self.budget or np.inf)
-                if len(self.errors) >= max_errors:
-                    raise Exception(self.errors)
-
-                pipeline.score = None
-                pipeline.normalized_score = 0.0
-
-            LOGGER.info('Pipeline %s score: %s - %s',
-                        pipeline.id, pipeline.score, pipeline.normalized_score)
-
-            try:
-                self._save_pipeline(pipeline)
-
-            except Exception:
-                LOGGER.exception('Error saving pipeline %s', pipeline.id)
-
-            if pipeline.normalized_score > self.best_normalized:
-                LOGGER.warn('New best pipeline found: %s! %s is better than %s',
-                            template_name, pipeline.score, self.best_score)
-
-                self.best_pipeline = pipeline.id
-                self.best_score = pipeline.score
-                self.best_normmalized = pipeline.normalized_score
-                self.best_template_name = template_name
-
-            return pipeline.normalized_score
+            finally:
+                try:
+                    self._save_pipeline(pipeline)
+                except Exception:
+                    LOGGER.exception('Error saving pipeline %s', pipeline.id)
 
         return btb_scorer
 
-    @staticmethod
-    def _get_tunables_templates(template_names):
+    def _get_tunables_templates(self, template_names):
+
         tunables = {}
         templates = {}
 
         for template_name in template_names:
             name = os.path.join(TEMPLATES_DIR, template_name)
-            path = glob.glob(name + '*')[0]
+            files = glob.glob(name + '*')
+            path = files[0]
             template, tunable_hp = load_pipeline(path)
             templates[template_name] = template
             tunables[template_name] = Tunable(tunable_hp)
@@ -415,12 +397,13 @@ class PipelineSearcher:
 
     def search(self, dataset_path, problem, timeout=None, budget=None, template_names=None):
         self.timeout = timeout
+        self.timeout_kill = False
         self.budget = budget
         self.best_pipeline = None
         self.best_score = None
-        self.best_normalized = 0
+        self.best_normalized = -np.inf
         self.best_template_name = None
-        self.iterations = 0
+        self.found_by_name = True
         template_names = template_names or list()
         data_modality = None
         task_type = None
@@ -438,10 +421,10 @@ class PipelineSearcher:
         task_type = problem['problem']['task_keywords'][0].name.lower()
         task_subtype = problem['problem']['task_keywords'][1].name.lower()
 
-        self.fallback = load_pipeline(
-            FALLBACK_PIPELINE,
-            tunables=False
-        )
+        # self.fallback = load_pipeline(
+        #     FALLBACK_PIPELINE,
+        #     tunables=False
+        # )
 
         # data_augmentation = self.get_data_augmentation(dataset, problem)
 
@@ -450,21 +433,6 @@ class PipelineSearcher:
 
         try:
             self.setup_search()
-
-            self.score_pipeline(dataset, problem, self.fallback)
-            self.fallback.normalized_score = metric.normalize(self.fallback.score)
-            self._save_pipeline(self.fallback)
-            self.best_pipeline = self.fallback.id
-            self.best_score = self.fallback.score
-            self.best_template_name = FALLBACK_PIPELINE
-            self.best_normalized = self.fallback.normalized_score
-            LOGGER.warn("Fallback pipeline score: %s - %s",
-                        self.fallback.score, self.fallback.normalized_score)
-
-        except Exception:
-            LOGGER.warn("Fallback pipeline faied.")
-
-        try:
             LOGGER.info("Loading the template and the tuner")
             if not template_names:
                 template_names = self._get_templates(dataset_name, data_modality, task_type)
@@ -472,10 +440,16 @@ class PipelineSearcher:
             tunables, templates = self._get_tunables_templates(template_names)
             btb_scorer = self.make_btb_scorer(dataset_name, dataset, problem, templates, metric)
 
-            session = BTBSession(tunables, btb_scorer)
+            session = BTBSession(tunables, btb_scorer, max_errors=0)
 
             if self.budget is not None:
-                session.run(self.budget)
+                while session.iterations < self.budget:
+                    session.run(1)
+                    last_score = list(session.proposals.values())[-1].get('score')
+                    if self.ignore_errors and (last_score is None):
+                        LOGGER.warning("Ignoring Errored pipeline")
+                        session.iterations -= 1
+
             else:
                 session.run()
 
@@ -497,6 +471,9 @@ class PipelineSearcher:
             'data_modality': data_modality,
             'task_type': task_type,
             'task_subtype': task_subtype,
-            'tuning_iterations': self.iterations,
-            'error': self.errors or None
+            'tuning_iterations': session.iterations if session else None,
+            'error': self.errors or None,
+            'killed_by_timeout': self.timeout_kill,
+            'pipelines_scheduled': template_names,
+            'found_by_name': self.found_by_name
         }

@@ -54,6 +54,7 @@ def search(dataset_root, problem, args):
         args.static,
         dump=True,
         hard_timeout=args.hard,
+        ignore_errors=args.ignore_errors,
     )
     dataset_root = os.path.abspath(dataset_root)
     dataset_path = 'file://{}/TRAIN/dataset_TRAIN/datasetDoc.json'.format(dataset_root)
@@ -115,10 +116,10 @@ def get_datasets(args):
 
         try:
             problem = load_problem(dataset_root, 'TRAIN')
+            data_modality, task_type, task_subtype = get_dataset_details(dataset_path, problem)
         except Exception:
             continue
 
-        data_modality, task_type, task_subtype = get_dataset_details(dataset_path, problem)
         if args.data_modality and not args.data_modality == data_modality:
             continue
         if args.task_type and not args.task_type == task_type:
@@ -134,22 +135,41 @@ def process_dataset(dataset_name, dataset_root, problem, args):
     box_print("Processing dataset {}".format(dataset_name), True)
 
     LOGGER.info("Searching Pipeline for dataset {}".format(dataset_name))
-    result = search(dataset_root, problem, args)
-    result['elapsed_time'] = datetime.utcnow() - start_ts
-    result['dataset'] = dataset_name
+    try:
+        result = search(dataset_root, problem, args)
+        result['elapsed_time'] = datetime.utcnow() - start_ts
+        result['dataset'] = dataset_name
 
-    pipeline_id = result['pipeline']
-    cv_score = result['cv_score']
-    if cv_score is not None:
-        box_print("Best Pipeline: {} - CV Score: {}".format(pipeline_id, cv_score))
+        pipeline_id = result['pipeline']
+        cv_score = result['cv_score']
+        if cv_score is not None:
+            box_print("Best Pipeline: {} - CV Score: {}".format(pipeline_id, cv_score))
 
-        pipeline_path = os.path.join(args.output, 'pipelines_ranked', pipeline_id + '.json')
-        test_score = score_pipeline(dataset_root, problem, pipeline_path, args.static)
-        box_print("Test Score for pipeline {}: {}".format(pipeline_id, test_score))
+            pipeline_path = os.path.join(args.output, 'pipelines_ranked', pipeline_id + '.json')
+            test_score = score_pipeline(dataset_root, problem, pipeline_path, args.static)
+            box_print("Test Score for pipeline {}: {}".format(pipeline_id, test_score))
 
-        result['test_score'] = test_score
+            result['test_score'] = test_score
 
-    return result
+        return result
+    except Exception:
+        return {
+            'dataset': dataset_name,
+            'pipeline': None,
+            'cv_score': None,
+            'template': None,
+            'data_modality': None,
+            'task_type': None,
+            'task_subtype': None,
+            'tuning_iterations': None,
+            'error': 'error from main',
+            'killed_by_timeout': None,
+            'pipelines_scheduled': None,
+            'found_by_name': None,
+            'test_score': None,
+            'elapsed_time': None
+        }
+
 
 
 REPORT_COLUMNS = [
@@ -162,6 +182,9 @@ REPORT_COLUMNS = [
     'data_modality',
     'task_type',
     'error',
+    'killed_by_timeout',
+#     'found_by_name',
+#     'pipelines_scheduled',
 ]
 
 
@@ -365,6 +388,9 @@ def parse_args():
         '-b', '--budget', type=int,
         help='Maximum number of tuning iterations to perform')
     ta2_parser.add_argument(
+        '-I', '--ignore-errors', action='store_true',
+        help='Ignore errors when counting tuning iterations.')
+    ta2_parser.add_argument(
         '-e', '--template', action='append',
         help='Name of the template to Use.')
 
@@ -392,9 +418,12 @@ def parse_args():
 
     args = parser.parse_args()
 
-    args.static = os.path.abspath(args.static)
+    args.input = os.path.abspath(os.getenv('D3MINPUTDIR', args.input))
+    args.output = os.path.abspath(os.getenv('D3MOUTPUTDIR', args.output))
+    args.static = os.path.abspath(os.getenv('D3MSTATICDIR', args.static))
 
-    os.makedirs(args.output, exist_ok=True)
+    if not os.path.exists(args.output):
+        os.makedirs(args.output, exist_ok=True)
 
     if args.mode is _ta2_test and not args.logfile:
         args.logfile = os.path.join(args.output, 'ta2.log')
@@ -402,7 +431,8 @@ def parse_args():
             os.remove(args.logfile)
 
     logging_setup(args.verbose, args.logfile, stdout=args.stdout)
-    logging.getLogger("d3m.metadata.pipeline_run").setLevel(logging.ERROR)
+    logging.getLogger("d3m").setLevel(logging.ERROR)
+    logging.getLogger("redirect").setLevel(logging.CRITICAL)
 
     return args
 
