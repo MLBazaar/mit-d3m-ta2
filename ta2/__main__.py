@@ -171,7 +171,6 @@ def process_dataset(dataset_name, dataset_root, problem, args):
         }
 
 
-
 REPORT_COLUMNS = [
     'dataset',
     'template',
@@ -183,8 +182,6 @@ REPORT_COLUMNS = [
     'task_type',
     'error',
     'killed_by_timeout',
-#     'found_by_name',
-#     'pipelines_scheduled',
 ]
 
 

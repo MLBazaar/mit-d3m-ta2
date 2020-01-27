@@ -21,7 +21,7 @@ from d3m.runtime import evaluate as d3m_evaluate
 from datamart import DatamartQuery
 from datamart_rest import RESTDatamart
 
-from ta2.loader import get_default_pipeline_parameters, load_pipeline
+from ta2.loader import load_pipeline
 from ta2.utils import dump_pipeline
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
