@@ -1,4 +1,4 @@
-openjdk-9-jre-headless
+openjdk-11-jre-headless
 libcap-dev
 libsndfile-dev
 libsm6 libxext6 libxrender-dev

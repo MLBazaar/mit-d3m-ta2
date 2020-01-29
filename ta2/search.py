@@ -1,3 +1,4 @@
+import glob
 import json
 import logging
 import os
@@ -6,105 +7,39 @@ import signal
 import warnings
 from collections import defaultdict
 from datetime import datetime, timedelta
-from enum import Enum
 from multiprocessing import Manager, Process
 
 import numpy as np
+import pandas as pd
 from btb.session import BTBSession
 from btb.tuning.tunable import Tunable
 from d3m.container.dataset import Dataset
 from d3m.metadata.base import ArgumentType, Context
 from d3m.metadata.pipeline import Pipeline, PrimitiveStep
-from d3m.metadata.problem import TaskKeyword
 from d3m.runtime import DEFAULT_SCORING_PIPELINE_PATH
 from d3m.runtime import evaluate as d3m_evaluate
 from datamart import DatamartQuery
 from datamart_rest import RESTDatamart
 
-from ta2.template import load_template
+from ta2.loader import load_pipeline
 from ta2.utils import dump_pipeline
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 PIPELINES_DIR = os.path.join(BASE_DIR, 'pipelines')
-TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')
-FALLBACK_PIPELINE = 'fallback_pipeline.yml'
+TEMPLATES_DIR = os.path.join(BASE_DIR, 'new_templates')
+FALLBACK_PIPELINE = 'single_table_classification_fallback.json'
 
 DATAMART_URL = os.getenv('DATAMART_URL_NYU', 'https://datamart.d3m.vida-nyu.org')
 
-TUNING_PARAMETER = 'https://metadata.datadrivendiscovery.org/types/TuningParameter'
-
 SUBPROCESS_PRIMITIVES = [
-    'd3m.primitives.natural_language_processing.lda.Fastlvm'
+    'd3m.primitives.natural_language_processing.lda.Fastlvm',
+    'd3m.primitives.feature_construction.sdne.DSBOX',
+    'd3m.primitives.feature_extraction.nk_sent2vec.Sent2Vec',
 ]
 
 LOGGER = logging.getLogger(__name__)
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
-
-
-class Templates(Enum):
-    # SINGLE TABLE CLASSIFICATION
-    SINGLE_TABLE_CLASSIFICATION_ENC_XGB = 'single_table_classification_encoding_xgb.yml'
-    # SINGLE_TABLE_CLASSIFICATION_AR_RF = 'single_table_classification_autorpi_rf.yml'
-    SINGLE_TABLE_CLASSIFICATION_DFS_ROBUST_XGB = 'single_table_classification_dfs_robust_xgb.yml'
-    # SINGLE_TABLE_CLASSIFICATION_DFS_XGB = 'single_table_classification_dfs_xgb.yml'
-    # SINGLE_TABLE_CLASSIFICATION_GB = 'single_table_classification_gradient_boosting.yml'
-
-    # SINGLE TABLE REGRESSION
-    SINGLE_TABLE_REGRESSION_XGB = 'single_table_regression_xgb.yml'
-    SINGLE_TABLE_REGRESSION_SC_XGB = 'single_table_regression_scale_xgb.yml'
-    SINGLE_TABLE_REGRESSION_ENC_XGB = 'single_table_regression_encoding_xgb.yml'
-    # SINGLE_TABLE_REGRESSION_DFS_XGB = 'single_table_regression_dfs_xgb.yml'
-    # SINGLE_TABLE_REGRESSION_GB = 'single_table_regression_gradient_boosting.yml'
-
-    # MISC
-    SINGLE_TABLE_SEMI_CLASSIFICATION = 'single_table_semi_classification_autonbox.yml'
-    # SINGLE_TABLE_CLUSTERING = 'single_table_clustering_ekss.yml'
-
-    # MULTI TABLE
-    MULTI_TABLE_CLASSIFICATION_DFS_XGB = 'multi_table_classification_dfs_xgb.yml'
-    MULTI_TABLE_CLASSIFICATION_LDA_LOGREG = 'multi_table_classification_lda_logreg.yml'
-    MULTI_TABLE_REGRESSION = 'multi_table_regression_dfs_xgb.yml'
-
-    # TIMESERIES CLASSIFICATION
-    TIMESERIES_CLASSIFICATION_KN = 'time_series_classification_k_neighbors_kn.yml'
-    TIMESERIES_CLASSIFICATION_DSBOX_LR = 'time_series_classification_dsbox_lr.yml'
-    TIMESERIES_CLASSIFICATION_LSTM_FCN = 'time_series_classification_lstm_fcn.yml'
-    # TIMESERIES_CLASSIFICATION_XGB = 'time_series_classification_xgb.yml'
-    # TIMESERIES_CLASSIFICATION_RF = 'time_series_classification_rf.yml'
-
-    # IMAGE
-    IMAGE_REGRESSION = 'image_regression_resnet50_xgb.yml'
-    IMAGE_CLASSIFICATION = 'image_classification_resnet50_xgb.yml'
-    IMAGE_OBJECT_DETECTION = 'image_object_detection_yolo.yml'
-
-    # TEXT
-    TEXT_CLASSIFICATION = 'text_classification_encoding_xgb.yml'
-    TEXT_REGRESSION = 'text_regression_encoding_xgb.yml'
-
-    # GRAPH
-    # GRAPH_COMMUNITY_DETECTION_DISTIL = 'graph_community_detection_distil.yml'
-    # GRAPH_LINK_PREDICTION = 'graph_link_prediction_distil.yml'
-    # GRAPH_MATCHING = 'graph_matching.yml'
-    # GRAPH_MATCHING_JHU = 'graph_matching_jhu.yml'
-
-
-def sanitize_hyperparameters(hyperparams):
-    sanitized = {
-        (step, name): value
-        for step, tunable_hp in hyperparams.items()
-        for name, value in tunable_hp.items()
-    }
-
-    for tunable_hp in sanitized.values():
-        if tunable_hp['type'] == 'string':
-            tunable_hp['type'] = 'str'
-        if tunable_hp['type'] == 'integer':
-            tunable_hp['type'] = 'int'
-        if tunable_hp['type'] == 'boolean':
-            tunable_hp['type'] = 'bool'
-
-    return sanitized
 
 
 def detect_data_modality(dataset_doc_path):
@@ -159,11 +94,6 @@ def to_dicts(hyperparameters):
     return params_tree
 
 
-FILE_COLLECTION = 'https://metadata.datadrivendiscovery.org/types/FilesCollection'
-GRAPH = 'https://metadata.datadrivendiscovery.org/types/Graph'
-EDGE_LIST = 'https://metadata.datadrivendiscovery.org/types/EdgeList'
-
-
 class PipelineSearcher:
 
     def _load_pipeline(self, pipeline):
@@ -178,81 +108,25 @@ class PipelineSearcher:
         with open(path, 'r') as pipeline_file:
             return loader(string_or_file=pipeline_file)
 
-    def _get_templates(self, data_modality, task_type):
-        LOGGER.info("Loading template for data modality %s and task type %s",
-                    data_modality, task_type)
+    def _get_templates(self, dataset_name, data_modality, task_type):
+        LOGGER.info('Loading template for dataset %s', dataset_name)
 
-        templates = [Templates.SINGLE_TABLE_CLASSIFICATION_ENC_XGB]
+        df = pd.read_csv(os.path.join(TEMPLATES_DIR, 'templates_with_z_score.csv'))
 
-        if data_modality == 'single_table':
-            if task_type == TaskKeyword.CLASSIFICATION.name.lower():
-                templates = [
-                    Templates.SINGLE_TABLE_CLASSIFICATION_ENC_XGB,
-                    Templates.SINGLE_TABLE_CLASSIFICATION_DFS_ROBUST_XGB,
-                ]
-            elif task_type == TaskKeyword.REGRESSION.name.lower():
-                templates = [
-                    Templates.SINGLE_TABLE_REGRESSION_XGB,
-                    Templates.SINGLE_TABLE_REGRESSION_SC_XGB,
-                    Templates.SINGLE_TABLE_REGRESSION_ENC_XGB,
-                ]
-            elif task_type == TaskKeyword.COLLABORATIVE_FILTERING.name.lower():
-                templates = [
-                    Templates.SINGLE_TABLE_REGRESSION_XGB,
-                    Templates.SINGLE_TABLE_REGRESSION_SC_XGB,
-                    Templates.SINGLE_TABLE_REGRESSION_ENC_XGB,
-                ]
-            elif task_type == TaskKeyword.TIME_SERIES_FORECASTING.name.lower():
-                templates = [
-                    Templates.SINGLE_TABLE_REGRESSION_XGB,
-                    Templates.SINGLE_TABLE_REGRESSION_SC_XGB,
-                    Templates.SINGLE_TABLE_REGRESSION_ENC_XGB,
-                ]
-            elif task_type == TaskKeyword.SEMISUPERVISED_CLASSIFICATION.name.lower():
-                templates = [Templates.SINGLE_TABLE_SEMI_CLASSIFICATION]
+        templates = df[df['name'] == dataset_name].sort_values('z_score', ascending=False)
 
-        if data_modality == 'multi_table':
-            if task_type == TaskKeyword.CLASSIFICATION.name.lower():
-                templates = [
-                    Templates.MULTI_TABLE_CLASSIFICATION_LDA_LOGREG,
-                    Templates.MULTI_TABLE_CLASSIFICATION_DFS_XGB,
-                ]
-            elif task_type == TaskKeyword.REGRESSION.name.lower():
-                templates = [Templates.MULTI_TABLE_REGRESSION]
-        elif data_modality == 'text':
-            if task_type == TaskKeyword.CLASSIFICATION.name.lower():
-                templates = [Templates.TEXT_CLASSIFICATION]
-            elif task_type == TaskKeyword.REGRESSION.name.lower():
-                templates = [Templates.TEXT_REGRESSION]
+        problem_type = '{}_{}'.format(data_modality, task_type)
+        df['match'] = df['name'] == dataset_name
+        templates = df[df['problem_type'] == problem_type]
+        templates = templates.sort_values(['match', 'z_score'], ascending=False)
+        templates = templates.drop_duplicates(subset=['pipeline_id'], keep='first')
 
-        if data_modality == 'timeseries':
-            templates = [
-                Templates.TIMESERIES_CLASSIFICATION_KN,
-                Templates.TIMESERIES_CLASSIFICATION_DSBOX_LR,
-                Templates.TIMESERIES_CLASSIFICATION_LSTM_FCN
-            ]
-            # if task_type == TaskKeyword.CLASSIFICATION.name.lower():
-            #     template = Templates.TIMESERIES_CLASSIFICATION
-            # elif task_type == TaskKeyword.REGRESSION.name.lower():
-            #     template = Templates.TIMESERIES_REGRESSION
-        elif data_modality == 'image':
-            if task_type == TaskKeyword.CLASSIFICATION.name.lower():
-                templates = [Templates.IMAGE_CLASSIFICATION]
-            elif task_type == TaskKeyword.REGRESSION.name.lower():
-                templates = [Templates.IMAGE_REGRESSION]
-            elif task_type == TaskKeyword.OBJECT_DETECTION.name.lower():
-                templates = [Templates.IMAGE_OBJECT_DETECTION]
+        self.found_by_name = df['match'].any()
 
-        if data_modality == 'graph':
-            if task_type == TaskKeyword.COMMUNITY_DETECTION.name.lower():
-                templates = [Templates.GRAPH_COMMUNITY_DETECTION]
-            elif task_type == TaskKeyword.VERTEX_CLASSIFICATION.name.lower():
-                templates = [Templates.SINGLE_TABLE_CLASSIFICATION_ENC_XGB]
-
-        return [template.value for template in templates]
+        return templates.pipeline_id.values
 
     def __init__(self, input_dir='input', output_dir='output', static_dir='static',
-                 dump=False, hard_timeout=False):
+                 dump=False, hard_timeout=False, ignore_errors=False):
         self.input = input_dir
         self.output = output_dir
         self.static = static_dir
@@ -270,7 +144,7 @@ class PipelineSearcher:
         self.solutions = list()
         self.data_pipeline = self._load_pipeline('kfold_pipeline.yml')
         self.scoring_pipeline = self._load_pipeline(DEFAULT_SCORING_PIPELINE_PATH)
-        self.fallback = self._load_pipeline(FALLBACK_PIPELINE)
+        self.ignore_errors = ignore_errors
 
     @staticmethod
     def _evaluate(out, pipeline, *args, **kwargs):
@@ -436,6 +310,8 @@ class PipelineSearcher:
         #     self.subprocess = None
 
     def _timeout(self, *args, **kwargs):
+        self.errors.append('STOP BY TIMEOUT')
+        self.timeout_kill = True
         raise KeyboardInterrupt()
 
     def setup_search(self):
@@ -482,73 +358,52 @@ class PipelineSearcher:
     def make_btb_scorer(self, dataset_name, dataset, problem, templates, metric):
         def btb_scorer(template_name, proposal):
             self.check_stop()
-            self.iterations += 1
 
             pipeline = self._new_pipeline(templates[template_name], proposal)
-            params = '\n'.join('{}: {}'.format(k, v) for k, v in proposal.items())
-
-            LOGGER.warn('Scoring pipeline %s - %s: %s\n%s',
-                        self.iterations, template_name, pipeline.id, params)
 
             try:
                 self.score_pipeline(dataset, problem, pipeline)
                 pipeline.normalized_score = metric.normalize(pipeline.score)
+                if pipeline.normalized_score > self.best_normalized:
+                    self.best_normalized = pipeline.normalized_score
+                    self.best_score = pipeline.score
+                    self.best_pipeline = pipeline.id
+                    self.best_template_name = template_name
 
-            except Exception as ex:
-                LOGGER.exception('Error scoring pipeline %s for dataset %s',
-                                 pipeline.id, dataset_name)
+                return pipeline.normalized_score
 
-                error = '{}: {}'.format(type(ex).__name__, ex)
-                self.errors.append(error)
-                max_errors = min(len(templates), self.budget or np.inf)
-                if len(self.errors) >= max_errors:
-                    raise Exception(self.errors)
-
-                pipeline.score = None
-                pipeline.normalized_score = 0.0
-
-            LOGGER.info('Pipeline %s score: %s - %s',
-                        pipeline.id, pipeline.score, pipeline.normalized_score)
-
-            try:
-                self._save_pipeline(pipeline)
-
-            except Exception:
-                LOGGER.exception('Error saving pipeline %s', pipeline.id)
-
-            if pipeline.normalized_score > self.best_normalized:
-                LOGGER.warn('New best pipeline found: %s! %s is better than %s',
-                            template_name, pipeline.score, self.best_score)
-
-                self.best_pipeline = pipeline.id
-                self.best_score = pipeline.score
-                self.best_normmalized = pipeline.normalized_score
-                self.best_template_name = template_name
-
-            return pipeline.normalized_score
+            finally:
+                try:
+                    self._save_pipeline(pipeline)
+                except Exception:
+                    LOGGER.exception('Error saving pipeline %s', pipeline.id)
 
         return btb_scorer
 
-    @staticmethod
-    def _get_tunables_templates(template_names):
+    def _get_tunables_templates(self, template_names):
+
         tunables = {}
         templates = {}
 
         for template_name in template_names:
-            template, tunable_hp = load_template(template_name)
+            name = os.path.join(TEMPLATES_DIR, template_name)
+            files = glob.glob(name + '*')
+            path = files[0]
+            template, tunable_hp = load_pipeline(path)
             templates[template_name] = template
-            tunables[template_name] = Tunable.from_dict(sanitize_hyperparameters(tunable_hp))
+            tunables[template_name] = Tunable(tunable_hp)
 
         return tunables, templates
 
     def search(self, dataset_path, problem, timeout=None, budget=None, template_names=None):
         self.timeout = timeout
+        self.timeout_kill = False
         self.budget = budget
         self.best_pipeline = None
         self.best_score = None
-        self.best_normalized = 0
+        self.best_normalized = -np.inf
         self.best_template_name = None
-        self.iterations = 0
+        self.found_by_name = True
         template_names = template_names or list()
         data_modality = None
         task_type = None
@@ -566,6 +421,11 @@ class PipelineSearcher:
         task_type = problem['problem']['task_keywords'][0].name.lower()
         task_subtype = problem['problem']['task_keywords'][1].name.lower()
 
+        # self.fallback = load_pipeline(
+        #     FALLBACK_PIPELINE,
+        #     tunables=False
+        # )
+
         # data_augmentation = self.get_data_augmentation(dataset, problem)
 
         LOGGER.info("Searching dataset %s: %s/%s/%s",
@@ -573,29 +433,23 @@ class PipelineSearcher:
 
         try:
             self.setup_search()
-
-            self.score_pipeline(dataset, problem, self.fallback)
-            self.fallback.normalized_score = metric.normalize(self.fallback.score)
-            self._save_pipeline(self.fallback)
-            self.best_pipeline = self.fallback.id
-            self.best_score = self.fallback.score
-            self.best_template_name = FALLBACK_PIPELINE
-            self.best_normalized = self.fallback.normalized_score
-
-            LOGGER.info("Fallback pipeline score: %s - %s",
-                        self.fallback.score, self.fallback.normalized_score)
-
             LOGGER.info("Loading the template and the tuner")
             if not template_names:
-                template_names = self._get_templates(data_modality, task_type)
+                template_names = self._get_templates(dataset_name, data_modality, task_type)
 
             tunables, templates = self._get_tunables_templates(template_names)
             btb_scorer = self.make_btb_scorer(dataset_name, dataset, problem, templates, metric)
 
-            session = BTBSession(tunables, btb_scorer)
+            session = BTBSession(tunables, btb_scorer, max_errors=0)
 
             if self.budget is not None:
-                session.run(self.budget)
+                while session.iterations < self.budget:
+                    session.run(1)
+                    last_score = list(session.proposals.values())[-1].get('score')
+                    if self.ignore_errors and (last_score is None):
+                        LOGGER.warning("Ignoring Errored pipeline")
+                        session.iterations -= 1
+
             else:
                 session.run()
 
@@ -617,6 +471,9 @@ class PipelineSearcher:
             'data_modality': data_modality,
             'task_type': task_type,
             'task_subtype': task_subtype,
-            'tuning_iterations': self.iterations,
-            'error': self.errors or None
+            'tuning_iterations': session.iterations if session else None,
+            'error': self.errors or None,
+            'killed_by_timeout': self.timeout_kill,
+            'pipelines_scheduled': template_names,
+            'found_by_name': self.found_by_name
         }
