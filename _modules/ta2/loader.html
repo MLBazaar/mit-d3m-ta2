@@ -1,0 +1,398 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>ta2.loader &mdash; mit-d3m-ta2 0.2.0-dev documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../../_static/dai-logo-white.ico"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> mit-d3m-ta2
+          
+
+          
+            
+            <img src="../../_static/dai-logo-white-200.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../readme.html">MIT-D3M-TA2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../readme.html#overview">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../readme.html#install">Install</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../readme.html#requirements">Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../readme.html#install-the-latest-release">Install the latest release</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../readme.html#install-for-development">Install for Development</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../readme.html#additional-dependencies">Additional Dependencies</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../readme.html#data-format">Data Format</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../readme.html#datasets-collection">Datasets Collection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../readme.html#d3m-seed-datasets">D3M Seed Datasets</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../readme.html#leaderboard">Leaderboard</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../readme.html#usage">Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../readme.html#local-testing">Local Testing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../readme.html#ta2-standalone-mode">TA2 Standalone Mode</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../readme.html#ta2-ta3-server-mode">TA2-TA3 Server Mode</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../readme.html#ta2-ta3-test">TA2-TA3 Test</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../readme.html#docker-usage">Docker Usage</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../readme.html#submission">Submission</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/ta2.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../api/ta2.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api/ta2.ta3.html">ta2.ta3 package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../api/ta2.ta3.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../api/ta2.ta3.html#module-ta2.ta3">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/ta2.html#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api/ta2.loader.html">ta2.loader module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/ta2.search.html">ta2.search module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/ta2.utils.html">ta2.utils module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../api/ta2.html#module-ta2">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../authors.html">Credits</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../authors.html#development-lead">Development Lead</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../authors.html#contributors">Contributors</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Contributing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../contributing.html#types-of-contributions">Types of Contributions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../contributing.html#report-bugs">Report Bugs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../contributing.html#fix-bugs">Fix Bugs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../contributing.html#implement-features">Implement Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../contributing.html#write-documentation">Write Documentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../contributing.html#submit-feedback">Submit Feedback</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../contributing.html#get-started">Get Started!</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../contributing.html#pull-request-guidelines">Pull Request Guidelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../contributing.html#unit-testing-guidelines">Unit Testing Guidelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../contributing.html#tips">Tips</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../contributing.html#release-workflow">Release Workflow</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../history.html">History</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../history.html#id1">0.1.0 - 2019-07-22</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../history.html#rc2-2019-07-01">0.1.0.rc2 - 2019-07-01</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../history.html#rc1-2019-06-14">0.1.0.rc1 - 2019-06-14</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">mit-d3m-ta2</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>ta2.loader</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for ta2.loader</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+
+<span class="kn">import</span> <span class="nn">yaml</span>
+<span class="kn">from</span> <span class="nn">btb.tuning.hyperparams.boolean</span> <span class="kn">import</span> <span class="n">BooleanHyperParam</span>
+<span class="kn">from</span> <span class="nn">btb.tuning.hyperparams.categorical</span> <span class="kn">import</span> <span class="n">CategoricalHyperParam</span>
+<span class="kn">from</span> <span class="nn">btb.tuning.hyperparams.numerical</span> <span class="kn">import</span> <span class="n">FloatHyperParam</span><span class="p">,</span> <span class="n">IntHyperParam</span>
+<span class="kn">from</span> <span class="nn">d3m.metadata.hyperparams</span> <span class="kn">import</span> <span class="n">Bounded</span><span class="p">,</span> <span class="n">Enumeration</span><span class="p">,</span> <span class="n">Uniform</span><span class="p">,</span> <span class="n">UniformBool</span><span class="p">,</span> <span class="n">UniformInt</span>
+<span class="kn">from</span> <span class="nn">d3m.metadata.pipeline</span> <span class="kn">import</span> <span class="n">Pipeline</span>
+
+<span class="n">BASE_DIR</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span>
+
+<span class="n">TUNING_PARAMETER</span> <span class="o">=</span> <span class="s1">&#39;https://metadata.datadrivendiscovery.org/types/TuningParameter&#39;</span>
+
+<span class="n">LOGGER</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
+
+<span class="c1"># DATA_AUGMENTATION = &#39;d3m.primitives.data_augmentation.datamart_augmentation.Common&#39;</span>
+
+
+<div class="viewcode-block" id="get_default_pipeline_parameters"><a class="viewcode-back" href="../../api/ta2.loader.html#ta2.loader.get_default_pipeline_parameters">[docs]</a><span class="k">def</span> <span class="nf">get_default_pipeline_parameters</span><span class="p">(</span><span class="n">json_pipeline</span><span class="p">,</span> <span class="n">tunables</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns default values from the json pipeline file.&quot;&quot;&quot;</span>
+    <span class="n">steps</span> <span class="o">=</span> <span class="n">json_pipeline</span><span class="p">[</span><span class="s1">&#39;steps&#39;</span><span class="p">]</span>
+    <span class="n">default_hyperparams</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">steps</span><span class="p">)):</span>
+        <span class="n">step_hyperparams</span> <span class="o">=</span> <span class="n">steps</span><span class="p">[</span><span class="n">step</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;hyperparams&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">step_hyperparams</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">continue</span>
+
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">hyperparam</span> <span class="ow">in</span> <span class="n">step_hyperparams</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">default_hyperparams</span><span class="p">[(</span><span class="nb">str</span><span class="p">(</span><span class="n">step</span><span class="p">),</span> <span class="n">name</span><span class="p">)]</span> <span class="o">=</span> <span class="n">hyperparam</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span>
+
+    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">tunable</span> <span class="ow">in</span> <span class="n">tunables</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">default_hyperparams</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">default_hyperparams</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">tunable</span><span class="o">.</span><span class="n">default</span>
+
+    <span class="k">return</span> <span class="n">default_hyperparams</span></div>
+
+
+<span class="k">def</span> <span class="nf">_generate_bounded_hyperparam</span><span class="p">(</span><span class="n">hyperparam</span><span class="p">,</span> <span class="n">default</span><span class="p">):</span>
+    <span class="n">hp_dict</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;min&#39;</span><span class="p">:</span> <span class="n">hyperparam</span><span class="o">.</span><span class="n">lower</span><span class="p">,</span>
+        <span class="s1">&#39;max&#39;</span><span class="p">:</span> <span class="n">hyperparam</span><span class="o">.</span><span class="n">upper</span><span class="p">,</span>
+        <span class="s1">&#39;default&#39;</span><span class="p">:</span> <span class="n">default</span><span class="p">,</span>
+        <span class="s1">&#39;include_min&#39;</span><span class="p">:</span> <span class="n">hyperparam</span><span class="o">.</span><span class="n">lower_inclusive</span><span class="p">,</span>
+        <span class="s1">&#39;include_max&#39;</span><span class="p">:</span> <span class="n">hyperparam</span><span class="o">.</span><span class="n">upper_inclusive</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="k">if</span> <span class="n">hyperparam</span><span class="o">.</span><span class="n">structural_type</span> <span class="ow">is</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="n">btb_hyperparam</span> <span class="o">=</span> <span class="n">FloatHyperParam</span><span class="p">(</span><span class="o">**</span><span class="n">hp_dict</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">hyperparam</span><span class="o">.</span><span class="n">structural_type</span> <span class="ow">is</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="n">btb_hyperparam</span> <span class="o">=</span> <span class="n">IntHyperParam</span><span class="p">(</span><span class="o">**</span><span class="n">hp_dict</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">return</span> <span class="n">btb_hyperparam</span>
+
+
+<div class="viewcode-block" id="extract_tunable_hyperparams"><a class="viewcode-back" href="../../api/ta2.loader.html#ta2.loader.extract_tunable_hyperparams">[docs]</a><span class="k">def</span> <span class="nf">extract_tunable_hyperparams</span><span class="p">(</span><span class="n">pipeline</span><span class="p">):</span>
+
+    <span class="c1"># state tunable hyperparameters for this pipeline</span>
+    <span class="n">tunable_hyperparams</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="c1"># obtain all the hyperparameters</span>
+    <span class="n">hyperparams</span> <span class="o">=</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">get_all_hyperparams</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">step_num</span><span class="p">,</span> <span class="p">(</span><span class="n">step_hyperparams</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">hyperparams</span><span class="p">,</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">steps</span><span class="p">)):</span>
+
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">hyperparam</span> <span class="ow">in</span> <span class="n">step_hyperparams</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="c1"># all logic goes here</span>
+            <span class="k">if</span> <span class="n">TUNING_PARAMETER</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">hyperparam</span><span class="o">.</span><span class="n">semantic_types</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="n">btb_hyperparam</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">default</span> <span class="o">=</span> <span class="n">step</span><span class="o">.</span><span class="n">hyperparams</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="n">hyperparam</span><span class="o">.</span><span class="n">get_default</span><span class="p">())</span>
+
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">hyperparam</span><span class="p">,</span> <span class="n">Bounded</span><span class="p">):</span>
+                <span class="n">btb_hyperparam</span> <span class="o">=</span> <span class="n">_generate_bounded_hyperparam</span><span class="p">(</span><span class="n">hyperparam</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">hyperparam</span><span class="p">,</span> <span class="n">Enumeration</span><span class="p">):</span>
+                <span class="n">btb_hyperparam</span> <span class="o">=</span> <span class="n">CategoricalHyperParam</span><span class="p">(</span>
+                    <span class="n">choices</span><span class="o">=</span><span class="n">hyperparam</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
+                    <span class="n">default</span><span class="o">=</span><span class="n">default</span>
+                <span class="p">)</span>
+
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">hyperparam</span><span class="p">,</span> <span class="n">UniformBool</span><span class="p">):</span>
+                <span class="n">btb_hyperparam</span> <span class="o">=</span> <span class="n">BooleanHyperParam</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">default</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">hyperparam</span><span class="p">,</span> <span class="p">(</span><span class="n">UniformInt</span><span class="p">,</span> <span class="n">Uniform</span><span class="p">)):</span>
+                <span class="n">btb_hyperparam</span> <span class="o">=</span> <span class="n">_generate_bounded_hyperparam</span><span class="p">(</span><span class="n">hyperparam</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">btb_hyperparam</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">tunable_hyperparams</span><span class="p">[(</span><span class="nb">str</span><span class="p">(</span><span class="n">step_num</span><span class="p">),</span> <span class="n">hyperparam</span><span class="o">.</span><span class="n">name</span><span class="p">)]</span> <span class="o">=</span> <span class="n">btb_hyperparam</span>
+
+    <span class="k">return</span> <span class="n">tunable_hyperparams</span></div>
+
+
+<div class="viewcode-block" id="load_pipeline"><a class="viewcode-back" href="../../api/ta2.loader.html#ta2.loader.load_pipeline">[docs]</a><span class="k">def</span> <span class="nf">load_pipeline</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">tunables</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">defaults</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Load a d3m json or yaml pipeline.&quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+        <span class="n">base_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span>
+
+        <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;templates&#39;</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">base_path</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Could not find pipeline: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Loading pipeline from </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="k">as</span> <span class="n">pipeline</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;yml&#39;</span><span class="p">):</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">pipeline</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">pipeline</span><span class="p">)</span>
+
+    <span class="n">pipeline</span> <span class="o">=</span> <span class="n">Pipeline</span><span class="o">.</span><span class="n">from_json_structure</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">tunables</span><span class="p">:</span>
+        <span class="c1"># extract tunable hyperparameters</span>
+        <span class="n">tunable_hyperparameters</span> <span class="o">=</span> <span class="n">extract_tunable_hyperparams</span><span class="p">(</span><span class="n">pipeline</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">pipeline</span><span class="p">,</span> <span class="n">tunable_hyperparameters</span>
+
+    <span class="k">return</span> <span class="n">pipeline</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, MIT Data To AI Lab
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

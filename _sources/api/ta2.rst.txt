@@ -13,8 +13,8 @@ Submodules
 
 .. toctree::
 
+   ta2.loader
    ta2.search
-   ta2.template
    ta2.utils
 
 Module contents

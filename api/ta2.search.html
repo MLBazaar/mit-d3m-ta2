@@ -37,8 +37,8 @@
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="ta2.template module" href="ta2.template.html" />
-    <link rel="prev" title="ta2.ta3.server module" href="ta2.ta3.server.html" /> 
+    <link rel="next" title="ta2.utils module" href="ta2.utils.html" />
+    <link rel="prev" title="ta2.loader module" href="ta2.loader.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -125,8 +125,8 @@
 </ul>
 </li>
 <li class="toctree-l2 current"><a class="reference internal" href="ta2.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="ta2.loader.html">ta2.loader module</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">ta2.search module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="ta2.template.html">ta2.template module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="ta2.utils.html">ta2.utils module</a></li>
 </ul>
 </li>
@@ -232,7 +232,7 @@
 <span id="ta2-search-module"></span><h1>ta2.search module<a class="headerlink" href="#module-ta2.search" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="ta2.search.PipelineSearcher">
-<em class="property">class </em><code class="sig-prename descclassname">ta2.search.</code><code class="sig-name descname">PipelineSearcher</code><span class="sig-paren">(</span><em class="sig-param">input_dir='input'</em>, <em class="sig-param">output_dir='output'</em>, <em class="sig-param">static_dir='static'</em>, <em class="sig-param">dump=False</em>, <em class="sig-param">hard_timeout=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ta2/search.html#PipelineSearcher"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ta2.search.PipelineSearcher" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">ta2.search.</code><code class="sig-name descname">PipelineSearcher</code><span class="sig-paren">(</span><em class="sig-param">input_dir='input'</em>, <em class="sig-param">output_dir='output'</em>, <em class="sig-param">static_dir='static'</em>, <em class="sig-param">dump=False</em>, <em class="sig-param">hard_timeout=False</em>, <em class="sig-param">ignore_errors=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ta2/search.html#PipelineSearcher"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ta2.search.PipelineSearcher" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="method">
 <dt id="ta2.search.PipelineSearcher.check_stop">
@@ -276,98 +276,6 @@
 
 </dd></dl>
 
-<dl class="class">
-<dt id="ta2.search.Templates">
-<em class="property">class </em><code class="sig-prename descclassname">ta2.search.</code><code class="sig-name descname">Templates</code><a class="reference internal" href="../_modules/ta2/search.html#Templates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ta2.search.Templates" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></p>
-<p>An enumeration.</p>
-<dl class="attribute">
-<dt id="ta2.search.Templates.IMAGE_CLASSIFICATION">
-<code class="sig-name descname">IMAGE_CLASSIFICATION</code><em class="property"> = 'image_classification_resnet50_xgb.yml'</em><a class="headerlink" href="#ta2.search.Templates.IMAGE_CLASSIFICATION" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="ta2.search.Templates.IMAGE_OBJECT_DETECTION">
-<code class="sig-name descname">IMAGE_OBJECT_DETECTION</code><em class="property"> = 'image_object_detection_yolo.yml'</em><a class="headerlink" href="#ta2.search.Templates.IMAGE_OBJECT_DETECTION" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="ta2.search.Templates.IMAGE_REGRESSION">
-<code class="sig-name descname">IMAGE_REGRESSION</code><em class="property"> = 'image_regression_resnet50_xgb.yml'</em><a class="headerlink" href="#ta2.search.Templates.IMAGE_REGRESSION" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="ta2.search.Templates.MULTI_TABLE_CLASSIFICATION_DFS_XGB">
-<code class="sig-name descname">MULTI_TABLE_CLASSIFICATION_DFS_XGB</code><em class="property"> = 'multi_table_classification_dfs_xgb.yml'</em><a class="headerlink" href="#ta2.search.Templates.MULTI_TABLE_CLASSIFICATION_DFS_XGB" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="ta2.search.Templates.MULTI_TABLE_CLASSIFICATION_LDA_LOGREG">
-<code class="sig-name descname">MULTI_TABLE_CLASSIFICATION_LDA_LOGREG</code><em class="property"> = 'multi_table_classification_lda_logreg.yml'</em><a class="headerlink" href="#ta2.search.Templates.MULTI_TABLE_CLASSIFICATION_LDA_LOGREG" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="ta2.search.Templates.MULTI_TABLE_REGRESSION">
-<code class="sig-name descname">MULTI_TABLE_REGRESSION</code><em class="property"> = 'multi_table_regression_dfs_xgb.yml'</em><a class="headerlink" href="#ta2.search.Templates.MULTI_TABLE_REGRESSION" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="ta2.search.Templates.SINGLE_TABLE_CLASSIFICATION_DFS_ROBUST_XGB">
-<code class="sig-name descname">SINGLE_TABLE_CLASSIFICATION_DFS_ROBUST_XGB</code><em class="property"> = 'single_table_classification_dfs_robust_xgb.yml'</em><a class="headerlink" href="#ta2.search.Templates.SINGLE_TABLE_CLASSIFICATION_DFS_ROBUST_XGB" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="ta2.search.Templates.SINGLE_TABLE_CLASSIFICATION_ENC_XGB">
-<code class="sig-name descname">SINGLE_TABLE_CLASSIFICATION_ENC_XGB</code><em class="property"> = 'single_table_classification_encoding_xgb.yml'</em><a class="headerlink" href="#ta2.search.Templates.SINGLE_TABLE_CLASSIFICATION_ENC_XGB" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="ta2.search.Templates.SINGLE_TABLE_REGRESSION_ENC_XGB">
-<code class="sig-name descname">SINGLE_TABLE_REGRESSION_ENC_XGB</code><em class="property"> = 'single_table_regression_encoding_xgb.yml'</em><a class="headerlink" href="#ta2.search.Templates.SINGLE_TABLE_REGRESSION_ENC_XGB" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="ta2.search.Templates.SINGLE_TABLE_REGRESSION_SC_XGB">
-<code class="sig-name descname">SINGLE_TABLE_REGRESSION_SC_XGB</code><em class="property"> = 'single_table_regression_scale_xgb.yml'</em><a class="headerlink" href="#ta2.search.Templates.SINGLE_TABLE_REGRESSION_SC_XGB" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="ta2.search.Templates.SINGLE_TABLE_REGRESSION_XGB">
-<code class="sig-name descname">SINGLE_TABLE_REGRESSION_XGB</code><em class="property"> = 'single_table_regression_xgb.yml'</em><a class="headerlink" href="#ta2.search.Templates.SINGLE_TABLE_REGRESSION_XGB" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="ta2.search.Templates.SINGLE_TABLE_SEMI_CLASSIFICATION">
-<code class="sig-name descname">SINGLE_TABLE_SEMI_CLASSIFICATION</code><em class="property"> = 'single_table_semi_classification_autonbox.yml'</em><a class="headerlink" href="#ta2.search.Templates.SINGLE_TABLE_SEMI_CLASSIFICATION" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="ta2.search.Templates.TEXT_CLASSIFICATION">
-<code class="sig-name descname">TEXT_CLASSIFICATION</code><em class="property"> = 'text_classification_encoding_xgb.yml'</em><a class="headerlink" href="#ta2.search.Templates.TEXT_CLASSIFICATION" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="ta2.search.Templates.TEXT_REGRESSION">
-<code class="sig-name descname">TEXT_REGRESSION</code><em class="property"> = 'text_regression_encoding_xgb.yml'</em><a class="headerlink" href="#ta2.search.Templates.TEXT_REGRESSION" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="ta2.search.Templates.TIMESERIES_CLASSIFICATION_DSBOX_LR">
-<code class="sig-name descname">TIMESERIES_CLASSIFICATION_DSBOX_LR</code><em class="property"> = 'time_series_classification_dsbox_lr.yml'</em><a class="headerlink" href="#ta2.search.Templates.TIMESERIES_CLASSIFICATION_DSBOX_LR" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="ta2.search.Templates.TIMESERIES_CLASSIFICATION_KN">
-<code class="sig-name descname">TIMESERIES_CLASSIFICATION_KN</code><em class="property"> = 'time_series_classification_k_neighbors_kn.yml'</em><a class="headerlink" href="#ta2.search.Templates.TIMESERIES_CLASSIFICATION_KN" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="ta2.search.Templates.TIMESERIES_CLASSIFICATION_LSTM_FCN">
-<code class="sig-name descname">TIMESERIES_CLASSIFICATION_LSTM_FCN</code><em class="property"> = 'time_series_classification_lstm_fcn.yml'</em><a class="headerlink" href="#ta2.search.Templates.TIMESERIES_CLASSIFICATION_LSTM_FCN" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
 <dl class="function">
 <dt id="ta2.search.detect_data_modality">
 <code class="sig-prename descclassname">ta2.search.</code><code class="sig-name descname">detect_data_modality</code><span class="sig-paren">(</span><em class="sig-param">dataset_doc_path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ta2/search.html#detect_data_modality"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ta2.search.detect_data_modality" title="Permalink to this definition">¶</a></dt>
@@ -376,11 +284,6 @@
 <dl class="function">
 <dt id="ta2.search.get_dataset_details">
 <code class="sig-prename descclassname">ta2.search.</code><code class="sig-name descname">get_dataset_details</code><span class="sig-paren">(</span><em class="sig-param">dataset</em>, <em class="sig-param">problem</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ta2/search.html#get_dataset_details"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ta2.search.get_dataset_details" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="ta2.search.sanitize_hyperparameters">
-<code class="sig-prename descclassname">ta2.search.</code><code class="sig-name descname">sanitize_hyperparameters</code><span class="sig-paren">(</span><em class="sig-param">hyperparams</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ta2/search.html#sanitize_hyperparameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ta2.search.sanitize_hyperparameters" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
@@ -398,10 +301,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="ta2.template.html" class="btn btn-neutral float-right" title="ta2.template module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="ta2.utils.html" class="btn btn-neutral float-right" title="ta2.utils module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="ta2.ta3.server.html" class="btn btn-neutral float-left" title="ta2.ta3.server module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="ta2.loader.html" class="btn btn-neutral float-left" title="ta2.loader module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

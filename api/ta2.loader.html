@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>ta2.template module &mdash; mit-d3m-ta2 0.2.0-dev documentation</title>
+  <title>ta2.loader module &mdash; mit-d3m-ta2 0.2.0-dev documentation</title>
   
 
   
@@ -37,8 +37,8 @@
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="ta2.utils module" href="ta2.utils.html" />
-    <link rel="prev" title="ta2.search module" href="ta2.search.html" /> 
+    <link rel="next" title="ta2.search module" href="ta2.search.html" />
+    <link rel="prev" title="ta2.ta3.server module" href="ta2.ta3.server.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -125,8 +125,8 @@
 </ul>
 </li>
 <li class="toctree-l2 current"><a class="reference internal" href="ta2.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">ta2.loader module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="ta2.search.html">ta2.search module</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">ta2.template module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="ta2.utils.html">ta2.utils module</a></li>
 </ul>
 </li>
@@ -207,14 +207,14 @@
         
           <li><a href="ta2.html">ta2 package</a> &raquo;</li>
         
-      <li>ta2.template module</li>
+      <li>ta2.loader module</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
             
-              <a href="https://github.com/HDI-Project/mit-d3m-ta2/blob/master/docs/api/ta2.template.rst" class="fa fa-github"> Edit on GitHub</a>
+              <a href="https://github.com/HDI-Project/mit-d3m-ta2/blob/master/docs/api/ta2.loader.rst" class="fa fa-github"> Edit on GitHub</a>
             
           
         
@@ -228,27 +228,23 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="module-ta2.template">
-<span id="ta2-template-module"></span><h1>ta2.template module<a class="headerlink" href="#module-ta2.template" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="module-ta2.loader">
+<span id="ta2-loader-module"></span><h1>ta2.loader module<a class="headerlink" href="#module-ta2.loader" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
-<dt id="ta2.template.add_tunable_hyperparameters">
-<code class="sig-prename descclassname">ta2.template.</code><code class="sig-name descname">add_tunable_hyperparameters</code><span class="sig-paren">(</span><em class="sig-param">input_path</em>, <em class="sig-param">output_path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ta2/template.html#add_tunable_hyperparameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ta2.template.add_tunable_hyperparameters" title="Permalink to this definition">¶</a></dt>
+<dt id="ta2.loader.extract_tunable_hyperparams">
+<code class="sig-prename descclassname">ta2.loader.</code><code class="sig-name descname">extract_tunable_hyperparams</code><span class="sig-paren">(</span><em class="sig-param">pipeline</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ta2/loader.html#extract_tunable_hyperparams"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ta2.loader.extract_tunable_hyperparams" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
-<dt id="ta2.template.extract_pipeline_tunables">
-<code class="sig-prename descclassname">ta2.template.</code><code class="sig-name descname">extract_pipeline_tunables</code><span class="sig-paren">(</span><em class="sig-param">pipeline</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ta2/template.html#extract_pipeline_tunables"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ta2.template.extract_pipeline_tunables" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="ta2.loader.get_default_pipeline_parameters">
+<code class="sig-prename descclassname">ta2.loader.</code><code class="sig-name descname">get_default_pipeline_parameters</code><span class="sig-paren">(</span><em class="sig-param">json_pipeline</em>, <em class="sig-param">tunables</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ta2/loader.html#get_default_pipeline_parameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ta2.loader.get_default_pipeline_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns default values from the json pipeline file.</p>
+</dd></dl>
 
 <dl class="function">
-<dt id="ta2.template.get_tunable_hyperparameters">
-<code class="sig-prename descclassname">ta2.template.</code><code class="sig-name descname">get_tunable_hyperparameters</code><span class="sig-paren">(</span><em class="sig-param">tunables</em>, <em class="sig-param">defaults</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ta2/template.html#get_tunable_hyperparameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ta2.template.get_tunable_hyperparameters" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="ta2.template.load_template">
-<code class="sig-prename descclassname">ta2.template.</code><code class="sig-name descname">load_template</code><span class="sig-paren">(</span><em class="sig-param">template_name</em>, <em class="sig-param">data_augmentation=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ta2/template.html#load_template"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ta2.template.load_template" title="Permalink to this definition">¶</a></dt>
-<dd><p>load a simplified version of a yaml pipeline, with hyperparameters.</p>
+<dt id="ta2.loader.load_pipeline">
+<code class="sig-prename descclassname">ta2.loader.</code><code class="sig-name descname">load_pipeline</code><span class="sig-paren">(</span><em class="sig-param">path</em>, <em class="sig-param">tunables=True</em>, <em class="sig-param">defaults=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ta2/loader.html#load_pipeline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ta2.loader.load_pipeline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load a d3m json or yaml pipeline.</p>
 </dd></dl>
 
 </div>
@@ -261,10 +257,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="ta2.utils.html" class="btn btn-neutral float-right" title="ta2.utils module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="ta2.search.html" class="btn btn-neutral float-right" title="ta2.search module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="ta2.search.html" class="btn btn-neutral float-left" title="ta2.search module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="ta2.ta3.server.html" class="btn btn-neutral float-left" title="ta2.ta3.server module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

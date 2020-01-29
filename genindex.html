@@ -124,8 +124,8 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="api/ta2.html#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api/ta2.loader.html">ta2.loader module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api/ta2.search.html">ta2.search module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="api/ta2.template.html">ta2.template module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api/ta2.utils.html">ta2.utils module</a></li>
 </ul>
 </li>
@@ -229,14 +229,12 @@
 <h1 id="index">Index</h1>
 
 <div class="genindex-jumpbox">
- <a href="#A"><strong>A</strong></a>
- | <a href="#C"><strong>C</strong></a>
+ <a href="#C"><strong>C</strong></a>
  | <a href="#D"><strong>D</strong></a>
  | <a href="#E"><strong>E</strong></a>
  | <a href="#F"><strong>F</strong></a>
  | <a href="#G"><strong>G</strong></a>
  | <a href="#H"><strong>H</strong></a>
- | <a href="#I"><strong>I</strong></a>
  | <a href="#L"><strong>L</strong></a>
  | <a href="#M"><strong>M</strong></a>
  | <a href="#P"><strong>P</strong></a>
@@ -247,14 +245,6 @@
  | <a href="#V"><strong>V</strong></a>
  
 </div>
-<h2 id="A">A</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/ta2.template.html#ta2.template.add_tunable_hyperparameters">add_tunable_hyperparameters() (in module ta2.template)</a>
-</li>
-  </ul></td>
-</tr></table>
-
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -300,7 +290,7 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/ta2.utils.html#ta2.utils.ensure_downloaded">ensure_downloaded() (in module ta2.utils)</a>
 </li>
-      <li><a href="api/ta2.template.html#ta2.template.extract_pipeline_tunables">extract_pipeline_tunables() (in module ta2.template)</a>
+      <li><a href="api/ta2.loader.html#ta2.loader.extract_tunable_hyperparams">extract_tunable_hyperparams() (in module ta2.loader)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -324,17 +314,17 @@
 </li>
       <li><a href="api/ta2.search.html#ta2.search.get_dataset_details">get_dataset_details() (in module ta2.search)</a>
 </li>
+      <li><a href="api/ta2.loader.html#ta2.loader.get_default_pipeline_parameters">get_default_pipeline_parameters() (in module ta2.loader)</a>
+</li>
       <li><a href="api/ta2.ta3.client.html#ta2.ta3.client.TA3APIClient.get_fit_solution_results">get_fit_solution_results() (ta2.ta3.client.TA3APIClient method)</a>
 </li>
       <li><a href="api/ta2.ta3.client.html#ta2.ta3.client.TA3APIClient.get_produce_solution_results">get_produce_solution_results() (ta2.ta3.client.TA3APIClient method)</a>
 </li>
-      <li><a href="api/ta2.ta3.client.html#ta2.ta3.client.TA3APIClient.get_score_solution_results">get_score_solution_results() (ta2.ta3.client.TA3APIClient method)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/ta2.ta3.client.html#ta2.ta3.client.TA3APIClient.get_search_solutions_results">get_search_solutions_results() (ta2.ta3.client.TA3APIClient method)</a>
+      <li><a href="api/ta2.ta3.client.html#ta2.ta3.client.TA3APIClient.get_score_solution_results">get_score_solution_results() (ta2.ta3.client.TA3APIClient method)</a>
 </li>
-      <li><a href="api/ta2.template.html#ta2.template.get_tunable_hyperparameters">get_tunable_hyperparameters() (in module ta2.template)</a>
+      <li><a href="api/ta2.ta3.client.html#ta2.ta3.client.TA3APIClient.get_search_solutions_results">get_search_solutions_results() (ta2.ta3.client.TA3APIClient method)</a>
 </li>
       <li><a href="api/ta2.ta3.core_servicer.html#ta2.ta3.core_servicer.CoreServicer.GetFitSolutionResults">GetFitSolutionResults() (ta2.ta3.core_servicer.CoreServicer method)</a>
 </li>
@@ -359,20 +349,6 @@
   </ul></td>
 </tr></table>
 
-<h2 id="I">I</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/ta2.search.html#ta2.search.Templates.IMAGE_CLASSIFICATION">IMAGE_CLASSIFICATION (ta2.search.Templates attribute)</a>
-</li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/ta2.search.html#ta2.search.Templates.IMAGE_OBJECT_DETECTION">IMAGE_OBJECT_DETECTION (ta2.search.Templates attribute)</a>
-</li>
-      <li><a href="api/ta2.search.html#ta2.search.Templates.IMAGE_REGRESSION">IMAGE_REGRESSION (ta2.search.Templates attribute)</a>
-</li>
-  </ul></td>
-</tr></table>
-
 <h2 id="L">L</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -382,7 +358,7 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/ta2.template.html#ta2.template.load_template">load_template() (in module ta2.template)</a>
+      <li><a href="api/ta2.loader.html#ta2.loader.load_pipeline">load_pipeline() (in module ta2.loader)</a>
 </li>
       <li><a href="api/ta2.utils.html#ta2.utils.logging_setup">logging_setup() (in module ta2.utils)</a>
 </li>
@@ -393,14 +369,6 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/ta2.search.html#ta2.search.PipelineSearcher.make_btb_scorer">make_btb_scorer() (ta2.search.PipelineSearcher method)</a>
-</li>
-      <li><a href="api/ta2.search.html#ta2.search.Templates.MULTI_TABLE_CLASSIFICATION_DFS_XGB">MULTI_TABLE_CLASSIFICATION_DFS_XGB (ta2.search.Templates attribute)</a>
-</li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/ta2.search.html#ta2.search.Templates.MULTI_TABLE_CLASSIFICATION_LDA_LOGREG">MULTI_TABLE_CLASSIFICATION_LDA_LOGREG (ta2.search.Templates attribute)</a>
-</li>
-      <li><a href="api/ta2.search.html#ta2.search.Templates.MULTI_TABLE_REGRESSION">MULTI_TABLE_REGRESSION (ta2.search.Templates attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -432,8 +400,6 @@
 <h2 id="S">S</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/ta2.search.html#ta2.search.sanitize_hyperparameters">sanitize_hyperparameters() (in module ta2.search)</a>
-</li>
       <li><a href="api/ta2.search.html#ta2.search.PipelineSearcher.score_pipeline">score_pipeline() (ta2.search.PipelineSearcher method)</a>
 </li>
       <li><a href="api/ta2.ta3.client.html#ta2.ta3.client.TA3APIClient.score_solution">score_solution() (ta2.ta3.client.TA3APIClient method)</a>
@@ -448,21 +414,9 @@
 </li>
       <li><a href="api/ta2.ta3.server.html#ta2.ta3.server.serve">serve() (in module ta2.ta3.server)</a>
 </li>
-      <li><a href="api/ta2.search.html#ta2.search.PipelineSearcher.setup_search">setup_search() (ta2.search.PipelineSearcher method)</a>
-</li>
-      <li><a href="api/ta2.search.html#ta2.search.Templates.SINGLE_TABLE_CLASSIFICATION_DFS_ROBUST_XGB">SINGLE_TABLE_CLASSIFICATION_DFS_ROBUST_XGB (ta2.search.Templates attribute)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/ta2.search.html#ta2.search.Templates.SINGLE_TABLE_CLASSIFICATION_ENC_XGB">SINGLE_TABLE_CLASSIFICATION_ENC_XGB (ta2.search.Templates attribute)</a>
-</li>
-      <li><a href="api/ta2.search.html#ta2.search.Templates.SINGLE_TABLE_REGRESSION_ENC_XGB">SINGLE_TABLE_REGRESSION_ENC_XGB (ta2.search.Templates attribute)</a>
-</li>
-      <li><a href="api/ta2.search.html#ta2.search.Templates.SINGLE_TABLE_REGRESSION_SC_XGB">SINGLE_TABLE_REGRESSION_SC_XGB (ta2.search.Templates attribute)</a>
-</li>
-      <li><a href="api/ta2.search.html#ta2.search.Templates.SINGLE_TABLE_REGRESSION_XGB">SINGLE_TABLE_REGRESSION_XGB (ta2.search.Templates attribute)</a>
-</li>
-      <li><a href="api/ta2.search.html#ta2.search.Templates.SINGLE_TABLE_SEMI_CLASSIFICATION">SINGLE_TABLE_SEMI_CLASSIFICATION (ta2.search.Templates attribute)</a>
+      <li><a href="api/ta2.search.html#ta2.search.PipelineSearcher.setup_search">setup_search() (ta2.search.PipelineSearcher method)</a>
 </li>
       <li><a href="api/ta2.ta3.client.html#ta2.ta3.client.TA3APIClient.solution_export">solution_export() (ta2.ta3.client.TA3APIClient method)</a>
 </li>
@@ -484,35 +438,23 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/ta2.html#module-ta2">ta2 (module)</a>
 </li>
+      <li><a href="api/ta2.loader.html#module-ta2.loader">ta2.loader (module)</a>
+</li>
       <li><a href="api/ta2.search.html#module-ta2.search">ta2.search (module)</a>
 </li>
       <li><a href="api/ta2.ta3.html#module-ta2.ta3">ta2.ta3 (module)</a>
 </li>
       <li><a href="api/ta2.ta3.client.html#module-ta2.ta3.client">ta2.ta3.client (module)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/ta2.ta3.core_servicer.html#module-ta2.ta3.core_servicer">ta2.ta3.core_servicer (module)</a>
 </li>
       <li><a href="api/ta2.ta3.server.html#module-ta2.ta3.server">ta2.ta3.server (module)</a>
 </li>
-      <li><a href="api/ta2.template.html#module-ta2.template">ta2.template (module)</a>
-</li>
       <li><a href="api/ta2.utils.html#module-ta2.utils">ta2.utils (module)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/ta2.ta3.client.html#ta2.ta3.client.TA3APIClient">TA3APIClient (class in ta2.ta3.client)</a>
-</li>
-      <li><a href="api/ta2.search.html#ta2.search.Templates">Templates (class in ta2.search)</a>
-</li>
-      <li><a href="api/ta2.search.html#ta2.search.Templates.TEXT_CLASSIFICATION">TEXT_CLASSIFICATION (ta2.search.Templates attribute)</a>
-</li>
-      <li><a href="api/ta2.search.html#ta2.search.Templates.TEXT_REGRESSION">TEXT_REGRESSION (ta2.search.Templates attribute)</a>
-</li>
-      <li><a href="api/ta2.search.html#ta2.search.Templates.TIMESERIES_CLASSIFICATION_DSBOX_LR">TIMESERIES_CLASSIFICATION_DSBOX_LR (ta2.search.Templates attribute)</a>
-</li>
-      <li><a href="api/ta2.search.html#ta2.search.Templates.TIMESERIES_CLASSIFICATION_KN">TIMESERIES_CLASSIFICATION_KN (ta2.search.Templates attribute)</a>
-</li>
-      <li><a href="api/ta2.search.html#ta2.search.Templates.TIMESERIES_CLASSIFICATION_LSTM_FCN">TIMESERIES_CLASSIFICATION_LSTM_FCN (ta2.search.Templates attribute)</a>
 </li>
       <li><a href="api/ta2.search.html#ta2.search.to_dicts">to_dicts() (in module ta2.search)</a>
 </li>

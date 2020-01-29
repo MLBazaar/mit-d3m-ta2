@@ -1,0 +1,7 @@
+ta2.loader module
+=================
+
+.. automodule:: ta2.loader
+   :members:
+   :undoc-members:
+   :show-inheritance:
