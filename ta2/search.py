@@ -1,4 +1,3 @@
-import glob
 import json
 import logging
 import os
@@ -12,7 +11,6 @@ from multiprocessing import Manager, Process
 import numpy as np
 import pandas as pd
 from btb.session import BTBSession
-from btb.tuning.tunable import Tunable
 from d3m.container.dataset import Dataset
 from d3m.metadata.base import ArgumentType, Context
 from d3m.metadata.pipeline import Pipeline, PrimitiveStep
@@ -21,13 +19,12 @@ from d3m.runtime import evaluate as d3m_evaluate
 from datamart import DatamartQuery
 from datamart_rest import RESTDatamart
 
-from ta2.loader import load_pipeline
+from ta2.loader import LazyLoader
 from ta2.utils import dump_pipeline
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 PIPELINES_DIR = os.path.join(BASE_DIR, 'pipelines')
-TEMPLATES_DIR = os.path.join(BASE_DIR, 'new_templates')
-FALLBACK_PIPELINE = 'single_table_classification_fallback.json'
+TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')
 
 DATAMART_URL = os.getenv('DATAMART_URL_NYU', 'https://datamart.d3m.vida-nyu.org')
 
@@ -194,16 +191,17 @@ class PipelineSearcher:
 
         # Some primitives crash with a core dump that kills everything.
         # We want to isolate those.
-        primitives = [
-            step['primitive']['python_path']
-            for step in pipeline.to_json_structure()['steps']
-        ]
-        if any(primitive in SUBPROCESS_PRIMITIVES for primitive in primitives):
-            evaluate = self.subprocess_evaluate
-        else:
-            evaluate = d3m_evaluate
+        # This is disabled in favor of permanently using a child process
+        # primitives = [
+        #     step['primitive']['python_path']
+        #     for step in pipeline.to_json_structure()['steps']
+        # ]
+        # if any(primitive in SUBPROCESS_PRIMITIVES for primitive in primitives):
+        #     evaluate = self.subprocess_evaluate
+        # else:
+        #     evaluate = d3m_evaluate
 
-        all_scores, all_results = evaluate(
+        all_scores, all_results = self.subprocess_evaluate(
             pipeline=pipeline,
             inputs=[dataset],
             data_pipeline=self.data_pipeline,
@@ -304,10 +302,10 @@ class PipelineSearcher:
 
     def stop(self):
         self._stop = True
-        # if self.subprocess:
-        #     LOGGER.info('Terminating subprocess: %s', self.subprocess.pid)
-        #     self.subprocess.terminate()
-        #     self.subprocess = None
+        if self.subprocess:
+            LOGGER.info('Terminating subprocess: %s', self.subprocess.pid)
+            self.subprocess.terminate()
+            self.subprocess = None
 
     def _timeout(self, *args, **kwargs):
         self.errors.append('STOP BY TIMEOUT')
@@ -380,21 +378,6 @@ class PipelineSearcher:
 
         return btb_scorer
 
-    def _get_tunables_templates(self, template_names):
-
-        tunables = {}
-        templates = {}
-
-        for template_name in template_names:
-            name = os.path.join(TEMPLATES_DIR, template_name)
-            files = glob.glob(name + '*')
-            path = files[0]
-            template, tunable_hp = load_pipeline(path)
-            templates[template_name] = template
-            tunables[template_name] = Tunable(tunable_hp)
-
-        return tunables, templates
-
     def search(self, dataset_path, problem, timeout=None, budget=None, template_names=None):
         self.timeout = timeout
         self.timeout_kill = False
@@ -421,11 +404,6 @@ class PipelineSearcher:
         task_type = problem['problem']['task_keywords'][0].name.lower()
         task_subtype = problem['problem']['task_keywords'][1].name.lower()
 
-        # self.fallback = load_pipeline(
-        #     FALLBACK_PIPELINE,
-        #     tunables=False
-        # )
-
         # data_augmentation = self.get_data_augmentation(dataset, problem)
 
         LOGGER.info("Searching dataset %s: %s/%s/%s",
@@ -435,12 +413,14 @@ class PipelineSearcher:
             self.setup_search()
             LOGGER.info("Loading the template and the tuner")
             if not template_names:
-                template_names = self._get_templates(dataset_name, data_modality, task_type)
+                # template_names = self._get_templates(dataset_name, data_modality, task_type)
+                template_names = os.listdir(TEMPLATES_DIR)
 
-            tunables, templates = self._get_tunables_templates(template_names)
-            btb_scorer = self.make_btb_scorer(dataset_name, dataset, problem, templates, metric)
+            template_loader = LazyLoader(template_names, TEMPLATES_DIR)
+            btb_scorer = self.make_btb_scorer(
+                dataset_name, dataset, problem, template_loader, metric)
 
-            session = BTBSession(tunables, btb_scorer, max_errors=0)
+            session = BTBSession(template_loader, btb_scorer, max_errors=0)
 
             if self.budget is not None:
                 while session.iterations < self.budget:

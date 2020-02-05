@@ -2,7 +2,6 @@ import argparse
 import gc
 import logging
 import os
-import shutil
 import socket
 import sys
 import traceback
@@ -109,9 +108,15 @@ def box_print(message, strong=False):
     LOGGER.info(message)
 
 
-def get_datasets(args):
-    for dataset_name in args.dataset:
-        dataset_root = os.path.join(args.input, dataset_name)
+def get_datasets(input_dir, datasets=None, data_modality=None, task_type=None, task_subtype=None):
+    if not datasets:
+        datasets = os.listdir(input_dir)
+
+    for dataset_name in datasets:
+        dataset_root = os.path.join(input_dir, dataset_name)
+        if not os.path.exists(dataset_root):
+            dataset_root += '_MIN_METADATA'
+
         dataset_path = os.path.join(dataset_root, 'TRAIN', 'dataset_TRAIN', 'datasetDoc.json')
 
         try:
@@ -120,11 +125,11 @@ def get_datasets(args):
         except Exception:
             continue
 
-        if args.data_modality and not args.data_modality == data_modality:
+        if data_modality and not data_modality == data_modality:
             continue
-        if args.task_type and not args.task_type == task_type:
+        if task_type and not task_type == task_type:
             continue
-        if args.task_subtype and not args.task_subtype == task_subtype:
+        if task_subtype and not task_subtype == task_subtype:
             continue
 
         yield dataset_name, dataset_root, problem
@@ -186,17 +191,8 @@ REPORT_COLUMNS = [
 
 
 def _ta2_test(args):
-
-    # Cleanup output dir
-    shutil.rmtree(os.path.join(args.output, 'pipelines_ranked'), ignore_errors=True)
-    shutil.rmtree(os.path.join(args.output, 'pipelines_scored'), ignore_errors=True)
-    shutil.rmtree(os.path.join(args.output, 'pipelines_searched'), ignore_errors=True)
-    shutil.rmtree(os.path.join(args.output, 'predictions'), ignore_errors=True)
-
     results = list()
-    if args.all:
-        args.dataset = os.listdir(args.input)
-    elif not args.dataset:
+    if not args.all and not args.dataset:
         print('ERROR: provide at least one dataset name or set --all')
         sys.exit(1)
 
@@ -209,7 +205,9 @@ def _ta2_test(args):
         os.remove(report_name)
 
     report = None
-    for dataset_name, dataset_root, problem in get_datasets(args):
+    datasets = get_datasets(args.input, args.dataset, args.data_modality,
+                            args.task_type, args.task_subtype)
+    for dataset_name, dataset_root, problem in datasets:
         try:
             results.append(process_dataset(dataset_name, dataset_root, problem, args))
             gc.collect()
@@ -230,7 +228,7 @@ def _ta2_test(args):
         report.to_csv(report_name, index=False)
 
     if report is None:
-        print("No matiching datasets found")
+        print("No matching datasets found")
         sys.exit(1)
 
     # print to stdout
