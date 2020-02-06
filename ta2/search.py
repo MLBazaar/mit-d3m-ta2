@@ -11,7 +11,6 @@ from multiprocessing import Manager, Process
 import numpy as np
 import pandas as pd
 from btb.session import BTBSession
-from d3m.container.dataset import Dataset
 from d3m.metadata.base import ArgumentType, Context
 from d3m.metadata.pipeline import Pipeline, PrimitiveStep
 from d3m.runtime import DEFAULT_SCORING_PIPELINE_PATH
@@ -39,8 +38,9 @@ LOGGER = logging.getLogger(__name__)
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 
-def detect_data_modality(dataset_doc_path):
-    with open(dataset_doc_path) as f:
+def detect_data_modality(dataset):
+    dataset_doc_path = dataset.metadata.query(())['location_uris'][0]
+    with open(dataset_doc_path[7:]) as f:
         dataset_doc = json.load(f)
 
     resources = list()
@@ -378,7 +378,7 @@ class PipelineSearcher:
 
         return btb_scorer
 
-    def search(self, dataset_path, problem, timeout=None, budget=None, template_names=None):
+    def search(self, dataset, problem, timeout=None, budget=None, template_names=None):
         self.timeout = timeout
         self.timeout_kill = False
         self.budget = budget
@@ -397,12 +397,9 @@ class PipelineSearcher:
         if dataset_name.endswith('_dataset'):
             dataset_name = dataset_name[:-len('_dataset')]
 
-        dataset = Dataset.load(dataset_path)
         metric = problem['problem']['performance_metrics'][0]['metric']
 
-        data_modality = detect_data_modality(dataset_path[7:])
-        task_type = problem['problem']['task_keywords'][0].name.lower()
-        task_subtype = problem['problem']['task_keywords'][1].name.lower()
+        data_modality, task_type, task_subtype = get_dataset_details(dataset, problem)
 
         # data_augmentation = self.get_data_augmentation(dataset, problem)
 
