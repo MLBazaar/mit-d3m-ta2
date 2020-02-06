@@ -1,6 +1,6 @@
 #!/bin/bash
 
-docker build --build-arg UID=$UID -t mit-d3m-ta2 .
+# docker build --build-arg UID=$UID -t mit-d3m-ta2 .
 
 # if [ -n "$*" ]; then
 #     COMMAND="ta2 $*"
@@ -9,7 +9,6 @@ docker build --build-arg UID=$UID -t mit-d3m-ta2 .
 rm -r output
 mkdir -p output
 chown $USER output
-
 
 function echodo() {
     echo $*
@@ -22,6 +21,7 @@ echodo docker run -i -t --rm \
     -e D3MINPUTDIR=/input \
     -e D3MOUTPUTDIR=/output \
     -e D3MSTATICDIR=/static \
+    -v $(pwd)/ta2:/user_dev/ta2 \
     -v $(pwd)/input:/input \
     -v $(pwd)/output:/output \
     -v $(pwd)/static:/static \
