@@ -453,10 +453,9 @@ def parse_args():
     if not os.path.exists(args.output):
         os.makedirs(args.output, exist_ok=True)
 
-    # if args.mode is _ta2_test and not args.logfile:
-    #     args.logfile = os.path.join(args.output, 'ta2.log')
-    #     if os.path.exists(args.logfile):
-    #         os.remove(args.logfile)
+    if args.logfile:
+        logdir = os.path.dirname(args.logfile)
+        os.makedirs(logdir, exist_ok=True)
 
     logging_setup(args.verbose, args.logfile, stdout=args.stdout)
     logging.getLogger("d3m").setLevel(logging.ERROR)
