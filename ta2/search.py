@@ -131,9 +131,11 @@ class PipelineSearcher:
         self.hard_timeout = hard_timeout
         self.subprocess = None
 
+        self.runs_dir = os.path.join(self.output, 'pipeline_runs')
         self.ranked_dir = os.path.join(self.output, 'pipelines_ranked')
         self.scored_dir = os.path.join(self.output, 'pipelines_scored')
         self.searched_dir = os.path.join(self.output, 'pipelines_searched')
+        os.makedirs(self.runs_dir, exist_ok=True)
         os.makedirs(self.ranked_dir, exist_ok=True)
         os.makedirs(self.scored_dir, exist_ok=True)
         os.makedirs(self.searched_dir, exist_ok=True)
@@ -225,6 +227,13 @@ class PipelineSearcher:
                 raise cause
             else:
                 raise Exception(cause)
+
+        for res in all_results:
+            pipeline_run = res.pipeline_run
+            if pipeline_run.run.get('phase') == 'PRODUCE':
+                yaml_file = os.path.join(self.runs_dir, '{}.yml'.format(pipeline_run.get_id()))
+                with open(yaml_file, 'w') as pip:
+                    pipeline_run.to_yaml(file=pip)
 
         pipeline.cv_scores = [score.value[0] for score in all_scores]
         pipeline.score = np.mean(pipeline.cv_scores)
@@ -451,6 +460,7 @@ class PipelineSearcher:
             'tuning_iterations': session.iterations if session else None,
             'error': self.errors or None,
             'killed_by_timeout': self.timeout_kill,
-            'pipelines_scheduled': template_names,
+            'pipelines_scheduled': len(template_names),
+            'pipelines_tried': len([x for x in template_loader.values() if x is not None]),
             'found_by_name': self.found_by_name
         }

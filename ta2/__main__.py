@@ -47,14 +47,21 @@ def load_pipeline(pipeline_path):
             return Pipeline.from_yaml(pipeline_file)
 
 
-def score_pipeline(dataset, problem, pipeline_path, static=None):
+def _to_yaml_run(pipeline_run, output_path):
+    run_dir = os.path.join(output_path, 'pipeline_runs')
+    run_dir = os.path.join(run_dir, '{}.yml'.format(pipeline_run.get_id()))
+    with open(run_dir, 'w') as output_file:
+        pipeline_run.to_yaml(file=output_file)
+
+
+def score_pipeline(dataset, problem, pipeline_path, static=None, output_path=None):
     pipeline = load_pipeline(pipeline_path)
 
     # Creating an instance on runtime with pipeline description and problem description.
     runtime = Runtime(
         pipeline=pipeline,
         problem_description=problem,
-        context=Context.TESTING,
+        context=Context.EVALUATION,
         volumes_dir=static,
     )
 
@@ -82,9 +89,17 @@ def score_pipeline(dataset, problem, pipeline_path, static=None):
         predictions=predictions,
         score_inputs=[test_dataset],
         metrics=metrics,
-        context=Context.TESTING,
+        context=Context.EVALUATION,
         random_seed=0,
     )
+
+    evaluated_pipeline_run = produce_results.pipeline_run
+    evaluated_pipeline_run.is_standard_pipeline = True
+    evaluated_pipeline_run.set_scores(scores, metrics)
+    evaluated_pipeline_run.set_scoring_pipeline_run(scoring_pipeline_run.pipeline_run, [dataset])
+
+    _to_yaml_run(evaluated_pipeline_run, output_path)
+
     return scores.iloc[0].value
 
 
@@ -164,7 +179,7 @@ def process_dataset(dataset_name, dataset, problem, args):
             box_print("Best Pipeline: {} - CV Score: {}".format(pipeline_id, cv_score))
 
             pipeline_path = os.path.join(output_path, 'pipelines_ranked', pipeline_id + '.json')
-            test_score = score_pipeline(dataset, problem, pipeline_path, args.static)
+            test_score = score_pipeline(dataset, problem, pipeline_path, args.static, output_path)
             box_print("Test Score for pipeline {}: {}".format(pipeline_id, test_score))
 
             result['test_score'] = test_score
@@ -199,6 +214,8 @@ REPORT_COLUMNS = [
     'tuning_iterations',
     'data_modality',
     'task_type',
+    'pipelines_scheduled',
+    'pipelines_tried',
     'error',
     'killed_by_timeout',
 ]
