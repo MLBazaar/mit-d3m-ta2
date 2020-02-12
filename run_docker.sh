@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# docker build --build-arg UID=$UID -t mit-d3m-ta2 .
+docker build --build-arg UID=$UID -t mit-d3m-ta2 .
 
 # if [ -n "$*" ]; then
 #     COMMAND="ta2 $*"

@@ -123,7 +123,8 @@ class PipelineSearcher:
         return templates.pipeline_id.values
 
     def __init__(self, input_dir='input', output_dir='output', static_dir='static',
-                 dump=False, hard_timeout=False, ignore_errors=False):
+                 dump=False, hard_timeout=False, ignore_errors=False, cv_folds=5,
+                 subprocess_timeout=None, max_errors=0):
         self.input = input_dir
         self.output = output_dir
         self.static = static_dir
@@ -144,6 +145,9 @@ class PipelineSearcher:
         self.data_pipeline = self._load_pipeline('kfold_pipeline.yml')
         self.scoring_pipeline = self._load_pipeline(DEFAULT_SCORING_PIPELINE_PATH)
         self.ignore_errors = ignore_errors
+        self.folds = cv_folds
+        self.subprocess_timeout = subprocess_timeout
+        self.max_errors = max_errors
 
     @staticmethod
     def _evaluate(out, pipeline, *args, **kwargs):
@@ -154,7 +158,6 @@ class PipelineSearcher:
         out.extend(results)
 
     def subprocess_evaluate(self, pipeline, *args, **kwargs):
-        LOGGER.info('Evaluating pipeline %s in a subprocess', pipeline.id)
         with Manager() as manager:
             output = manager.list()
             process = Process(
@@ -167,22 +170,26 @@ class PipelineSearcher:
             process.start()
 
             LOGGER.info('Joining process %s', process.pid)
-            process.join()
+            process.join(self.subprocess_timeout)
 
-            LOGGER.info('Terminating process %s', process.pid)
-            process.terminate()
             self.subprocess = None
+
+            if process.is_alive():
+                self._subprocess_timeouts += 1
+                process.terminate()
+                raise Exception('Timeout reached for subprocess {}'.format(process.pid))
 
             result = tuple(output) if output else None
 
         if not result:
-            raise Exception("Evaluate crashed")
+            raise Exception("Subprocess evaluate crashed")
 
         return result
 
     def score_pipeline(self, dataset, problem, pipeline, metrics=None, random_seed=0,
-                       folds=5, stratified=False, shuffle=False):
+                       folds=None, stratified=False, shuffle=False):
 
+        folds = folds or self.folds
         problem_metrics = problem['problem']['performance_metrics']
         metrics = metrics or problem_metrics
         data_params = {
@@ -218,7 +225,15 @@ class PipelineSearcher:
             volumes_dir=self.static,
         )
 
+        for res in all_results:
+            pipeline_run = res.pipeline_run
+            if pipeline_run.run.get('phase') == 'PRODUCE':
+                yaml_file = os.path.join(self.runs_dir, '{}.yml'.format(pipeline_run.get_id()))
+                with open(yaml_file, 'w') as pip:
+                    pipeline_run.to_yaml(file=pip)
+
         if not all_scores:
+            self.error += 1
             failed_result = all_results[-1]
             message = failed_result.pipeline_run.status['message']
             LOGGER.error(message)
@@ -226,14 +241,7 @@ class PipelineSearcher:
             if isinstance(cause, BaseException):
                 raise cause
             else:
-                raise Exception(cause)
-
-        for res in all_results:
-            pipeline_run = res.pipeline_run
-            if pipeline_run.run.get('phase') == 'PRODUCE':
-                yaml_file = os.path.join(self.runs_dir, '{}.yml'.format(pipeline_run.get_id()))
-                with open(yaml_file, 'w') as pip:
-                    pipeline_run.to_yaml(file=pip)
+                raise failed_result.error
 
         pipeline.cv_scores = [score.value[0] for score in all_scores]
         pipeline.score = np.mean(pipeline.cv_scores)
@@ -317,8 +325,7 @@ class PipelineSearcher:
             self.subprocess = None
 
     def _timeout(self, *args, **kwargs):
-        self.errors.append('STOP BY TIMEOUT')
-        self.timeout_kill = True
+        self._timeout_reached = True
         raise KeyboardInterrupt()
 
     def setup_search(self):
@@ -365,8 +372,17 @@ class PipelineSearcher:
     def make_btb_scorer(self, dataset_name, dataset, problem, templates, metric):
         def btb_scorer(template_name, proposal):
             self.check_stop()
+            self.iterations += 1
 
-            pipeline = self._new_pipeline(templates[template_name], proposal)
+
+            try:
+                LOGGER.info('Scoring template %s', template_name)
+                pipeline = self._new_pipeline(templates[template_name], proposal)
+            except Exception:
+                LOGGER.exception('Error creating pipeline from template %s with params %s',
+                                 template_name, proposal)
+                self.invalid += 1
+                raise
 
             try:
                 self.score_pipeline(dataset, problem, pipeline)
@@ -377,11 +393,15 @@ class PipelineSearcher:
                     self.best_pipeline = pipeline.id
                     self.best_template_name = template_name
 
+                LOGGER.warning('Template %s score: %s - %s', template_name,
+                               pipeline.score, pipeline.normalized_score)
+                self.success += 1
                 return pipeline.normalized_score
 
             finally:
                 try:
                     self._save_pipeline(pipeline)
+
                 except Exception:
                     LOGGER.exception('Error saving pipeline %s', pipeline.id)
 
@@ -389,7 +409,8 @@ class PipelineSearcher:
 
     def search(self, dataset, problem, timeout=None, budget=None, template_names=None):
         self.timeout = timeout
-        self.timeout_kill = False
+        self._timeout_reached = False
+        self._subprocess_timeouts = 0
         self.budget = budget
         self.best_pipeline = None
         self.best_score = None
@@ -400,7 +421,10 @@ class PipelineSearcher:
         data_modality = None
         task_type = None
         task_subtype = None
-        self.errors = list()
+        self.iterations = 0
+        self.error = 0
+        self.invalid = 0
+        self.success = 0
 
         dataset_name = problem['inputs'][0]['dataset_id']
         if dataset_name.endswith('_dataset'):
@@ -426,15 +450,17 @@ class PipelineSearcher:
             btb_scorer = self.make_btb_scorer(
                 dataset_name, dataset, problem, template_loader, metric)
 
-            session = BTBSession(template_loader, btb_scorer, max_errors=0)
+            session = BTBSession(template_loader, btb_scorer, max_errors=self.max_errors)
 
             if self.budget is not None:
-                while session.iterations < self.budget:
+                spent = 0
+                while spent < self.budget:
                     session.run(1)
                     last_score = list(session.proposals.values())[-1].get('score')
-                    if self.ignore_errors and (last_score is None):
-                        LOGGER.warning("Ignoring Errored pipeline")
-                        session.iterations -= 1
+                    if (last_score is None) and self.ignore_errors:
+                        LOGGER.warning("Ignoring errored pipeline")
+                    else:
+                        spent += 1
 
             else:
                 session.run()
@@ -454,13 +480,15 @@ class PipelineSearcher:
             'pipeline': self.best_pipeline,
             'cv_score': self.best_score,
             'template': self.best_template_name,
-            'data_modality': data_modality,
-            'task_type': task_type,
-            'task_subtype': task_subtype,
-            'tuning_iterations': session.iterations if session else None,
-            'error': self.errors or None,
-            'killed_by_timeout': self.timeout_kill,
-            'pipelines_scheduled': len(template_names),
-            'pipelines_tried': len([x for x in template_loader.values() if x is not None]),
-            'found_by_name': self.found_by_name
+            'modality': data_modality,
+            'type': task_type,
+            'subtype': task_subtype,
+            'iterations': self.iterations,
+            'timeout': self._timeout_reached,
+            'timeouts': self._subprocess_timeouts,
+            'scheduled': len(template_names),
+            'scored': self.success,
+            'errored': self.error,
+            'invalid': self.invalid,
+            'found': self.found_by_name
         }

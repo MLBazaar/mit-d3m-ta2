@@ -144,6 +144,9 @@ def _append_report(result, path):
         [result],
         columns=REPORT_COLUMNS
     )
+
+    report['dataset'] = report['dataset'].str.replace('_MIN_METADATA', '')
+    report['template'] = report['template'].str[0:12]
     report['host'] = socket.gethostname()
     report['timestamp'] = datetime.utcnow()
     report.to_csv(path, mode='a', header=False, index=False)
@@ -167,10 +170,13 @@ def process_dataset(dataset_name, dataset, problem, args):
             dump=True,
             hard_timeout=args.hard,
             ignore_errors=args.ignore_errors,
+            cv_folds=args.folds,
+            subprocess_timeout=args.subprocess_timeout,
+            max_errors=args.max_errors
         )
         result = pps.search(dataset, problem, args.timeout, args.budget, args.template)
 
-        result['elapsed_time'] = datetime.utcnow() - start_ts
+        result['elapsed'] = datetime.utcnow() - start_ts
         result['dataset'] = dataset_name
 
         pipeline_id = result['pipeline']
@@ -184,22 +190,10 @@ def process_dataset(dataset_name, dataset, problem, args):
 
             result['test_score'] = test_score
 
-    except Exception:
+    except Exception as ex:
         result = {
             'dataset': dataset_name,
-            'pipeline': None,
-            'cv_score': None,
-            'template': None,
-            'data_modality': None,
-            'task_type': None,
-            'task_subtype': None,
-            'tuning_iterations': None,
-            'error': 'error from main',
-            'killed_by_timeout': None,
-            'pipelines_scheduled': None,
-            'found_by_name': None,
-            'test_score': None,
-            'elapsed_time': None
+            'error': '{}: {}'.format(type(ex).__name__, ex),
         }
 
     return result
@@ -210,14 +204,17 @@ REPORT_COLUMNS = [
     'template',
     'cv_score',
     'test_score',
-    'elapsed_time',
-    'tuning_iterations',
-    'data_modality',
-    'task_type',
-    'pipelines_scheduled',
-    'pipelines_tried',
-    'error',
-    'killed_by_timeout',
+    'elapsed',
+    'scheduled',
+    'iterations',
+    'scored',
+    'errored',
+    'invalid',
+    'timeouts',
+    'timeout',
+    'modality',
+    'type',
+    'subtype',
 ]
 
 
@@ -338,12 +335,12 @@ def _ta3_test(args):
                 'dataset': dataset,
                 'score': score
             })
-        except Exception as e:
+        except Exception as ex:
             results.append({
                 'dataset': dataset,
                 'score': 'ERROR'
             })
-            print('An error occurred trying to process the dataset {}, produced by {}'.format(dataset, e))
+            print('TA3 Error on dataset {}: {}'.format(dataset, ex))
 
     results = pd.DataFrame(results)
     print(tabulate.tabulate(
@@ -438,6 +435,15 @@ def parse_args():
     ta2_parser.add_argument(
         '-e', '--template', action='append',
         help='Name of the template to Use.')
+    ta2_parser.add_argument(
+        '-f', '--folds', type=int,
+        help='Number of folds to use for cross validation')
+    ta2_parser.add_argument(
+        '-p', '--subprocess-timeout', type=int,
+        help='Maximum time allowed per pipeline execution, in seconds')
+    ta2_parser.add_argument(
+        '-m', '--max-errors', type=int, default=0,
+        help='Maximum amount of errors per template.')
 
     # TA3 Mode
     ta3_parents = [logging_args, io_args, search_args, ta3_args, dataset_args]
