@@ -5,7 +5,7 @@ from setuptools import setup, find_packages
 
 
 install_requires = [
-    'baytune==0.3.5',
+    'baytune>=0.3.6.dev0',
     'tabulate>=0.8.3,<0.9',
     'd3m==2020.1.9',
     'datamart-rest==0.2.3',
