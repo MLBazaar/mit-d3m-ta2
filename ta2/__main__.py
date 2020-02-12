@@ -436,7 +436,7 @@ def parse_args():
         '-e', '--template', action='append',
         help='Name of the template to Use.')
     ta2_parser.add_argument(
-        '-f', '--folds', type=int,
+        '-f', '--folds', type=int, default=5,
         help='Number of folds to use for cross validation')
     ta2_parser.add_argument(
         '-p', '--subprocess-timeout', type=int,
