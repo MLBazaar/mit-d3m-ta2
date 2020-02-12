@@ -374,7 +374,6 @@ class PipelineSearcher:
             self.check_stop()
             self.iterations += 1
 
-
             try:
                 LOGGER.info('Scoring template %s', template_name)
                 pipeline = self._new_pipeline(templates[template_name], proposal)
