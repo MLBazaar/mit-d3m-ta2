@@ -106,23 +106,7 @@ class PipelineSearcher:
         with open(path, 'r') as pipeline_file:
             return loader(string_or_file=pipeline_file)
 
-    def _get_templates(self):
-        # LOGGER.info('Loading template for dataset %s', dataset_name)
-
-        # df = pd.read_csv(os.path.join(TEMPLATES_DIR, 'templates_with_z_score.csv'))
-
-        # templates = df[df['name'] == dataset_name].sort_values('z_score', ascending=False)
-
-        # problem_type = '{}_{}'.format(data_modality, task_type)
-        # df['match'] = df['name'] == dataset_name
-        # templates = df[df['problem_type'] == problem_type]
-        # templates = templates.sort_values(['match', 'z_score'], ascending=False)
-        # templates = templates.drop_duplicates(subset=['pipeline_id'], keep='first')
-
-        # self.found_by_name = df['match'].any()
-
-        # return templates.pipeline_id.values
-
+    def _get_all_templates(self):
         valid_templates = []
         templates = os.listdir(TEMPLATES_DIR)
         for template in templates:
@@ -133,10 +117,26 @@ class PipelineSearcher:
 
                 valid_templates.append(template)
             except:
-                print('Errored: ', template)
-                continue
+                LOGGER.warning('Invalid template found: %s', path)
 
         return valid_templates
+
+    def _get_templates(self):
+        LOGGER.info('Loading template for dataset %s', dataset_name)
+
+        df = pd.read_csv(os.path.join(TEMPLATES_DIR, 'templates_with_z_score.csv'))
+
+        templates = df[df['name'] == dataset_name].sort_values('z_score', ascending=False)
+
+        problem_type = '{}_{}'.format(data_modality, task_type)
+        df['match'] = df['name'] == dataset_name
+        templates = df[df['problem_type'] == problem_type]
+        templates = templates.sort_values(['match', 'z_score'], ascending=False)
+        templates = templates.drop_duplicates(subset=['pipeline_id'], keep='first')
+
+        self.found_by_name = df['match'].any()
+
+        return templates.pipeline_id.values
 
     def __init__(self, input_dir='input', output_dir='output', static_dir='static',
                  dump=False, hard_timeout=False, ignore_errors=False, cv_folds=5,
@@ -458,7 +458,7 @@ class PipelineSearcher:
             self.setup_search()
             LOGGER.info("Loading the template and the tuner")
             if not template_names:
-                template_names = self._get_templates()
+                template_names = self._get_all_templates()
 
             template_loader = LazyLoader(template_names, TEMPLATES_DIR)
             btb_scorer = self.make_btb_scorer(
@@ -466,18 +466,22 @@ class PipelineSearcher:
 
             session = BTBSession(template_loader, btb_scorer, max_errors=self.max_errors)
 
-            if self.budget is not None:
-                spent = 0
-                while spent < self.budget:
-                    session.run(1)
-                    last_score = list(session.proposals.values())[-1].get('score')
-                    if (last_score is None) and self.ignore_errors:
-                        LOGGER.warning("Ignoring errored pipeline")
-                    else:
-                        spent += 1
+            try:
+                if self.budget is not None:
+                    spent = 0
+                    while spent < self.budget:
+                        session.run(1)
+                        last_score = list(session.proposals.values())[-1].get('score')
+                        if (last_score is None) and self.ignore_errors:
+                            LOGGER.warning("Ignoring errored pipeline")
+                        else:
+                            spent += 1
 
-            else:
-                session.run()
+                else:
+                    session.run()
+            except Exception:
+                self.invalid += 1
+                raise
 
         except KeyboardInterrupt:
             pass
