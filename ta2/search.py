@@ -4,6 +4,7 @@ import os
 import random
 import signal
 import warnings
+import yaml
 from collections import defaultdict
 from datetime import datetime, timedelta
 from multiprocessing import Manager, Process
@@ -124,7 +125,7 @@ class PipelineSearcher:
 
     def __init__(self, input_dir='input', output_dir='output', static_dir='static',
                  dump=False, hard_timeout=False, ignore_errors=False, cv_folds=5,
-                 subprocess_timeout=None, max_errors=0):
+                 subprocess_timeout=None, max_errors=0, store_pipeline_runs=False):
         self.input = input_dir
         self.output = output_dir
         self.static = static_dir
@@ -148,6 +149,7 @@ class PipelineSearcher:
         self.folds = cv_folds
         self.subprocess_timeout = subprocess_timeout
         self.max_errors = max_errors
+        self.store_pipeline_runs = store_pipeline_runs
 
     @staticmethod
     def _evaluate(out, pipeline, *args, **kwargs):
@@ -225,12 +227,11 @@ class PipelineSearcher:
             volumes_dir=self.static,
         )
 
-        for res in all_results:
-            pipeline_run = res.pipeline_run
-            if pipeline_run.run.get('phase') == 'PRODUCE':
-                yaml_file = os.path.join(self.runs_dir, '{}.yml'.format(pipeline_run.get_id()))
-                with open(yaml_file, 'w') as pip:
-                    pipeline_run.to_yaml(file=pip)
+        if self.store_pipeline_runs:
+            yaml_path = os.path.join(self.runs_dir, '{}.yml'.format(pipeline.id))
+            runs = [res.pipeline_run.to_json_structure() for res in all_results]
+            with open(yaml_path, 'w') as yaml_file:
+                yaml.dump_all(runs, yaml_file, default_flow_style=False)
 
         if not all_scores:
             self.error += 1
