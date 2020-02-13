@@ -204,8 +204,9 @@ REPORT_COLUMNS = [
     'template',
     'cv_score',
     'test_score',
+    'metric',
     'elapsed',
-    'scheduled',
+    'templates',
     'iterations',
     'scored',
     'errored',
@@ -215,6 +216,8 @@ REPORT_COLUMNS = [
     'modality',
     'type',
     'subtype',
+    'host',
+    'timestamp'
 ]
 
 

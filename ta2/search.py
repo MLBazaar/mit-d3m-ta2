@@ -485,9 +485,10 @@ class PipelineSearcher:
             'iterations': self.iterations,
             'timeout': self._timeout_reached,
             'timeouts': self._subprocess_timeouts,
-            'scheduled': len(template_names),
+            'templates': len(template_names),
             'scored': self.success,
             'errored': self.error,
             'invalid': self.invalid,
-            'found': self.found_by_name
+            'found': self.found_by_name,
+            'metric': metric.name.lower()
         }
