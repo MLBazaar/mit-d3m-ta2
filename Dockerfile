@@ -1,4 +1,4 @@
-FROM registry.gitlab.com/datadrivendiscovery/images/primitives:ubuntu-bionic-python36-v2020.1.9-20200201-083256
+FROM registry.gitlab.com/datadrivendiscovery/images/primitives:ubuntu-bionic-python36-v2020.1.9-20200212-063959
 
 ARG UID=1000
 ARG D3MPORT=45042

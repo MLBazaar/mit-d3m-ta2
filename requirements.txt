@@ -1,2 +1,2 @@
--e git+https://gitlab.com/datadrivendiscovery/ta3ta2-api.git@ef803f908edb1b41457eaed6079346b7b6317646#egg=ta3ta2-api
+-e git+https://gitlab.com/datadrivendiscovery/ta3ta2-api.git@1214abaac7cccd3f578e9589509b279bd820a758#egg=ta3ta2-api
 -e git+https://github.com/HDI-Project/BTB.git@6a08dc3cf1b68b35630cae6a87783aec4e2c9f83#egg=baytune
