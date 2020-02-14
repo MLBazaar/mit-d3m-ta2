@@ -212,8 +212,8 @@ REPORT_COLUMNS = [
     'scored',
     'errored',
     'invalid',
-    'timeouts',
-    'timeout',
+    'timedout',
+    'killed',
     'modality',
     'type',
     'subtype',
@@ -481,6 +481,9 @@ def parse_args():
         os.makedirs(args.output, exist_ok=True)
 
     if args.logfile:
+        if not os.path.isabs(args.logfile):
+            args.logfile = os.path.join(args.output, args.logfile)
+
         logdir = os.path.dirname(args.logfile)
         os.makedirs(logdir, exist_ok=True)
 
