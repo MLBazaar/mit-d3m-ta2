@@ -25,6 +25,7 @@ from ta2.utils import dump_pipeline
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 PIPELINES_DIR = os.path.join(BASE_DIR, 'pipelines')
 TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')
+CURATED_TEMPLATES_DIR = os.path.join(BASE_DIR, 'curated_templates')
 
 DATAMART_URL = os.getenv('DATAMART_URL_NYU', 'https://datamart.d3m.vida-nyu.org')
 
@@ -115,20 +116,31 @@ class PipelineSearcher:
         with open(path, 'r') as pipeline_file:
             return loader(string_or_file=pipeline_file)
 
-    def _get_all_templates(self):
+    def _get_valid_templates(self, templates):
         valid_templates = []
-        templates = os.listdir(TEMPLATES_DIR)
         for template in templates:
             try:
                 path = os.path.join(TEMPLATES_DIR, template)
                 with open(path, 'r') as f:
                     json.load(f)
-
                 valid_templates.append(template)
             except:
                 LOGGER.warning('Invalid template found: %s', path)
 
         return valid_templates
+
+    def _get_all_templates(self):
+        curated = [
+            os.path.join(CURATED_TEMPLATES_DIR, temp)
+            for temp in os.listdir(CURATED_TEMPLATES_DIR)
+        ]
+
+        curated_templates = self._get_valid_templates(curated)
+        templates = self._get_valid_templates(os.listdir(TEMPLATES_DIR))
+
+        curated_templates.extend(templates)
+
+        return curated_templates
 
     def _get_templates(self):
         LOGGER.info('Loading template for dataset %s', dataset_name)
