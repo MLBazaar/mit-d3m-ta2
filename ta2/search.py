@@ -93,6 +93,14 @@ def to_dicts(hyperparameters):
     return params_tree
 
 
+class SubprocessTimeout(Exception):
+    pass
+
+
+class ScoringError(Exception):
+    pass
+
+
 class PipelineSearcher:
 
     def _load_pipeline(self, pipeline):
@@ -141,7 +149,7 @@ class PipelineSearcher:
 
     def __init__(self, input_dir='input', output_dir='output', static_dir='static',
                  dump=False, hard_timeout=False, ignore_errors=False, cv_folds=5,
-                 subprocess_timeout=None, max_errors=0, store_pipeline_runs=False):
+                 subprocess_timeout=None, max_errors=0, store_summary=False):
         self.input = input_dir
         self.output = output_dir
         self.static = static_dir
@@ -165,7 +173,7 @@ class PipelineSearcher:
         self.folds = cv_folds
         self.subprocess_timeout = subprocess_timeout
         self.max_errors = max_errors
-        self.store_pipeline_runs = store_pipeline_runs
+        self.store_summary = store_summary
 
     @staticmethod
     def _evaluate(out, pipeline, *args, **kwargs):
@@ -193,20 +201,16 @@ class PipelineSearcher:
             self.subprocess = None
 
             if process.is_alive():
-                self.timedout += 1
                 process.terminate()
-                raise Exception('Timeout reached for subprocess {}'.format(process.pid))
+                raise SubprocessTimeout('Timeout reached for subprocess {}'.format(process.pid))
 
-            result = tuple(output) if output else None
+            if not output:
+                raise Exception("Subprocess evaluate crashed")
 
-        if not result:
-            self.invalid += 1
-            raise Exception("Subprocess evaluate crashed")
-
-        return result
+            return tuple(output)
 
     def score_pipeline(self, dataset, problem, pipeline, metrics=None, random_seed=0,
-                       folds=None, stratified=False, shuffle=False):
+                       folds=None, stratified=False, shuffle=False, template_name=None):
 
         folds = folds or self.folds
         problem_metrics = problem['problem']['performance_metrics']
@@ -216,18 +220,6 @@ class PipelineSearcher:
             'stratified': json.dumps(stratified),
             'shuffle': json.dumps(shuffle),
         }
-
-        # Some primitives crash with a core dump that kills everything.
-        # We want to isolate those.
-        # This is disabled in favor of permanently using a child process
-        # primitives = [
-        #     step['primitive']['python_path']
-        #     for step in pipeline.to_json_structure()['steps']
-        # ]
-        # if any(primitive in SUBPROCESS_PRIMITIVES for primitive in primitives):
-        #     evaluate = self.subprocess_evaluate
-        # else:
-        #     evaluate = d3m_evaluate
 
         all_scores, all_results = self.subprocess_evaluate(
             pipeline=pipeline,
@@ -244,22 +236,16 @@ class PipelineSearcher:
             volumes_dir=self.static,
         )
 
-        if self.store_pipeline_runs:
+        if not all_scores:
+            failed_result = all_results[-1]
+            message = failed_result.pipeline_run.status['message']
+            raise ScoringError(message)
+
+        elif self.store_summary:
             yaml_path = os.path.join(self.runs_dir, '{}.yml'.format(pipeline.id))
             runs = [res.pipeline_run.to_json_structure() for res in all_results]
             with open(yaml_path, 'w') as yaml_file:
                 yaml.dump_all(runs, yaml_file, default_flow_style=False)
-
-        if not all_scores:
-            self.errored += 1
-            failed_result = all_results[-1]
-            message = failed_result.pipeline_run.status['message']
-            LOGGER.error(message)
-            cause = failed_result.error.__cause__
-            if isinstance(cause, BaseException):
-                raise cause
-            else:
-                raise failed_result.error
 
         pipeline.cv_scores = [score.value[0] for score in all_scores]
         pipeline.score = np.mean(pipeline.cv_scores)
@@ -391,17 +377,15 @@ class PipelineSearcher:
         def btb_scorer(template_name, proposal):
             self.check_stop()
             self.iterations += 1
+            LOGGER.info('Scoring template %s', template_name)
 
+            pipeline = None
+            status = None
+            score = None
+            normalized = None
             try:
-                LOGGER.info('Scoring template %s', template_name)
                 pipeline = self._new_pipeline(templates[template_name], proposal)
-            except Exception:
-                LOGGER.exception('Error creating pipeline from template %s with params %s',
-                                 template_name, proposal)
-                self.invalid += 1
-                raise
 
-            try:
                 self.score_pipeline(dataset, problem, pipeline)
                 pipeline.normalized_score = metric.normalize(pipeline.score)
                 if pipeline.normalized_score > self.best_normalized:
@@ -412,15 +396,38 @@ class PipelineSearcher:
 
                 LOGGER.warning('Template %s score: %s - %s', template_name,
                                pipeline.score, pipeline.normalized_score)
+                status = 'SCORED'
+                score = pipeline.score
+                normalized = pipeline.normalized_score
                 self.scored += 1
                 return pipeline.normalized_score
 
-            finally:
-                try:
-                    self._save_pipeline(pipeline)
+            except SubprocessTimeout:
+                self.timedout += 1
+                status = 'TIMEOUT'
+                raise
+            except ScoringError:
+                self.errored += 1
+                status = 'ERROR'
+                raise
+            except Exception:
+                self.invalid += 1
+                status = 'INVALID'
+                raise
 
-                except Exception:
-                    LOGGER.exception('Error saving pipeline %s', pipeline.id)
+            finally:
+                self.summary.append({
+                    'template': template_name,
+                    'status': status,
+                    'score': score,
+                    'normalized': normalized
+                })
+                if pipeline:
+                    try:
+                        self._save_pipeline(pipeline)
+
+                    except Exception:
+                        LOGGER.exception('Error saving pipeline %s', pipeline.id)
 
         return btb_scorer
 
@@ -442,6 +449,7 @@ class PipelineSearcher:
         self.errored = 0
         self.invalid = 0
         self.timedout = 0
+        self.summary = list()
 
         dataset_name = problem['inputs'][0]['dataset_id']
         if dataset_name.endswith('_dataset'):
@@ -492,6 +500,15 @@ class PipelineSearcher:
         finally:
             if self.timeout and self.hard_timeout:
                 signal.alarm(0)
+
+        if self.store_summary and self.summary:
+            summary_path = os.path.join(self.output, 'summary.csv')
+            summary = pd.DataFrame(self.summary)
+            summary['dataset'] = dataset_name
+            summary['data_modality'] = data_modality
+            summary['type'] = task_type
+            summary['subtype'] = task_subtype
+            summary.to_csv(summary_path, index=False)
 
         self.done = True
 

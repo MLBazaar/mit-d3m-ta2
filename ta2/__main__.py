@@ -173,7 +173,7 @@ def process_dataset(dataset_name, dataset, problem, args):
             cv_folds=args.folds,
             subprocess_timeout=args.subprocess_timeout,
             max_errors=args.max_errors,
-            store_pipeline_runs=True
+            store_summary=True
         )
         result = pps.search(dataset, problem, args.timeout, args.budget, args.template)
 
