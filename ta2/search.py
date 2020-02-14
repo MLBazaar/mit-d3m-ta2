@@ -116,48 +116,28 @@ class PipelineSearcher:
         with open(path, 'r') as pipeline_file:
             return loader(string_or_file=pipeline_file)
 
-    def _get_valid_templates(self, templates):
-        valid_templates = []
-        for template in templates:
-            try:
-                path = os.path.join(TEMPLATES_DIR, template)
-                with open(path, 'r') as f:
-                    json.load(f)
-                valid_templates.append(template)
-            except:
-                LOGGER.warning('Invalid template found: %s', path)
+    def _valid_template(self, template):
+        try:
+            path = os.path.join(TEMPLATES_DIR, template)
+            with open(path, 'r') as f:
+                json.load(f)
+                return True
 
-        return valid_templates
+        except Exception:
+            LOGGER.warning('Invalid template found: %s', path)
+            return False
 
-    def _get_all_templates(self):
-        curated = [
-            os.path.join(CURATED_TEMPLATES_DIR, temp)
-            for temp in os.listdir(CURATED_TEMPLATES_DIR)
-        ]
+    def _select_templates(self, data_modality, task_type):
+        # TODO
+        return list(filter(self._valid_template, []))
 
-        curated_templates = self._get_valid_templates(curated)
-        templates = self._get_valid_templates(os.listdir(TEMPLATES_DIR))
+    def _get_templates(self, data_modality, task_type):
+        selected = self._select_templates(data_modality, task_type)
+        if selected:
+            return selected
 
-        curated_templates.extend(templates)
-
-        return curated_templates
-
-    def _get_templates(self):
-        LOGGER.info('Loading template for dataset %s', dataset_name)
-
-        df = pd.read_csv(os.path.join(TEMPLATES_DIR, 'templates_with_z_score.csv'))
-
-        templates = df[df['name'] == dataset_name].sort_values('z_score', ascending=False)
-
-        problem_type = '{}_{}'.format(data_modality, task_type)
-        df['match'] = df['name'] == dataset_name
-        templates = df[df['problem_type'] == problem_type]
-        templates = templates.sort_values(['match', 'z_score'], ascending=False)
-        templates = templates.drop_duplicates(subset=['pipeline_id'], keep='first')
-
-        self.found_by_name = df['match'].any()
-
-        return templates.pipeline_id.values
+        all_templates = list(filter(self._valid_template, os.listdir(TEMPLATES_DIR)))
+        return random.sample(all_templates, len(all_templates))
 
     def __init__(self, input_dir='input', output_dir='output', static_dir='static',
                  dump=False, hard_timeout=False, ignore_errors=False, cv_folds=5,
@@ -480,7 +460,7 @@ class PipelineSearcher:
             self.setup_search()
             LOGGER.info("Loading the template and the tuner")
             if not template_names:
-                template_names = self._get_all_templates()
+                template_names = self._get_templates(data_modality, task_type)
 
             template_loader = LazyLoader(template_names, TEMPLATES_DIR)
             btb_scorer = self.make_btb_scorer(
