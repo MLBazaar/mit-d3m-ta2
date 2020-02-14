@@ -146,16 +146,27 @@ def get_template_id(pipeline_id, pipelines_path, templates_path):
     return template.get_digest()[:12]
 
 
-def extract_pipeline_run(pipeline_run, pipelines_path, templates_path, datasets_path):
-
-    dataset_id = pipeline_run['datasets'][0]['id']
+def produce_phase(pipeline_run):
+    """Produce result with Produce phase data."""
     scores = pipeline_run['run']['results']['scores']
-    pipeline_id = pipeline_run['pipeline']['id']
 
     if len(scores) > 1:
         raise ValueError('This run has more than one score!')
 
     scores = scores[0]
+
+    return {
+        'metric': scores['metric']['metric'],
+        'context': pipeline_run['context'],
+        'normalized_score': scores['normalized']
+    }
+
+
+def extract_pipeline_run(pipeline_run, pipelines_path, templates_path, datasets_path):
+    dataset_id = pipeline_run['datasets'][0]['id']
+    phase = pipeline_run['run']['phase']
+    succeed = pipeline_run.get('status').get('state')
+    pipeline_id = pipeline_run['pipeline']['id']
 
     if dataset_id.endswith('TRAIN'):
         dataset_name = dataset_id.replace('_dataset_TRAIN', '')
@@ -167,17 +178,26 @@ def extract_pipeline_run(pipeline_run, pipelines_path, templates_path, datasets_
 
     template_id = get_template_id(pipeline_id, pipelines_path, templates_path)
 
-    return {
+    result = {
         'dataset': dataset_name,
         'pipeline_id': pipeline_id,
         'template_id': template_id,
         'modality': data_modality,
         'type': task_type,
         'subtype': task_subtype,
-        'metric': scores['metric']['metric'],
-        'context': pipeline_run['context'],
-        'normalized_score': scores['normalized'],
+        'phase': phase,
+        'succeed': succeed,
     }
+
+    if phase == 'PRODUCE' and succeed != 'FAILURE':
+        try:
+            score = produce_phase(pipeline_run)
+            result.update(score)
+        except:
+            # Timeout
+            result['phase'] = 'TIMEOUT'
+
+    return result, succeed
 
 
 def extract_meta_information(pipeline_runs, pipelines_path, templates_path, datasets_path):
@@ -188,13 +208,13 @@ def extract_meta_information(pipeline_runs, pipelines_path, templates_path, data
     discarded = []
 
     for pipeline_run_path in glob.glob(pipeline_runs_path):
-        pipeline_runs = read_pipeline_run(pipeline_run_path)
+        pipeline_runs = load_pipeline_run(pipeline_run_path)
 
         data_extracted = []
 
         failed = False
 
-        for pipeline_run in enumerate(pipeline_runs):
+        for pipeline_run in pipeline_runs:
             try:
                 run_data, run_status = extract_pipeline_run(
                     pipeline_run, pipelines_path, templates_path, datasets_path)
@@ -208,7 +228,7 @@ def extract_meta_information(pipeline_runs, pipelines_path, templates_path, data
                 continue
 
         if not failed:
-            results.append(data_extracted)
+            results.extend(data_extracted)
 
         else:
             LOGGER.warning('Pipeline run %s discarded.', pipeline_run_path)
