@@ -133,7 +133,10 @@ class PipelineSearcher:
         problem_type = data_modality + '/' + task_type
         problem_templates = templates[templates.problem_type == problem_type]
 
-        z_scores = problem_templates.groupby('template').z_score.mean()
+        problem_templates = problem_templates.sort_values('z_score', ascending=False)
+        problem_winners = problem_templates.groupby('dataset').head(3)
+
+        z_scores = problem_winners.groupby('template').z_score.mean()
         selected = z_scores.sort_values(ascending=False).index
 
         return list(filter(self._valid_template, selected))
