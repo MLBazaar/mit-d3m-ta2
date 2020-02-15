@@ -25,6 +25,7 @@ from ta2.utils import dump_pipeline
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 PIPELINES_DIR = os.path.join(BASE_DIR, 'pipelines')
 TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')
+TEMPLATES_CSV = os.path.join(BASE_DIR, 'templates.csv')
 CURATED_TEMPLATES_DIR = os.path.join(BASE_DIR, 'curated_templates')
 
 DATAMART_URL = os.getenv('DATAMART_URL_NYU', 'https://datamart.d3m.vida-nyu.org')
@@ -128,8 +129,19 @@ class PipelineSearcher:
             return False
 
     def _select_templates(self, data_modality, task_type):
-        # TODO
-        return list(filter(self._valid_template, []))
+        templates = pd.read_csv(TEMPLATES_CSV)
+        problem_type = data_modality + '/' + task_type
+        problem_templates = templates[templates.problem_type == problem_type]
+
+        z_scores = problem_templates.groupby('template').z_score.mean()
+        selected = z_scores.sort_values(ascending=False).index
+
+        return list(filter(self._valid_template, selected))
+
+    def _get_timeouts(self, dataset_name):
+        templates = pd.read_csv(os.path.join(BASE_DIR, 'timeouts.csv'))
+        selected = templates[templates.dataset == dataset_name]
+        return list(filter(self._valid_template, selected.template))
 
     def _get_templates(self, data_modality, task_type):
         selected = self._select_templates(data_modality, task_type)
@@ -461,7 +473,11 @@ class PipelineSearcher:
             LOGGER.info("Loading the template and the tuner")
             if not template_names:
                 template_names = self._get_templates(data_modality, task_type)
+                # Execute TIMEOUT templates only
+                # template_names = self._get_timeouts(dataset_name)
+                # self.budget = len(template_names)
 
+            LOGGER.warning('Selected %s templates', len(template_names))
             template_loader = LazyLoader(template_names, TEMPLATES_DIR)
             btb_scorer = self.make_btb_scorer(
                 dataset_name, dataset, problem, template_loader, metric)
