@@ -129,16 +129,22 @@ class PipelineSearcher:
             LOGGER.warning('Invalid template found: %s', path)
             return False
 
-    def _select_templates(self, data_modality, task_type):
+    def _select_templates(self, dataset_name, data_modality, task_type):
         templates = pd.read_csv(TEMPLATES_CSV)
-        problem_type = data_modality + '/' + task_type
-        problem_templates = templates[templates.problem_type == problem_type]
+        dataset_templates = templates[templates.dataset == dataset_name]
+        if not dataset_templates.empty:
+            dataset_templates = dataset_templates.groupby('template').z_score.max()
+            selected = dataset_templates.sort_values(ascending=False).index
 
-        problem_templates = problem_templates.sort_values('z_score', ascending=False)
-        problem_winners = problem_templates.groupby('dataset').head(3)
+        else:
+            problem_type = data_modality + '/' + task_type
+            problem_templates = templates[templates.problem_type == problem_type]
 
-        z_scores = problem_winners.groupby('template').z_score.mean()
-        selected = z_scores.sort_values(ascending=False).index
+            problem_templates = problem_templates.sort_values('z_score', ascending=False)
+            problem_winners = problem_templates.groupby('dataset').head(3)
+
+            z_scores = problem_winners.groupby('template').z_score.mean()
+            selected = z_scores.sort_values(ascending=False).index
 
         return list(filter(self._valid_template, selected))
 
@@ -495,7 +501,7 @@ class PipelineSearcher:
             self.setup_search()
             LOGGER.info("Loading the template and the tuner")
             if not template_names:
-                template_names = self._select_templates(data_modality, task_type)
+                template_names = self._select_templates(dataset_name, data_modality, task_type)
                 # Execute TIMEOUT templates only
                 # template_names = self._get_timeouts(dataset_name)
                 # self.budget = len(template_names)
