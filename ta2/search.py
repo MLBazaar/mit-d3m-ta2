@@ -451,9 +451,6 @@ class PipelineSearcher:
 
         session = BTBSession(template_loader, btb_scorer, max_errors=self.max_errors)
 
-        if (budget is not None) and budget < 0:
-            budget = len(template_names) * -budget
-
         if budget:
             while self.spent < budget:
                 session.run(1)
@@ -509,6 +506,9 @@ class PipelineSearcher:
 
             template_names = self._select_templates(
                 dataset_name, data_modality, task_type, templates_csv)
+
+            if (budget is not None) and budget < 0:
+                budget = len(template_names) * -budget
 
             try:
                 self.start_session(template_names, dataset, problem, metric, budget)
