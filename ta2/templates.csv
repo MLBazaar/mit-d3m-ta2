@@ -1,4 +1,4 @@
-template,status,score,normalized,dataset,data_modality,type,subtype,problem_type,z_score
+template,status,score,normalized,dataset,data_modality,task_type,subtype,problem_type,z_score
 0a20d587980a.json,SCORED,0.0,0.0,124_174_cifar10_MIN_METADATA,image,classification,multiclass,image/classification,-0.9371466062683409
 9ae530dbe284.json,SCORED,0.0,0.0,124_174_cifar10_MIN_METADATA,image,classification,multiclass,image/classification,-0.9371466062683409
 025fe8f5fa15.json,SCORED,0.0,0.0,124_174_cifar10_MIN_METADATA,image,classification,multiclass,image/classification,-0.9371466062683409

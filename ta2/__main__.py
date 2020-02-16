@@ -175,7 +175,7 @@ def process_dataset(dataset_name, dataset, problem, args):
             max_errors=args.max_errors,
             store_summary=True
         )
-        result = pps.search(dataset, problem, args.timeout, args.budget, args.template)
+        result = pps.search(dataset, problem, args.timeout, args.budget, args.templates_csv)
 
         result['elapsed'] = datetime.utcnow() - start_ts
         result['dataset'] = dataset_name
@@ -437,8 +437,7 @@ def parse_args():
         '-I', '--ignore-errors', action='store_true',
         help='Ignore errors when counting tuning iterations.')
     ta2_parser.add_argument(
-        '-e', '--template', action='append',
-        help='Name of the template to Use.')
+        '-e', '--templates-csv', help='Path to the templates csv file to use.')
     ta2_parser.add_argument(
         '-f', '--folds', type=int, default=5,
         help='Number of folds to use for cross validation')
@@ -446,7 +445,7 @@ def parse_args():
         '-p', '--subprocess-timeout', type=int,
         help='Maximum time allowed per pipeline execution, in seconds')
     ta2_parser.add_argument(
-        '-m', '--max-errors', type=int, default=0,
+        '-m', '--max-errors', type=int, default=5,
         help='Maximum amount of errors per template.')
 
     # TA3 Mode

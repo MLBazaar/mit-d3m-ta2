@@ -1,4 +1,4 @@
-template,status,score,normalized,dataset,data_modality,type,subtype,problem_type
+template,status,score,normalized,dataset,data_modality,task_type,subtype,problem_type
 a776f902723d.json,TIMEOUT,,,124_174_cifar10_MIN_METADATA,image,classification,multiclass,image/classification
 2a895007a922.json,TIMEOUT,,,124_174_cifar10_MIN_METADATA,image,classification,multiclass,image/classification
 882b2cb3f955.json,TIMEOUT,,,124_174_cifar10_MIN_METADATA,image,classification,multiclass,image/classification

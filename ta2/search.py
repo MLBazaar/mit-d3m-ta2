@@ -4,13 +4,13 @@ import os
 import random
 import signal
 import warnings
-import yaml
 from collections import defaultdict
 from datetime import datetime, timedelta
 from multiprocessing import Manager, Process
 
 import numpy as np
 import pandas as pd
+import yaml
 from btb import BTBSession
 from btb.tuning import StopTuning
 from d3m.metadata.base import ArgumentType, Context
@@ -129,22 +129,30 @@ class PipelineSearcher:
             LOGGER.warning('Invalid template found: %s', path)
             return False
 
-    def _select_templates(self, dataset_name, data_modality, task_type):
-        templates = pd.read_csv(TEMPLATES_CSV)
-        dataset_templates = templates[templates.dataset == dataset_name]
-        if not dataset_templates.empty:
-            dataset_templates = dataset_templates.groupby('template').z_score.max()
-            selected = dataset_templates.sort_values(ascending=False).index
+    def _select_templates(self, dataset_name, data_modality, task_type, templates_csv):
+        templates = pd.read_csv(templates_csv)
+        if 'z_score' not in templates:
+            templates['z_score'] = 0
+        if 'problem_type' not in templates:
+            templates['problem_type'] = templates['data_modality'] + '/' + templates['task_type']
 
-        else:
+        selected = None
+        if 'dataset' in templates:
+            dataset_templates = templates[templates.dataset == dataset_name]
+            if not dataset_templates.empty:
+                dataset_templates = dataset_templates.groupby('template').z_score.max()
+                selected = list(dataset_templates.sort_values(ascending=False).head(5).index)
+
+        if not selected:
             problem_type = data_modality + '/' + task_type
             problem_templates = templates[templates.problem_type == problem_type]
 
             problem_templates = problem_templates.sort_values('z_score', ascending=False)
-            problem_winners = problem_templates.groupby('dataset').head(3)
+            if 'dataset' in problem_templates:
+                problem_templates = problem_templates.groupby('dataset').head(3)
 
-            z_scores = problem_winners.groupby('template').z_score.mean()
-            selected = z_scores.sort_values(ascending=False).index
+            z_scores = problem_templates.groupby('template').z_score.mean()
+            selected = list(z_scores.sort_values(ascending=False).index)
 
         return list(filter(self._valid_template, selected))
 
@@ -152,14 +160,9 @@ class PipelineSearcher:
         all_templates = list(filter(self._valid_template, os.listdir(TEMPLATES_DIR)))
         return random.sample(all_templates, len(all_templates))
 
-    def _get_timeouts(self, dataset_name):
-        templates = pd.read_csv(os.path.join(BASE_DIR, 'timeouts.csv'))
-        selected = templates[templates.dataset == dataset_name]
-        return list(filter(self._valid_template, selected.template))
-
     def __init__(self, input_dir='input', output_dir='output', static_dir='static',
                  dump=False, hard_timeout=False, ignore_errors=False, cv_folds=5,
-                 subprocess_timeout=None, max_errors=0, store_summary=False):
+                 subprocess_timeout=None, max_errors=5, store_summary=False):
         self.input = input_dir
         self.output = output_dir
         self.static = static_dir
@@ -441,15 +444,18 @@ class PipelineSearcher:
 
         return btb_scorer
 
-    def start_session(self, template_names, dataset, problem, metric):
+    def start_session(self, template_names, dataset, problem, metric, budget):
         LOGGER.warning('Selected %s templates', len(template_names))
         template_loader = LazyLoader(template_names, TEMPLATES_DIR)
         btb_scorer = self.make_btb_scorer(dataset, problem, template_loader, metric)
 
         session = BTBSession(template_loader, btb_scorer, max_errors=self.max_errors)
 
-        if self.budget is not None:
-            while self.spent < self.budget:
+        if (budget is not None) and budget < 0:
+            budget = len(template_names) * -budget
+
+        if budget:
+            while self.spent < budget:
                 session.run(1)
                 last_score = list(session.proposals.values())[-1].get('score')
                 if (last_score is None) and self.ignore_errors:
@@ -463,16 +469,14 @@ class PipelineSearcher:
         else:
             session.run()
 
-    def search(self, dataset, problem, timeout=None, budget=None, template_names=None):
+    def search(self, dataset, problem, timeout=None, budget=None, templates_csv=None):
         self.timeout = timeout
         self.killed = False
-        self.budget = budget
         self.best_pipeline = None
         self.best_score = None
         self.best_normalized = -np.inf
         self.best_template_name = None
         self.found_by_name = True
-        template_names = template_names or list()
         data_modality = None
         task_type = None
         task_subtype = None
@@ -500,14 +504,14 @@ class PipelineSearcher:
         try:
             self.setup_search()
             LOGGER.info("Loading the template and the tuner")
-            if not template_names:
-                template_names = self._select_templates(dataset_name, data_modality, task_type)
-                # Execute TIMEOUT templates only
-                # template_names = self._get_timeouts(dataset_name)
-                # self.budget = len(template_names)
+            if not templates_csv:
+                templates_csv = TEMPLATES_CSV
+
+            template_names = self._select_templates(
+                dataset_name, data_modality, task_type, templates_csv)
 
             try:
-                self.start_session(template_names, dataset, problem, metric)
+                self.start_session(template_names, dataset, problem, metric, budget)
             except StopTuning:
                 LOGGER.warning('All selected templates failed. Falling back to the rest')
                 all_templates = self._get_all_templates()
@@ -516,7 +520,7 @@ class PipelineSearcher:
                     for template in all_templates
                     if template not in template_names
                 ]
-                self.start_session(untried_templates, dataset, problem, metric)
+                self.start_session(untried_templates, dataset, problem, metric, budget)
 
         except KeyboardInterrupt:
             pass
@@ -546,7 +550,7 @@ class PipelineSearcher:
             'type': task_type,
             'subtype': task_subtype,
             'iterations': self.iterations,
-            'templates': len(template_names),
+            'templates': len(template_names or []),
             'scored': self.scored,
             'errored': self.errored,
             'invalid': self.invalid,
