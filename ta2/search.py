@@ -11,7 +11,8 @@ from multiprocessing import Manager, Process
 
 import numpy as np
 import pandas as pd
-from btb.session import BTBSession
+from btb import BTBSession
+from btb.tuning import StopTuning
 from d3m.metadata.base import ArgumentType, Context
 from d3m.metadata.pipeline import Pipeline, PrimitiveStep
 from d3m.runtime import DEFAULT_SCORING_PIPELINE_PATH
@@ -141,18 +142,14 @@ class PipelineSearcher:
 
         return list(filter(self._valid_template, selected))
 
+    def _get_all_templates(self):
+        all_templates = list(filter(self._valid_template, os.listdir(TEMPLATES_DIR)))
+        return random.sample(all_templates, len(all_templates))
+
     def _get_timeouts(self, dataset_name):
         templates = pd.read_csv(os.path.join(BASE_DIR, 'timeouts.csv'))
         selected = templates[templates.dataset == dataset_name]
         return list(filter(self._valid_template, selected.template))
-
-    def _get_templates(self, data_modality, task_type):
-        selected = self._select_templates(data_modality, task_type)
-        if selected:
-            return selected
-
-        all_templates = list(filter(self._valid_template, os.listdir(TEMPLATES_DIR)))
-        return random.sample(all_templates, len(all_templates))
 
     def __init__(self, input_dir='input', output_dir='output', static_dir='static',
                  dump=False, hard_timeout=False, ignore_errors=False, cv_folds=5,
@@ -380,7 +377,7 @@ class PipelineSearcher:
         #     with open(os.path.join(BASE_DIR, 'da.json')) as f:
         #         return json.dumps(json.load(f))
 
-    def make_btb_scorer(self, dataset_name, dataset, problem, templates, metric):
+    def make_btb_scorer(self, dataset, problem, templates, metric):
         def btb_scorer(template_name, proposal):
             self.check_stop()
             self.iterations += 1
@@ -438,6 +435,28 @@ class PipelineSearcher:
 
         return btb_scorer
 
+    def start_session(self, template_names, dataset, problem, metric):
+        LOGGER.warning('Selected %s templates', len(template_names))
+        template_loader = LazyLoader(template_names, TEMPLATES_DIR)
+        btb_scorer = self.make_btb_scorer(dataset, problem, template_loader, metric)
+
+        session = BTBSession(template_loader, btb_scorer, max_errors=self.max_errors)
+
+        if self.budget is not None:
+            while self.spent < self.budget:
+                session.run(1)
+                last_score = list(session.proposals.values())[-1].get('score')
+                if (last_score is None) and self.ignore_errors:
+                    LOGGER.warning("Ignoring errored pipeline")
+                else:
+                    self.spent += 1
+
+                LOGGER.warn('its: %s; sc: %s; er: %s; in: %s; ti: %s', self.iterations,
+                            self.scored, self.errored, self.invalid, self.timedout)
+
+        else:
+            session.run()
+
     def search(self, dataset, problem, timeout=None, budget=None, template_names=None):
         self.timeout = timeout
         self.killed = False
@@ -451,6 +470,7 @@ class PipelineSearcher:
         data_modality = None
         task_type = None
         task_subtype = None
+        self.spent = 0
         self.iterations = 0
         self.scored = 0
         self.errored = 0
@@ -475,33 +495,22 @@ class PipelineSearcher:
             self.setup_search()
             LOGGER.info("Loading the template and the tuner")
             if not template_names:
-                template_names = self._get_templates(data_modality, task_type)
+                template_names = self._select_templates(data_modality, task_type)
                 # Execute TIMEOUT templates only
                 # template_names = self._get_timeouts(dataset_name)
                 # self.budget = len(template_names)
 
-            LOGGER.warning('Selected %s templates', len(template_names))
-            template_loader = LazyLoader(template_names, TEMPLATES_DIR)
-            btb_scorer = self.make_btb_scorer(
-                dataset_name, dataset, problem, template_loader, metric)
-
-            session = BTBSession(template_loader, btb_scorer, max_errors=self.max_errors)
-
-            if self.budget is not None:
-                spent = 0
-                while spent < self.budget:
-                    session.run(1)
-                    last_score = list(session.proposals.values())[-1].get('score')
-                    if (last_score is None) and self.ignore_errors:
-                        LOGGER.warning("Ignoring errored pipeline")
-                    else:
-                        spent += 1
-
-                    LOGGER.warn('its: %s; sc: %s; er: %s; in: %s; ti: %s', self.iterations,
-                                self.scored, self.errored, self.invalid, self.timedout)
-
-            else:
-                session.run()
+            try:
+                self.start_session(template_names, dataset, problem, metric)
+            except StopTuning:
+                LOGGER.warning('All selected templates failed. Falling back to the rest')
+                all_templates = self._get_all_templates()
+                untried_templates = [
+                    template
+                    for template in all_templates
+                    if template not in template_names
+                ]
+                self.start_session(untried_templates, dataset, problem, metric)
 
         except KeyboardInterrupt:
             pass
