@@ -180,22 +180,27 @@ def process_dataset(dataset_name, dataset, problem, args):
         result['elapsed'] = datetime.utcnow() - start_ts
         result['dataset'] = dataset_name
 
-        pipeline_id = result['pipeline']
-        cv_score = result['cv_score']
-        if cv_score is not None:
-            box_print("Best Pipeline: {} - CV Score: {}".format(pipeline_id, cv_score))
-
-            pipeline_path = os.path.join(output_path, 'pipelines_ranked', pipeline_id + '.json')
-            test_score = score_pipeline(dataset, problem, pipeline_path, args.static, output_path)
-            box_print("Test Score for pipeline {}: {}".format(pipeline_id, test_score))
-
-            result['test_score'] = test_score
-
     except Exception as ex:
         result = {
             'dataset': dataset_name,
             'error': '{}: {}'.format(type(ex).__name__, ex),
         }
+    else:
+        try:
+            pipeline_id = result['pipeline']
+            cv_score = result['cv_score']
+            if cv_score is not None:
+                box_print("Best Pipeline: {} - CV Score: {}".format(pipeline_id, cv_score))
+
+                pipeline_path = os.path.join(output_path, 'pipelines_ranked', pipeline_id + '.json')
+                test_score = score_pipeline(dataset, problem, pipeline_path,
+                                            args.static, output_path)
+                box_print("Test Score for pipeline {}: {}".format(pipeline_id, test_score))
+
+                result['test_score'] = test_score
+        except Exception as ex:
+            LOGGER.exception('Error while testing the winner pipeline')
+            result['error'] = 'TEST Error: {}'.format(ex)
 
     return result
 
