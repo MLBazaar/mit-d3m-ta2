@@ -65,7 +65,7 @@ def score_pipeline(dataset, problem, pipeline_path, static=None, output_path=Non
         volumes_dir=static,
     )
 
-    LOGGER.info("Fitting the pipeline")
+    LOGGER.info("Fitting pipeline %s", pipeline_path)
     fit_results = runtime.fit(inputs=[dataset])
     fit_results.check_success()
 
@@ -74,14 +74,14 @@ def score_pipeline(dataset, problem, pipeline_path, static=None, output_path=Non
     test_dataset = load_dataset(dataset_root, 'SCORE', 'TEST')
 
     # Producing results using the fitted pipeline.
-    LOGGER.info("Producing predictions")
+    LOGGER.info("Producing predictions for pipeline %s", pipeline_path)
     produce_results = runtime.produce(inputs=[test_dataset])
     produce_results.check_success()
 
     predictions = produce_results.values['outputs.0']
     metrics = problem['problem']['performance_metrics']
 
-    LOGGER.info("Computing the score")
+    LOGGER.info("Computing the score for pipeline %s", pipeline_path)
     scoring_pipeline = load_pipeline(DEFAULT_SCORING_PIPELINE_PATH)
     scores, scoring_pipeline_run = score(
         scoring_pipeline=scoring_pipeline,
@@ -105,10 +105,8 @@ def score_pipeline(dataset, problem, pipeline_path, static=None, output_path=Non
 
 def box_print(message, strong=False):
     char = '#' if strong else '*'
-    print(char * len(message))
-    print(message)
-    print(char * len(message))
-    LOGGER.info(message)
+    line = char * max(len(line) for line in message.split('\n'))
+    LOGGER.warn('\n'.join(('', line, message, line)))
 
 
 def get_datasets(input_dir, datasets=None, data_modality=None, task_type=None, task_subtype=None):
@@ -154,6 +152,14 @@ def _append_report(result, path):
     return report
 
 
+def _select_candidates(summary):
+    summary = summary[summary.status == 'SCORED']
+    summary = summary[['template', 'pipeline', 'score', 'normalized']]
+    candidates = summary.sort_values('normalized', ascending=False).head(20)
+    candidates['pipeline'] += '.json'
+    return candidates
+
+
 def process_dataset(dataset_name, dataset, problem, args):
     box_print("Processing dataset {}".format(dataset_name), True)
 
@@ -187,17 +193,33 @@ def process_dataset(dataset_name, dataset, problem, args):
         }
     else:
         try:
-            pipeline_id = result['pipeline']
-            cv_score = result['cv_score']
-            if cv_score is not None:
-                box_print("Best Pipeline: {} - CV Score: {}".format(pipeline_id, cv_score))
+            summary = result.pop('summary')
+            candidates = _select_candidates(summary)
+            if candidates.empty:
+                box_print('No valid pipelines found for dataset {}'.format(dataset_name))
+            else:
+                ranked_path = os.path.join(output_path, 'pipelines_ranked')
+                test_scores = list()
+                for _, candidate in candidates.iterrows():
+                    try:
+                        pipeline = candidate.pipeline
+                        pipeline_path = os.path.join(ranked_path, pipeline)
+                        test_score = score_pipeline(dataset, problem, pipeline_path,
+                                                    args.static, output_path)
+                        test_scores.append(test_score)
+                    except Exception:
+                        test_score = None
 
-                pipeline_path = os.path.join(output_path, 'pipelines_ranked', pipeline_id + '.json')
-                test_score = score_pipeline(dataset, problem, pipeline_path,
-                                            args.static, output_path)
-                box_print("Test Score for pipeline {}: {}".format(pipeline_id, test_score))
+                candidates['test_score'] = test_scores
+                candidates = candidates.sort_values('test_score', ascending=False)
 
-                result['test_score'] = test_score
+                best = candidates.iloc[0]
+                result['test_score'] = best.test_score
+                result['template'] = best.template
+                result['cv_score'] = best.score
+                box_print('Best pipelines for dataset {}:\n{}'.format(
+                    dataset_name, candidates.to_string()))
+
         except Exception as ex:
             LOGGER.exception('Error while testing the winner pipeline')
             result['error'] = 'TEST Error: {}'.format(ex)

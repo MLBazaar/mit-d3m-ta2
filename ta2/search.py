@@ -4,7 +4,6 @@ import os
 import random
 import signal
 import warnings
-from collections import defaultdict
 from datetime import datetime, timedelta
 from multiprocessing import Manager, Process
 
@@ -21,79 +20,18 @@ from datamart import DatamartQuery
 from datamart_rest import RESTDatamart
 
 from ta2.loader import LazyLoader
-from ta2.utils import dump_pipeline
+from ta2.utils import dump_pipeline, get_dataset_details, to_dicts
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 PIPELINES_DIR = os.path.join(BASE_DIR, 'pipelines')
 TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')
 TEMPLATES_CSV = os.path.join(BASE_DIR, 'templates.csv')
-CURATED_TEMPLATES_DIR = os.path.join(BASE_DIR, 'curated_templates')
 
 DATAMART_URL = os.getenv('DATAMART_URL_NYU', 'https://datamart.d3m.vida-nyu.org')
 
-SUBPROCESS_PRIMITIVES = [
-    'd3m.primitives.natural_language_processing.lda.Fastlvm',
-    'd3m.primitives.feature_construction.sdne.DSBOX',
-    'd3m.primitives.feature_extraction.nk_sent2vec.Sent2Vec',
-]
-
 LOGGER = logging.getLogger(__name__)
-STATUS_MSG = 'iteartions: %s; scored: %s; errored: %s; invalid: %s; timedout: %s'
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
-
-
-def detect_data_modality(dataset):
-    dataset_doc_path = dataset.metadata.query(())['location_uris'][0]
-    with open(dataset_doc_path[7:]) as f:
-        dataset_doc = json.load(f)
-
-    resources = list()
-    for resource in dataset_doc['dataResources']:
-        resources.append(resource['resType'])
-
-    if len(resources) == 1:
-        return 'single_table'
-    else:
-        for resource in resources:
-            if resource == 'edgeList':
-                return 'graph'
-            elif resource not in ('table', 'raw'):
-                return resource
-
-    return 'multi_table'
-
-
-def get_dataset_details(dataset, problem):
-    data_modality = detect_data_modality(dataset)
-    task_type = problem['problem']['task_keywords'][0].name.lower()
-    task_subtype = problem['problem']['task_keywords'][1].name.lower()
-
-    return data_modality, task_type, task_subtype
-
-
-def to_dicts(hyperparameters):
-
-    params_tree = defaultdict(dict)
-    for (block, hyperparameter), value in hyperparameters.items():
-        if isinstance(value, np.integer):
-            value = int(value)
-
-        elif isinstance(value, np.floating):
-            value = float(value)
-
-        elif isinstance(value, np.ndarray):
-            value = value.tolist()
-
-        elif isinstance(value, np.bool_):
-            value = bool(value)
-
-        elif value == 'None':
-            value = None
-
-        params_tree[block][hyperparameter] = value
-
-    return params_tree
 
 
 class SubprocessTimeout(Exception):
@@ -436,9 +374,10 @@ class PipelineSearcher:
                     'normalized': normalized
                 })
                 if pipeline:
+                    pipeline_id = pipeline.id
                     try:
                         self._save_pipeline(pipeline)
-
+                        self.summary[-1]['pipeline'] = pipeline_id
                     except Exception:
                         LOGGER.exception('Error saving pipeline %s', pipeline.id)
 
@@ -532,18 +471,21 @@ class PipelineSearcher:
                 signal.alarm(0)
 
         if self.store_summary and self.summary:
+            # TODO: Do this outside, in __main__.py
+            # Store all the summary at once
             summary_path = os.path.join(self.output, 'summary.csv')
-            summary = pd.DataFrame(self.summary)
-            summary['dataset'] = dataset_name
-            summary['data_modality'] = data_modality
-            summary['type'] = task_type
-            summary['subtype'] = task_subtype
-            summary.to_csv(summary_path, index=False)
+            self.summary = pd.DataFrame(self.summary)
+            self.summary['dataset'] = dataset_name
+            self.summary['data_modality'] = data_modality
+            self.summary['type'] = task_type
+            self.summary['subtype'] = task_subtype
+            self.summary.to_csv(summary_path, index=False)
 
         self.done = True
 
         return {
             'pipeline': self.best_pipeline,
+            'summary': self.summary,
             'cv_score': self.best_score,
             'template': self.best_template_name,
             'modality': data_modality,
