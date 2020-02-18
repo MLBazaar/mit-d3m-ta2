@@ -208,7 +208,7 @@ def process_dataset(dataset_name, dataset, problem, args):
                                                     args.static, output_path)
                         test_scores.append(test_score)
                     except Exception:
-                        test_score = None
+                        test_scores.append(None)
 
                 candidates['test_score'] = test_scores
                 candidates = candidates.sort_values('test_score', ascending=False)
