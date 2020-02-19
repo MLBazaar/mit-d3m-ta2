@@ -137,10 +137,11 @@ def test_core_servicer_start_session(thread_mock, logger_mock):
     # `end` and `done` are not in session
 
 
+@patch('ta2.ta3.core_servicer.Dataset.load')
 @patch('ta2.ta3.core_servicer.decode_problem_description')
 @patch('ta2.ta3.core_servicer.PipelineSearcher')
 @patch('ta2.ta3.core_servicer.core_pb2.SearchSolutionsResponse')
-def test_core_servicer_searchsolutions(searcher_mock, pipeline_searcher_mock, decode_mock):
+def test_core_servicer_searchsolutions(searcher_mock, pipeline_searcher_mock, decode_mock, load_mock):
     instance = CoreServicer('/input', '/output', '/static', 0.5)
     instance._start_session = MagicMock()
     expected_result = 'result'
@@ -154,14 +155,14 @@ def test_core_servicer_searchsolutions(searcher_mock, pipeline_searcher_mock, de
         instance.SearchSolutions(request, None)  # context (None) is not used
 
     # wrong problem inputs
-    request = MagicMock(version='2019.12.4')
+    request = MagicMock(version='2020.1.28')
 
     with pytest.raises(AssertionError):
         instance.SearchSolutions(request, None)  # context (None) is not used
 
     # correct parameters
     problem = MagicMock(inputs=inputs)
-    request = MagicMock(version='2019.12.4', inputs=inputs, problem=problem)
+    request = MagicMock(version='2020.1.28', inputs=inputs, problem=problem)
 
     result = instance.SearchSolutions(request, None)  # context (None) is not used
 
