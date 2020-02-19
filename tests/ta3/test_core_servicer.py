@@ -155,14 +155,14 @@ def test_core_servicer_searchsolutions(searcher_mock, pipeline_searcher_mock, de
         instance.SearchSolutions(request, None)  # context (None) is not used
 
     # wrong problem inputs
-    request = MagicMock(version='2020.1.28')
+    request = MagicMock(version='2020.2.11')
 
     with pytest.raises(AssertionError):
         instance.SearchSolutions(request, None)  # context (None) is not used
 
     # correct parameters
     problem = MagicMock(inputs=inputs)
-    request = MagicMock(version='2020.1.28', inputs=inputs, problem=problem)
+    request = MagicMock(version='2020.2.11', inputs=inputs, problem=problem)
 
     result = instance.SearchSolutions(request, None)  # context (None) is not used
 

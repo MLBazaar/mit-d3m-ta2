@@ -9,6 +9,7 @@ install_requires = [
     'tabulate>=0.8.3,<0.9',
     'd3m==2020.1.9',
     'datamart-rest==0.2.3',
+    'gitdb2>=2,<3.0.2',
     # 'numpy==1.17.3',
     # 'scikit-learn[alldeps]==0.21.3',
     # 'Cython==0.29.7',
