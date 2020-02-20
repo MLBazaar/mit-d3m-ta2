@@ -3,6 +3,8 @@
 <i>An open source project from Data to AI Lab at MIT.</i>
 </p>
 
+
+[![Development Status](https://img.shields.io/badge/Development%20Status-2%20--%20Pre--Alpha-yellow)](https://pypi.org/search/?c=Development+Status+%3A%3A+2+-+Pre-Alpha)
 [![Release Shield](https://img.shields.io/github/release-pre/HDI-Project/mit-d3m-ta2.svg)](https://github.com/HDI-Project/mit-d3m-ta2/releases)
 [![Travis CI Shield](https://travis-ci.org/HDI-Project/mit-d3m-ta2.svg?branch=master)](https://travis-ci.org/HDI-Project/mit-d3m-ta2)
 
@@ -12,6 +14,7 @@
 MIT-Featuretools TA2 submission for the D3M program.
 
 - Free software: MIT license
+- Development Status: [Pre-Alpha](https://pypi.org/search/?c=Development+Status+%3A%3A+2+-+Pre-Alpha)
 - Documentation: https://HDI-Project.github.io/mit-d3m-ta2
 
 # Overview
