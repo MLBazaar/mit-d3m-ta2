@@ -23,10 +23,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../../_static/language_data.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
@@ -239,6 +239,7 @@
 <span class="kn">from</span> <span class="nn">d3m.runtime</span> <span class="kn">import</span> <span class="n">Runtime</span>
 <span class="kn">from</span> <span class="nn">google.protobuf.timestamp_pb2</span> <span class="kn">import</span> <span class="n">Timestamp</span>
 <span class="kn">from</span> <span class="nn">ta3ta2_api</span> <span class="kn">import</span> <span class="n">core_pb2</span><span class="p">,</span> <span class="n">core_pb2_grpc</span><span class="p">,</span> <span class="n">pipeline_pb2</span><span class="p">,</span> <span class="n">primitive_pb2</span><span class="p">,</span> <span class="n">problem_pb2</span><span class="p">,</span> <span class="n">value_pb2</span>
+<span class="kn">from</span> <span class="nn">ta3ta2_api.utils</span> <span class="kn">import</span> <span class="n">ValueType</span> <span class="k">as</span> <span class="n">D3MValueType</span>
 <span class="kn">from</span> <span class="nn">ta3ta2_api.utils</span> <span class="kn">import</span> <span class="n">decode_performance_metric</span><span class="p">,</span> <span class="n">decode_problem_description</span><span class="p">,</span> <span class="n">encode_score</span>
 
 <span class="kn">from</span> <span class="nn">ta2.search</span> <span class="kn">import</span> <span class="n">PipelineSearcher</span>
@@ -1050,7 +1051,7 @@
         <span class="n">time_bound_search</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">time_bound_search</span>
         <span class="n">problem_description</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">problem</span>
         <span class="n">inputs</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">inputs</span>
-        <span class="n">allowed_value_types</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">allowed_value_types</span>
+        <span class="n">allowed_value_types</span> <span class="o">=</span> <span class="p">[</span><span class="n">D3MValueType</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">request</span><span class="o">.</span><span class="n">allowed_value_types</span><span class="p">]</span>
 
         <span class="c1"># Ignored:</span>
         <span class="c1"># user_agent = request.user_agent</span>
@@ -1074,12 +1075,13 @@
         <span class="n">searcher</span> <span class="o">=</span> <span class="n">PipelineSearcher</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input_dir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">static_dir</span><span class="p">)</span>
 
         <span class="n">dataset_doc</span> <span class="o">=</span> <span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">dataset_uri</span>
+        <span class="n">dataset</span> <span class="o">=</span> <span class="n">Dataset</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">dataset_doc</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_start_session</span><span class="p">(</span>
             <span class="n">search_id</span><span class="p">,</span>
             <span class="s1">&#39;search&#39;</span><span class="p">,</span>
             <span class="n">searcher</span><span class="o">.</span><span class="n">search</span><span class="p">,</span>
-            <span class="n">dataset_doc</span><span class="p">,</span>
+            <span class="n">dataset</span><span class="p">,</span>
             <span class="n">problem</span><span class="p">,</span>
             <span class="n">timeout</span><span class="p">,</span>
             <span class="n">searcher</span><span class="o">=</span><span class="n">searcher</span><span class="p">,</span>
@@ -1418,6 +1420,7 @@
             <span class="n">metric</span> <span class="o">=</span> <span class="n">decode_performance_metric</span><span class="p">(</span><span class="n">metric</span><span class="p">)</span>
 
             <span class="n">searcher</span><span class="o">.</span><span class="n">score_pipeline</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">problem</span><span class="p">,</span> <span class="n">pipeline</span><span class="p">,</span> <span class="p">[</span><span class="n">metric</span><span class="p">],</span> <span class="o">**</span><span class="n">cv_args</span><span class="p">)</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Pipeline </span><span class="si">%s</span><span class="s1"> obtained score </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">score</span><span class="p">)</span>
 
 <div class="viewcode-block" id="CoreServicer.ScoreSolution"><a class="viewcode-back" href="../../../api/ta2.ta3.core_servicer.html#ta2.ta3.core_servicer.CoreServicer.ScoreSolution">[docs]</a>    <span class="k">def</span> <span class="nf">ScoreSolution</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
         <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">######## ScoreSolution ########</span><span class="se">\n</span><span class="si">%s</span><span class="s2">########&quot;</span><span class="p">,</span> <span class="n">request</span><span class="p">)</span>

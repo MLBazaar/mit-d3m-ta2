@@ -23,10 +23,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../_static/language_data.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -221,22 +221,20 @@
            <div itemprop="articleBody">
             
   <h1>Source code for ta2.search</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">glob</span>
-<span class="kn">import</span> <span class="nn">json</span>
+<span></span><span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">random</span>
 <span class="kn">import</span> <span class="nn">signal</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
 <span class="kn">from</span> <span class="nn">multiprocessing</span> <span class="kn">import</span> <span class="n">Manager</span><span class="p">,</span> <span class="n">Process</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">from</span> <span class="nn">btb.session</span> <span class="kn">import</span> <span class="n">BTBSession</span>
-<span class="kn">from</span> <span class="nn">btb.tuning.tunable</span> <span class="kn">import</span> <span class="n">Tunable</span>
-<span class="kn">from</span> <span class="nn">d3m.container.dataset</span> <span class="kn">import</span> <span class="n">Dataset</span>
+<span class="kn">import</span> <span class="nn">yaml</span>
+<span class="kn">from</span> <span class="nn">btb</span> <span class="kn">import</span> <span class="n">BTBSession</span>
+<span class="kn">from</span> <span class="nn">btb.tuning</span> <span class="kn">import</span> <span class="n">StopTuning</span>
 <span class="kn">from</span> <span class="nn">d3m.metadata.base</span> <span class="kn">import</span> <span class="n">ArgumentType</span><span class="p">,</span> <span class="n">Context</span>
 <span class="kn">from</span> <span class="nn">d3m.metadata.pipeline</span> <span class="kn">import</span> <span class="n">Pipeline</span><span class="p">,</span> <span class="n">PrimitiveStep</span>
 <span class="kn">from</span> <span class="nn">d3m.runtime</span> <span class="kn">import</span> <span class="n">DEFAULT_SCORING_PIPELINE_PATH</span>
@@ -244,77 +242,27 @@
 <span class="kn">from</span> <span class="nn">datamart</span> <span class="kn">import</span> <span class="n">DatamartQuery</span>
 <span class="kn">from</span> <span class="nn">datamart_rest</span> <span class="kn">import</span> <span class="n">RESTDatamart</span>
 
-<span class="kn">from</span> <span class="nn">ta2.loader</span> <span class="kn">import</span> <span class="n">load_pipeline</span>
-<span class="kn">from</span> <span class="nn">ta2.utils</span> <span class="kn">import</span> <span class="n">dump_pipeline</span>
+<span class="kn">from</span> <span class="nn">ta2.loader</span> <span class="kn">import</span> <span class="n">LazyLoader</span>
+<span class="kn">from</span> <span class="nn">ta2.utils</span> <span class="kn">import</span> <span class="n">dump_pipeline</span><span class="p">,</span> <span class="n">get_dataset_details</span><span class="p">,</span> <span class="n">to_dicts</span>
 
 <span class="n">BASE_DIR</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span>
 <span class="n">PIPELINES_DIR</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">BASE_DIR</span><span class="p">,</span> <span class="s1">&#39;pipelines&#39;</span><span class="p">)</span>
-<span class="n">TEMPLATES_DIR</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">BASE_DIR</span><span class="p">,</span> <span class="s1">&#39;new_templates&#39;</span><span class="p">)</span>
-<span class="n">FALLBACK_PIPELINE</span> <span class="o">=</span> <span class="s1">&#39;single_table_classification_fallback.json&#39;</span>
+<span class="n">TEMPLATES_DIR</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">BASE_DIR</span><span class="p">,</span> <span class="s1">&#39;templates&#39;</span><span class="p">)</span>
+<span class="n">TEMPLATES_CSV</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">BASE_DIR</span><span class="p">,</span> <span class="s1">&#39;templates.csv&#39;</span><span class="p">)</span>
 
 <span class="n">DATAMART_URL</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;DATAMART_URL_NYU&#39;</span><span class="p">,</span> <span class="s1">&#39;https://datamart.d3m.vida-nyu.org&#39;</span><span class="p">)</span>
-
-<span class="n">SUBPROCESS_PRIMITIVES</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s1">&#39;d3m.primitives.natural_language_processing.lda.Fastlvm&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;d3m.primitives.feature_construction.sdne.DSBOX&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;d3m.primitives.feature_extraction.nk_sent2vec.Sent2Vec&#39;</span><span class="p">,</span>
-<span class="p">]</span>
 
 <span class="n">LOGGER</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="detect_data_modality"><a class="viewcode-back" href="../../api/ta2.search.html#ta2.search.detect_data_modality">[docs]</a><span class="k">def</span> <span class="nf">detect_data_modality</span><span class="p">(</span><span class="n">dataset_doc_path</span><span class="p">):</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">dataset_doc_path</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-        <span class="n">dataset_doc</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
-
-    <span class="n">resources</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
-    <span class="k">for</span> <span class="n">resource</span> <span class="ow">in</span> <span class="n">dataset_doc</span><span class="p">[</span><span class="s1">&#39;dataResources&#39;</span><span class="p">]:</span>
-        <span class="n">resources</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">resource</span><span class="p">[</span><span class="s1">&#39;resType&#39;</span><span class="p">])</span>
-
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">resources</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s1">&#39;single_table&#39;</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">resource</span> <span class="ow">in</span> <span class="n">resources</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">resource</span> <span class="o">==</span> <span class="s1">&#39;edgeList&#39;</span><span class="p">:</span>
-                <span class="k">return</span> <span class="s1">&#39;graph&#39;</span>
-            <span class="k">elif</span> <span class="n">resource</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;table&#39;</span><span class="p">,</span> <span class="s1">&#39;raw&#39;</span><span class="p">):</span>
-                <span class="k">return</span> <span class="n">resource</span>
-
-    <span class="k">return</span> <span class="s1">&#39;multi_table&#39;</span></div>
+<div class="viewcode-block" id="SubprocessTimeout"><a class="viewcode-back" href="../../api/ta2.search.html#ta2.search.SubprocessTimeout">[docs]</a><span class="k">class</span> <span class="nc">SubprocessTimeout</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="k">pass</span></div>
 
 
-<div class="viewcode-block" id="get_dataset_details"><a class="viewcode-back" href="../../api/ta2.search.html#ta2.search.get_dataset_details">[docs]</a><span class="k">def</span> <span class="nf">get_dataset_details</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">problem</span><span class="p">):</span>
-    <span class="n">data_modality</span> <span class="o">=</span> <span class="n">detect_data_modality</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
-    <span class="n">task_type</span> <span class="o">=</span> <span class="n">problem</span><span class="p">[</span><span class="s1">&#39;problem&#39;</span><span class="p">][</span><span class="s1">&#39;task_keywords&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
-    <span class="n">task_subtype</span> <span class="o">=</span> <span class="n">problem</span><span class="p">[</span><span class="s1">&#39;problem&#39;</span><span class="p">][</span><span class="s1">&#39;task_keywords&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
-
-    <span class="k">return</span> <span class="n">data_modality</span><span class="p">,</span> <span class="n">task_type</span><span class="p">,</span> <span class="n">task_subtype</span></div>
-
-
-<div class="viewcode-block" id="to_dicts"><a class="viewcode-back" href="../../api/ta2.search.html#ta2.search.to_dicts">[docs]</a><span class="k">def</span> <span class="nf">to_dicts</span><span class="p">(</span><span class="n">hyperparameters</span><span class="p">):</span>
-
-    <span class="n">params_tree</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">dict</span><span class="p">)</span>
-    <span class="k">for</span> <span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="n">hyperparameter</span><span class="p">),</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">hyperparameters</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">):</span>
-            <span class="n">value</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">):</span>
-            <span class="n">value</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
-            <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
-
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">):</span>
-            <span class="n">value</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-
-        <span class="k">elif</span> <span class="n">value</span> <span class="o">==</span> <span class="s1">&#39;None&#39;</span><span class="p">:</span>
-            <span class="n">value</span> <span class="o">=</span> <span class="kc">None</span>
-
-        <span class="n">params_tree</span><span class="p">[</span><span class="n">block</span><span class="p">][</span><span class="n">hyperparameter</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
-
-    <span class="k">return</span> <span class="n">params_tree</span></div>
+<div class="viewcode-block" id="ScoringError"><a class="viewcode-back" href="../../api/ta2.search.html#ta2.search.ScoringError">[docs]</a><span class="k">class</span> <span class="nc">ScoringError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="k">pass</span></div>
 
 
 <div class="viewcode-block" id="PipelineSearcher"><a class="viewcode-back" href="../../api/ta2.search.html#ta2.search.PipelineSearcher">[docs]</a><span class="k">class</span> <span class="nc">PipelineSearcher</span><span class="p">:</span>
@@ -331,25 +279,51 @@
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">pipeline_file</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">loader</span><span class="p">(</span><span class="n">string_or_file</span><span class="o">=</span><span class="n">pipeline_file</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_get_templates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset_name</span><span class="p">,</span> <span class="n">data_modality</span><span class="p">,</span> <span class="n">task_type</span><span class="p">):</span>
-        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Loading template for dataset </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">dataset_name</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_valid_template</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">TEMPLATES_DIR</span><span class="p">,</span> <span class="n">template</span><span class="p">)</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">True</span>
 
-        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">TEMPLATES_DIR</span><span class="p">,</span> <span class="s1">&#39;templates_with_z_score.csv&#39;</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Invalid template found: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
 
-        <span class="n">templates</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">dataset_name</span><span class="p">]</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s1">&#39;z_score&#39;</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_select_templates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset_name</span><span class="p">,</span> <span class="n">data_modality</span><span class="p">,</span> <span class="n">task_type</span><span class="p">,</span> <span class="n">templates_csv</span><span class="p">):</span>
+        <span class="n">templates</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">templates_csv</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s1">&#39;z_score&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">templates</span><span class="p">:</span>
+            <span class="n">templates</span><span class="p">[</span><span class="s1">&#39;z_score&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="s1">&#39;problem_type&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">templates</span><span class="p">:</span>
+            <span class="n">templates</span><span class="p">[</span><span class="s1">&#39;problem_type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">templates</span><span class="p">[</span><span class="s1">&#39;data_modality&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="n">templates</span><span class="p">[</span><span class="s1">&#39;task_type&#39;</span><span class="p">]</span>
 
-        <span class="n">problem_type</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">_</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">data_modality</span><span class="p">,</span> <span class="n">task_type</span><span class="p">)</span>
-        <span class="n">df</span><span class="p">[</span><span class="s1">&#39;match&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">dataset_name</span>
-        <span class="n">templates</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;problem_type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">problem_type</span><span class="p">]</span>
-        <span class="n">templates</span> <span class="o">=</span> <span class="n">templates</span><span class="o">.</span><span class="n">sort_values</span><span class="p">([</span><span class="s1">&#39;match&#39;</span><span class="p">,</span> <span class="s1">&#39;z_score&#39;</span><span class="p">],</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-        <span class="n">templates</span> <span class="o">=</span> <span class="n">templates</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;pipeline_id&#39;</span><span class="p">],</span> <span class="n">keep</span><span class="o">=</span><span class="s1">&#39;first&#39;</span><span class="p">)</span>
+        <span class="n">selected</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="s1">&#39;dataset&#39;</span> <span class="ow">in</span> <span class="n">templates</span><span class="p">:</span>
+            <span class="n">dataset_templates</span> <span class="o">=</span> <span class="n">templates</span><span class="p">[</span><span class="n">templates</span><span class="o">.</span><span class="n">dataset</span> <span class="o">==</span> <span class="n">dataset_name</span><span class="p">]</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">dataset_templates</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
+                <span class="n">dataset_templates</span> <span class="o">=</span> <span class="n">dataset_templates</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;template&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">z_score</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+                <span class="n">selected</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">dataset_templates</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">found_by_name</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;match&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">any</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">selected</span><span class="p">:</span>
+            <span class="n">problem_type</span> <span class="o">=</span> <span class="n">data_modality</span> <span class="o">+</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="n">task_type</span>
+            <span class="n">problem_templates</span> <span class="o">=</span> <span class="n">templates</span><span class="p">[</span><span class="n">templates</span><span class="o">.</span><span class="n">problem_type</span> <span class="o">==</span> <span class="n">problem_type</span><span class="p">]</span>
 
-        <span class="k">return</span> <span class="n">templates</span><span class="o">.</span><span class="n">pipeline_id</span><span class="o">.</span><span class="n">values</span>
+            <span class="n">problem_templates</span> <span class="o">=</span> <span class="n">problem_templates</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s1">&#39;z_score&#39;</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="k">if</span> <span class="s1">&#39;dataset&#39;</span> <span class="ow">in</span> <span class="n">problem_templates</span><span class="p">:</span>
+                <span class="n">problem_templates</span> <span class="o">=</span> <span class="n">problem_templates</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;dataset&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+
+            <span class="n">z_scores</span> <span class="o">=</span> <span class="n">problem_templates</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;template&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">z_score</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+            <span class="n">selected</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">z_scores</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_valid_template</span><span class="p">,</span> <span class="n">selected</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_get_all_templates</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">all_templates</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_valid_template</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">TEMPLATES_DIR</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">all_templates</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">all_templates</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_dir</span><span class="o">=</span><span class="s1">&#39;input&#39;</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;output&#39;</span><span class="p">,</span> <span class="n">static_dir</span><span class="o">=</span><span class="s1">&#39;static&#39;</span><span class="p">,</span>
-                 <span class="n">dump</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">hard_timeout</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ignore_errors</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+                 <span class="n">dump</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">hard_timeout</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ignore_errors</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">cv_folds</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+                 <span class="n">subprocess_timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">max_errors</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">store_summary</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">input</span> <span class="o">=</span> <span class="n">input_dir</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">output</span> <span class="o">=</span> <span class="n">output_dir</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">static</span> <span class="o">=</span> <span class="n">static_dir</span>
@@ -357,9 +331,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">hard_timeout</span> <span class="o">=</span> <span class="n">hard_timeout</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span> <span class="o">=</span> <span class="kc">None</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">runs_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="p">,</span> <span class="s1">&#39;pipeline_runs&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ranked_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="p">,</span> <span class="s1">&#39;pipelines_ranked&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">scored_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="p">,</span> <span class="s1">&#39;pipelines_scored&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">searched_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="p">,</span> <span class="s1">&#39;pipelines_searched&#39;</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">runs_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ranked_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scored_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">searched_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -368,6 +344,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">data_pipeline</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_pipeline</span><span class="p">(</span><span class="s1">&#39;kfold_pipeline.yml&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">scoring_pipeline</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_pipeline</span><span class="p">(</span><span class="n">DEFAULT_SCORING_PIPELINE_PATH</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ignore_errors</span> <span class="o">=</span> <span class="n">ignore_errors</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">folds</span> <span class="o">=</span> <span class="n">cv_folds</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subprocess_timeout</span> <span class="o">=</span> <span class="n">subprocess_timeout</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_errors</span> <span class="o">=</span> <span class="n">max_errors</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">store_summary</span> <span class="o">=</span> <span class="n">store_summary</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_evaluate</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">pipeline</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -378,7 +358,6 @@
         <span class="n">out</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
 
 <div class="viewcode-block" id="PipelineSearcher.subprocess_evaluate"><a class="viewcode-back" href="../../api/ta2.search.html#ta2.search.PipelineSearcher.subprocess_evaluate">[docs]</a>    <span class="k">def</span> <span class="nf">subprocess_evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pipeline</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Evaluating pipeline </span><span class="si">%s</span><span class="s1"> in a subprocess&#39;</span><span class="p">,</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
         <span class="k">with</span> <span class="n">Manager</span><span class="p">()</span> <span class="k">as</span> <span class="n">manager</span><span class="p">:</span>
             <span class="n">output</span> <span class="o">=</span> <span class="n">manager</span><span class="o">.</span><span class="n">list</span><span class="p">()</span>
             <span class="n">process</span> <span class="o">=</span> <span class="n">Process</span><span class="p">(</span>
@@ -391,22 +370,23 @@
             <span class="n">process</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 
             <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Joining process </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">process</span><span class="o">.</span><span class="n">pid</span><span class="p">)</span>
-            <span class="n">process</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+            <span class="n">process</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">subprocess_timeout</span><span class="p">)</span>
 
-            <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Terminating process </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">process</span><span class="o">.</span><span class="n">pid</span><span class="p">)</span>
-            <span class="n">process</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span> <span class="o">=</span> <span class="kc">None</span>
 
-            <span class="n">result</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">output</span><span class="p">)</span> <span class="k">if</span> <span class="n">output</span> <span class="k">else</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="n">process</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
+                <span class="n">process</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
+                <span class="k">raise</span> <span class="n">SubprocessTimeout</span><span class="p">(</span><span class="s1">&#39;Timeout reached for subprocess </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">process</span><span class="o">.</span><span class="n">pid</span><span class="p">))</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">result</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Evaluate crashed&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">output</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Subprocess evaluate crashed&quot;</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">result</span></div>
+            <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">output</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="PipelineSearcher.score_pipeline"><a class="viewcode-back" href="../../api/ta2.search.html#ta2.search.PipelineSearcher.score_pipeline">[docs]</a>    <span class="k">def</span> <span class="nf">score_pipeline</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">problem</span><span class="p">,</span> <span class="n">pipeline</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">random_seed</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-                       <span class="n">folds</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">stratified</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+                       <span class="n">folds</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">stratified</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">template_name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 
+        <span class="n">folds</span> <span class="o">=</span> <span class="n">folds</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">folds</span>
         <span class="n">problem_metrics</span> <span class="o">=</span> <span class="n">problem</span><span class="p">[</span><span class="s1">&#39;problem&#39;</span><span class="p">][</span><span class="s1">&#39;performance_metrics&#39;</span><span class="p">]</span>
         <span class="n">metrics</span> <span class="o">=</span> <span class="n">metrics</span> <span class="ow">or</span> <span class="n">problem_metrics</span>
         <span class="n">data_params</span> <span class="o">=</span> <span class="p">{</span>
@@ -415,18 +395,7 @@
             <span class="s1">&#39;shuffle&#39;</span><span class="p">:</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">shuffle</span><span class="p">),</span>
         <span class="p">}</span>
 
-        <span class="c1"># Some primitives crash with a core dump that kills everything.</span>
-        <span class="c1"># We want to isolate those.</span>
-        <span class="n">primitives</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="n">step</span><span class="p">[</span><span class="s1">&#39;primitive&#39;</span><span class="p">][</span><span class="s1">&#39;python_path&#39;</span><span class="p">]</span>
-            <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">to_json_structure</span><span class="p">()[</span><span class="s1">&#39;steps&#39;</span><span class="p">]</span>
-        <span class="p">]</span>
-        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">primitive</span> <span class="ow">in</span> <span class="n">SUBPROCESS_PRIMITIVES</span> <span class="k">for</span> <span class="n">primitive</span> <span class="ow">in</span> <span class="n">primitives</span><span class="p">):</span>
-            <span class="n">evaluate</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subprocess_evaluate</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">evaluate</span> <span class="o">=</span> <span class="n">d3m_evaluate</span>
-
-        <span class="n">all_scores</span><span class="p">,</span> <span class="n">all_results</span> <span class="o">=</span> <span class="n">evaluate</span><span class="p">(</span>
+        <span class="n">all_scores</span><span class="p">,</span> <span class="n">all_results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subprocess_evaluate</span><span class="p">(</span>
             <span class="n">pipeline</span><span class="o">=</span><span class="n">pipeline</span><span class="p">,</span>
             <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">dataset</span><span class="p">],</span>
             <span class="n">data_pipeline</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data_pipeline</span><span class="p">,</span>
@@ -444,12 +413,13 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">all_scores</span><span class="p">:</span>
             <span class="n">failed_result</span> <span class="o">=</span> <span class="n">all_results</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
             <span class="n">message</span> <span class="o">=</span> <span class="n">failed_result</span><span class="o">.</span><span class="n">pipeline_run</span><span class="o">.</span><span class="n">status</span><span class="p">[</span><span class="s1">&#39;message&#39;</span><span class="p">]</span>
-            <span class="n">LOGGER</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
-            <span class="n">cause</span> <span class="o">=</span> <span class="n">failed_result</span><span class="o">.</span><span class="n">error</span><span class="o">.</span><span class="n">__cause__</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cause</span><span class="p">,</span> <span class="ne">BaseException</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="n">cause</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">cause</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">ScoringError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">store_summary</span><span class="p">:</span>
+            <span class="n">yaml_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">runs_dir</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">.yml&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pipeline</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
+            <span class="n">runs</span> <span class="o">=</span> <span class="p">[</span><span class="n">res</span><span class="o">.</span><span class="n">pipeline_run</span><span class="o">.</span><span class="n">to_json_structure</span><span class="p">()</span> <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">all_results</span><span class="p">]</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">yaml_path</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">yaml_file</span><span class="p">:</span>
+                <span class="n">yaml</span><span class="o">.</span><span class="n">dump_all</span><span class="p">(</span><span class="n">runs</span><span class="p">,</span> <span class="n">yaml_file</span><span class="p">,</span> <span class="n">default_flow_style</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
         <span class="n">pipeline</span><span class="o">.</span><span class="n">cv_scores</span> <span class="o">=</span> <span class="p">[</span><span class="n">score</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">score</span> <span class="ow">in</span> <span class="n">all_scores</span><span class="p">]</span>
         <span class="n">pipeline</span><span class="o">.</span><span class="n">score</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">pipeline</span><span class="o">.</span><span class="n">cv_scores</span><span class="p">)</span></div>
@@ -526,15 +496,14 @@
             <span class="k">raise</span> <span class="ne">KeyboardInterrupt</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="PipelineSearcher.stop"><a class="viewcode-back" href="../../api/ta2.search.html#ta2.search.PipelineSearcher.stop">[docs]</a>    <span class="k">def</span> <span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_stop</span> <span class="o">=</span> <span class="kc">True</span></div>
-        <span class="c1"># if self.subprocess:</span>
-        <span class="c1">#     LOGGER.info(&#39;Terminating subprocess: %s&#39;, self.subprocess.pid)</span>
-        <span class="c1">#     self.subprocess.terminate()</span>
-        <span class="c1">#     self.subprocess = None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stop</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="p">:</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Terminating subprocess: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">pid</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">subprocess</span> <span class="o">=</span> <span class="kc">None</span></div>
 
     <span class="k">def</span> <span class="nf">_timeout</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;STOP BY TIMEOUT&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">timeout_kill</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">killed</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">raise</span> <span class="ne">KeyboardInterrupt</span><span class="p">()</span>
 
 <div class="viewcode-block" id="PipelineSearcher.setup_search"><a class="viewcode-back" href="../../api/ta2.search.html#ta2.search.PipelineSearcher.setup_search">[docs]</a>    <span class="k">def</span> <span class="nf">setup_search</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -578,13 +547,19 @@
         <span class="c1">#     with open(os.path.join(BASE_DIR, &#39;da.json&#39;)) as f:</span>
         <span class="c1">#         return json.dumps(json.load(f))</span>
 
-<div class="viewcode-block" id="PipelineSearcher.make_btb_scorer"><a class="viewcode-back" href="../../api/ta2.search.html#ta2.search.PipelineSearcher.make_btb_scorer">[docs]</a>    <span class="k">def</span> <span class="nf">make_btb_scorer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset_name</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">problem</span><span class="p">,</span> <span class="n">templates</span><span class="p">,</span> <span class="n">metric</span><span class="p">):</span>
+<div class="viewcode-block" id="PipelineSearcher.make_btb_scorer"><a class="viewcode-back" href="../../api/ta2.search.html#ta2.search.PipelineSearcher.make_btb_scorer">[docs]</a>    <span class="k">def</span> <span class="nf">make_btb_scorer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">problem</span><span class="p">,</span> <span class="n">templates</span><span class="p">,</span> <span class="n">metric</span><span class="p">):</span>
         <span class="k">def</span> <span class="nf">btb_scorer</span><span class="p">(</span><span class="n">template_name</span><span class="p">,</span> <span class="n">proposal</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">check_stop</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">iterations</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Scoring template </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">template_name</span><span class="p">)</span>
 
-            <span class="n">pipeline</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_new_pipeline</span><span class="p">(</span><span class="n">templates</span><span class="p">[</span><span class="n">template_name</span><span class="p">],</span> <span class="n">proposal</span><span class="p">)</span>
-
+            <span class="n">pipeline</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">status</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">score</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">normalized</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">try</span><span class="p">:</span>
+                <span class="n">pipeline</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_new_pipeline</span><span class="p">(</span><span class="n">templates</span><span class="p">[</span><span class="n">template_name</span><span class="p">],</span> <span class="n">proposal</span><span class="p">)</span>
+
                 <span class="bp">self</span><span class="o">.</span><span class="n">score_pipeline</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">problem</span><span class="p">,</span> <span class="n">pipeline</span><span class="p">)</span>
                 <span class="n">pipeline</span><span class="o">.</span><span class="n">normalized_score</span> <span class="o">=</span> <span class="n">metric</span><span class="o">.</span><span class="n">normalize</span><span class="p">(</span><span class="n">pipeline</span><span class="o">.</span><span class="n">score</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">normalized_score</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">best_normalized</span><span class="p">:</span>
@@ -593,61 +568,92 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">best_pipeline</span> <span class="o">=</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">id</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">best_template_name</span> <span class="o">=</span> <span class="n">template_name</span>
 
+                <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Template </span><span class="si">%s</span><span class="s1"> score: </span><span class="si">%s</span><span class="s1"> - </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">template_name</span><span class="p">,</span>
+                               <span class="n">pipeline</span><span class="o">.</span><span class="n">score</span><span class="p">,</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">normalized_score</span><span class="p">)</span>
+                <span class="n">status</span> <span class="o">=</span> <span class="s1">&#39;SCORED&#39;</span>
+                <span class="n">score</span> <span class="o">=</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">score</span>
+                <span class="n">normalized</span> <span class="o">=</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">normalized_score</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">scored</span> <span class="o">+=</span> <span class="mi">1</span>
                 <span class="k">return</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">normalized_score</span>
 
+            <span class="k">except</span> <span class="n">SubprocessTimeout</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">timedout</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">status</span> <span class="o">=</span> <span class="s1">&#39;TIMEOUT&#39;</span>
+                <span class="k">raise</span>
+            <span class="k">except</span> <span class="n">ScoringError</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">errored</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">status</span> <span class="o">=</span> <span class="s1">&#39;ERROR&#39;</span>
+                <span class="k">raise</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">invalid</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">status</span> <span class="o">=</span> <span class="s1">&#39;INVALID&#39;</span>
+                <span class="k">raise</span>
+
             <span class="k">finally</span><span class="p">:</span>
-                <span class="k">try</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_save_pipeline</span><span class="p">(</span><span class="n">pipeline</span><span class="p">)</span>
-                <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-                    <span class="n">LOGGER</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s1">&#39;Error saving pipeline </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">summary</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                    <span class="s1">&#39;template&#39;</span><span class="p">:</span> <span class="n">template_name</span><span class="p">,</span>
+                    <span class="s1">&#39;status&#39;</span><span class="p">:</span> <span class="n">status</span><span class="p">,</span>
+                    <span class="s1">&#39;score&#39;</span><span class="p">:</span> <span class="n">score</span><span class="p">,</span>
+                    <span class="s1">&#39;normalized&#39;</span><span class="p">:</span> <span class="n">normalized</span>
+                <span class="p">})</span>
+                <span class="k">if</span> <span class="n">pipeline</span><span class="p">:</span>
+                    <span class="n">pipeline_id</span> <span class="o">=</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">id</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_save_pipeline</span><span class="p">(</span><span class="n">pipeline</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">summary</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;pipeline&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pipeline_id</span>
+                    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                        <span class="n">LOGGER</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s1">&#39;Error saving pipeline </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">btb_scorer</span></div>
 
-    <span class="k">def</span> <span class="nf">_get_tunables_templates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template_names</span><span class="p">):</span>
+<div class="viewcode-block" id="PipelineSearcher.start_session"><a class="viewcode-back" href="../../api/ta2.search.html#ta2.search.PipelineSearcher.start_session">[docs]</a>    <span class="k">def</span> <span class="nf">start_session</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template_names</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">problem</span><span class="p">,</span> <span class="n">metric</span><span class="p">,</span> <span class="n">budget</span><span class="p">):</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Selected </span><span class="si">%s</span><span class="s1"> templates&#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">template_names</span><span class="p">))</span>
+        <span class="n">template_loader</span> <span class="o">=</span> <span class="n">LazyLoader</span><span class="p">(</span><span class="n">template_names</span><span class="p">,</span> <span class="n">TEMPLATES_DIR</span><span class="p">)</span>
+        <span class="n">btb_scorer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_btb_scorer</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">problem</span><span class="p">,</span> <span class="n">template_loader</span><span class="p">,</span> <span class="n">metric</span><span class="p">)</span>
 
-        <span class="n">tunables</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="n">templates</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">session</span> <span class="o">=</span> <span class="n">BTBSession</span><span class="p">(</span><span class="n">template_loader</span><span class="p">,</span> <span class="n">btb_scorer</span><span class="p">,</span> <span class="n">max_errors</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_errors</span><span class="p">)</span>
 
-        <span class="k">for</span> <span class="n">template_name</span> <span class="ow">in</span> <span class="n">template_names</span><span class="p">:</span>
-            <span class="n">name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">TEMPLATES_DIR</span><span class="p">,</span> <span class="n">template_name</span><span class="p">)</span>
-            <span class="n">files</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39;*&#39;</span><span class="p">)</span>
-            <span class="n">path</span> <span class="o">=</span> <span class="n">files</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">template</span><span class="p">,</span> <span class="n">tunable_hp</span> <span class="o">=</span> <span class="n">load_pipeline</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
-            <span class="n">templates</span><span class="p">[</span><span class="n">template_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">template</span>
-            <span class="n">tunables</span><span class="p">[</span><span class="n">template_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">Tunable</span><span class="p">(</span><span class="n">tunable_hp</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">budget</span><span class="p">:</span>
+            <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">spent</span> <span class="o">&lt;</span> <span class="n">budget</span><span class="p">:</span>
+                <span class="n">session</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                <span class="n">last_score</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">session</span><span class="o">.</span><span class="n">proposals</span><span class="o">.</span><span class="n">values</span><span class="p">())[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;score&#39;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">last_score</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">ignore_errors</span><span class="p">:</span>
+                    <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Ignoring errored pipeline&quot;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">spent</span> <span class="o">+=</span> <span class="mi">1</span>
 
-        <span class="k">return</span> <span class="n">tunables</span><span class="p">,</span> <span class="n">templates</span>
+                <span class="n">LOGGER</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;its: </span><span class="si">%s</span><span class="s1">; sc: </span><span class="si">%s</span><span class="s1">; er: </span><span class="si">%s</span><span class="s1">; in: </span><span class="si">%s</span><span class="s1">; ti: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">iterations</span><span class="p">,</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">scored</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">errored</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">invalid</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">timedout</span><span class="p">)</span>
 
-<div class="viewcode-block" id="PipelineSearcher.search"><a class="viewcode-back" href="../../api/ta2.search.html#ta2.search.PipelineSearcher.search">[docs]</a>    <span class="k">def</span> <span class="nf">search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset_path</span><span class="p">,</span> <span class="n">problem</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">budget</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">template_names</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">session</span><span class="o">.</span><span class="n">run</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="PipelineSearcher.search"><a class="viewcode-back" href="../../api/ta2.search.html#ta2.search.PipelineSearcher.search">[docs]</a>    <span class="k">def</span> <span class="nf">search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">problem</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">budget</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">templates_csv</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span> <span class="o">=</span> <span class="n">timeout</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">timeout_kill</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">budget</span> <span class="o">=</span> <span class="n">budget</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">killed</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">best_pipeline</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">best_score</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">best_normalized</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">best_template_name</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">found_by_name</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="n">template_names</span> <span class="o">=</span> <span class="n">template_names</span> <span class="ow">or</span> <span class="nb">list</span><span class="p">()</span>
         <span class="n">data_modality</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">task_type</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">task_subtype</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">errors</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">spent</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">iterations</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scored</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">errored</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">invalid</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timedout</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">summary</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
 
         <span class="n">dataset_name</span> <span class="o">=</span> <span class="n">problem</span><span class="p">[</span><span class="s1">&#39;inputs&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;dataset_id&#39;</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">dataset_name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;_dataset&#39;</span><span class="p">):</span>
             <span class="n">dataset_name</span> <span class="o">=</span> <span class="n">dataset_name</span><span class="p">[:</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="s1">&#39;_dataset&#39;</span><span class="p">)]</span>
 
-        <span class="n">dataset</span> <span class="o">=</span> <span class="n">Dataset</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">dataset_path</span><span class="p">)</span>
         <span class="n">metric</span> <span class="o">=</span> <span class="n">problem</span><span class="p">[</span><span class="s1">&#39;problem&#39;</span><span class="p">][</span><span class="s1">&#39;performance_metrics&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;metric&#39;</span><span class="p">]</span>
 
-        <span class="n">data_modality</span> <span class="o">=</span> <span class="n">detect_data_modality</span><span class="p">(</span><span class="n">dataset_path</span><span class="p">[</span><span class="mi">7</span><span class="p">:])</span>
-        <span class="n">task_type</span> <span class="o">=</span> <span class="n">problem</span><span class="p">[</span><span class="s1">&#39;problem&#39;</span><span class="p">][</span><span class="s1">&#39;task_keywords&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
-        <span class="n">task_subtype</span> <span class="o">=</span> <span class="n">problem</span><span class="p">[</span><span class="s1">&#39;problem&#39;</span><span class="p">][</span><span class="s1">&#39;task_keywords&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
-
-        <span class="c1"># self.fallback = load_pipeline(</span>
-        <span class="c1">#     FALLBACK_PIPELINE,</span>
-        <span class="c1">#     tunables=False</span>
-        <span class="c1"># )</span>
+        <span class="n">data_modality</span><span class="p">,</span> <span class="n">task_type</span><span class="p">,</span> <span class="n">task_subtype</span> <span class="o">=</span> <span class="n">get_dataset_details</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">problem</span><span class="p">)</span>
 
         <span class="c1"># data_augmentation = self.get_data_augmentation(dataset, problem)</span>
 
@@ -657,24 +663,26 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">setup_search</span><span class="p">()</span>
             <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Loading the template and the tuner&quot;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">template_names</span><span class="p">:</span>
-                <span class="n">template_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_templates</span><span class="p">(</span><span class="n">dataset_name</span><span class="p">,</span> <span class="n">data_modality</span><span class="p">,</span> <span class="n">task_type</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">templates_csv</span><span class="p">:</span>
+                <span class="n">templates_csv</span> <span class="o">=</span> <span class="n">TEMPLATES_CSV</span>
 
-            <span class="n">tunables</span><span class="p">,</span> <span class="n">templates</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_tunables_templates</span><span class="p">(</span><span class="n">template_names</span><span class="p">)</span>
-            <span class="n">btb_scorer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_btb_scorer</span><span class="p">(</span><span class="n">dataset_name</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">problem</span><span class="p">,</span> <span class="n">templates</span><span class="p">,</span> <span class="n">metric</span><span class="p">)</span>
+            <span class="n">template_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_select_templates</span><span class="p">(</span>
+                <span class="n">dataset_name</span><span class="p">,</span> <span class="n">data_modality</span><span class="p">,</span> <span class="n">task_type</span><span class="p">,</span> <span class="n">templates_csv</span><span class="p">)</span>
 
-            <span class="n">session</span> <span class="o">=</span> <span class="n">BTBSession</span><span class="p">(</span><span class="n">tunables</span><span class="p">,</span> <span class="n">btb_scorer</span><span class="p">,</span> <span class="n">max_errors</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">budget</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="n">budget</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">budget</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">template_names</span><span class="p">)</span> <span class="o">*</span> <span class="o">-</span><span class="n">budget</span>
 
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">budget</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">while</span> <span class="n">session</span><span class="o">.</span><span class="n">iterations</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">budget</span><span class="p">:</span>
-                    <span class="n">session</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-                    <span class="n">last_score</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">session</span><span class="o">.</span><span class="n">proposals</span><span class="o">.</span><span class="n">values</span><span class="p">())[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;score&#39;</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ignore_errors</span> <span class="ow">and</span> <span class="p">(</span><span class="n">last_score</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
-                        <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Ignoring Errored pipeline&quot;</span><span class="p">)</span>
-                        <span class="n">session</span><span class="o">.</span><span class="n">iterations</span> <span class="o">-=</span> <span class="mi">1</span>
-
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">session</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">start_session</span><span class="p">(</span><span class="n">template_names</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">problem</span><span class="p">,</span> <span class="n">metric</span><span class="p">,</span> <span class="n">budget</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">StopTuning</span><span class="p">:</span>
+                <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;All selected templates failed. Falling back to the rest&#39;</span><span class="p">)</span>
+                <span class="n">all_templates</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_all_templates</span><span class="p">()</span>
+                <span class="n">untried_templates</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">template</span>
+                    <span class="k">for</span> <span class="n">template</span> <span class="ow">in</span> <span class="n">all_templates</span>
+                    <span class="k">if</span> <span class="n">template</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">template_names</span>
+                <span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">start_session</span><span class="p">(</span><span class="n">untried_templates</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">problem</span><span class="p">,</span> <span class="n">metric</span><span class="p">,</span> <span class="n">budget</span><span class="p">)</span>
 
         <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
             <span class="k">pass</span>
@@ -685,20 +693,36 @@
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">hard_timeout</span><span class="p">:</span>
                 <span class="n">signal</span><span class="o">.</span><span class="n">alarm</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">store_summary</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">summary</span><span class="p">:</span>
+            <span class="c1"># TODO: Do this outside, in __main__.py</span>
+            <span class="c1"># Store all the summary at once</span>
+            <span class="n">summary_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="p">,</span> <span class="s1">&#39;summary.csv&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">summary</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">summary</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">summary</span><span class="p">[</span><span class="s1">&#39;dataset&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataset_name</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">summary</span><span class="p">[</span><span class="s1">&#39;data_modality&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data_modality</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">summary</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">task_type</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">summary</span><span class="p">[</span><span class="s1">&#39;subtype&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">task_subtype</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">summary</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">summary_path</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">done</span> <span class="o">=</span> <span class="kc">True</span>
 
         <span class="k">return</span> <span class="p">{</span>
             <span class="s1">&#39;pipeline&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">best_pipeline</span><span class="p">,</span>
+            <span class="s1">&#39;summary&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">summary</span><span class="p">,</span>
             <span class="s1">&#39;cv_score&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">best_score</span><span class="p">,</span>
             <span class="s1">&#39;template&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">best_template_name</span><span class="p">,</span>
-            <span class="s1">&#39;data_modality&#39;</span><span class="p">:</span> <span class="n">data_modality</span><span class="p">,</span>
-            <span class="s1">&#39;task_type&#39;</span><span class="p">:</span> <span class="n">task_type</span><span class="p">,</span>
-            <span class="s1">&#39;task_subtype&#39;</span><span class="p">:</span> <span class="n">task_subtype</span><span class="p">,</span>
-            <span class="s1">&#39;tuning_iterations&#39;</span><span class="p">:</span> <span class="n">session</span><span class="o">.</span><span class="n">iterations</span> <span class="k">if</span> <span class="n">session</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="s1">&#39;error&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">errors</span> <span class="ow">or</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="s1">&#39;killed_by_timeout&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">timeout_kill</span><span class="p">,</span>
-            <span class="s1">&#39;pipelines_scheduled&#39;</span><span class="p">:</span> <span class="n">template_names</span><span class="p">,</span>
-            <span class="s1">&#39;found_by_name&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">found_by_name</span>
+            <span class="s1">&#39;modality&#39;</span><span class="p">:</span> <span class="n">data_modality</span><span class="p">,</span>
+            <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="n">task_type</span><span class="p">,</span>
+            <span class="s1">&#39;subtype&#39;</span><span class="p">:</span> <span class="n">task_subtype</span><span class="p">,</span>
+            <span class="s1">&#39;iterations&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">iterations</span><span class="p">,</span>
+            <span class="s1">&#39;templates&#39;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">template_names</span> <span class="ow">or</span> <span class="p">[]),</span>
+            <span class="s1">&#39;scored&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">scored</span><span class="p">,</span>
+            <span class="s1">&#39;errored&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">errored</span><span class="p">,</span>
+            <span class="s1">&#39;invalid&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">invalid</span><span class="p">,</span>
+            <span class="s1">&#39;timedout&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">timedout</span><span class="p">,</span>
+            <span class="s1">&#39;killed&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">killed</span><span class="p">,</span>
+            <span class="s1">&#39;found&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">found_by_name</span><span class="p">,</span>
+            <span class="s1">&#39;metric&#39;</span><span class="p">:</span> <span class="n">metric</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
         <span class="p">}</span></div></div>
 </pre></div>
 

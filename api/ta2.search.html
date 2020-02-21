@@ -23,10 +23,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -232,7 +232,7 @@
 <span id="ta2-search-module"></span><h1>ta2.search module<a class="headerlink" href="#module-ta2.search" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="ta2.search.PipelineSearcher">
-<em class="property">class </em><code class="sig-prename descclassname">ta2.search.</code><code class="sig-name descname">PipelineSearcher</code><span class="sig-paren">(</span><em class="sig-param">input_dir='input'</em>, <em class="sig-param">output_dir='output'</em>, <em class="sig-param">static_dir='static'</em>, <em class="sig-param">dump=False</em>, <em class="sig-param">hard_timeout=False</em>, <em class="sig-param">ignore_errors=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ta2/search.html#PipelineSearcher"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ta2.search.PipelineSearcher" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">ta2.search.</code><code class="sig-name descname">PipelineSearcher</code><span class="sig-paren">(</span><em class="sig-param">input_dir='input'</em>, <em class="sig-param">output_dir='output'</em>, <em class="sig-param">static_dir='static'</em>, <em class="sig-param">dump=False</em>, <em class="sig-param">hard_timeout=False</em>, <em class="sig-param">ignore_errors=False</em>, <em class="sig-param">cv_folds=5</em>, <em class="sig-param">subprocess_timeout=None</em>, <em class="sig-param">max_errors=5</em>, <em class="sig-param">store_summary=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ta2/search.html#PipelineSearcher"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ta2.search.PipelineSearcher" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="method">
 <dt id="ta2.search.PipelineSearcher.check_stop">
@@ -246,22 +246,27 @@
 
 <dl class="method">
 <dt id="ta2.search.PipelineSearcher.make_btb_scorer">
-<code class="sig-name descname">make_btb_scorer</code><span class="sig-paren">(</span><em class="sig-param">dataset_name</em>, <em class="sig-param">dataset</em>, <em class="sig-param">problem</em>, <em class="sig-param">templates</em>, <em class="sig-param">metric</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ta2/search.html#PipelineSearcher.make_btb_scorer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ta2.search.PipelineSearcher.make_btb_scorer" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">make_btb_scorer</code><span class="sig-paren">(</span><em class="sig-param">dataset</em>, <em class="sig-param">problem</em>, <em class="sig-param">templates</em>, <em class="sig-param">metric</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ta2/search.html#PipelineSearcher.make_btb_scorer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ta2.search.PipelineSearcher.make_btb_scorer" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="ta2.search.PipelineSearcher.score_pipeline">
-<code class="sig-name descname">score_pipeline</code><span class="sig-paren">(</span><em class="sig-param">dataset</em>, <em class="sig-param">problem</em>, <em class="sig-param">pipeline</em>, <em class="sig-param">metrics=None</em>, <em class="sig-param">random_seed=0</em>, <em class="sig-param">folds=5</em>, <em class="sig-param">stratified=False</em>, <em class="sig-param">shuffle=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ta2/search.html#PipelineSearcher.score_pipeline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ta2.search.PipelineSearcher.score_pipeline" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">score_pipeline</code><span class="sig-paren">(</span><em class="sig-param">dataset</em>, <em class="sig-param">problem</em>, <em class="sig-param">pipeline</em>, <em class="sig-param">metrics=None</em>, <em class="sig-param">random_seed=0</em>, <em class="sig-param">folds=None</em>, <em class="sig-param">stratified=False</em>, <em class="sig-param">shuffle=False</em>, <em class="sig-param">template_name=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ta2/search.html#PipelineSearcher.score_pipeline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ta2.search.PipelineSearcher.score_pipeline" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="ta2.search.PipelineSearcher.search">
-<code class="sig-name descname">search</code><span class="sig-paren">(</span><em class="sig-param">dataset_path</em>, <em class="sig-param">problem</em>, <em class="sig-param">timeout=None</em>, <em class="sig-param">budget=None</em>, <em class="sig-param">template_names=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ta2/search.html#PipelineSearcher.search"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ta2.search.PipelineSearcher.search" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">search</code><span class="sig-paren">(</span><em class="sig-param">dataset</em>, <em class="sig-param">problem</em>, <em class="sig-param">timeout=None</em>, <em class="sig-param">budget=None</em>, <em class="sig-param">templates_csv=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ta2/search.html#PipelineSearcher.search"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ta2.search.PipelineSearcher.search" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="ta2.search.PipelineSearcher.setup_search">
 <code class="sig-name descname">setup_search</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ta2/search.html#PipelineSearcher.setup_search"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ta2.search.PipelineSearcher.setup_search" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ta2.search.PipelineSearcher.start_session">
+<code class="sig-name descname">start_session</code><span class="sig-paren">(</span><em class="sig-param">template_names</em>, <em class="sig-param">dataset</em>, <em class="sig-param">problem</em>, <em class="sig-param">metric</em>, <em class="sig-param">budget</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ta2/search.html#PipelineSearcher.start_session"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ta2.search.PipelineSearcher.start_session" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -276,20 +281,17 @@
 
 </dd></dl>
 
-<dl class="function">
-<dt id="ta2.search.detect_data_modality">
-<code class="sig-prename descclassname">ta2.search.</code><code class="sig-name descname">detect_data_modality</code><span class="sig-paren">(</span><em class="sig-param">dataset_doc_path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ta2/search.html#detect_data_modality"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ta2.search.detect_data_modality" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dl class="exception">
+<dt id="ta2.search.ScoringError">
+<em class="property">exception </em><code class="sig-prename descclassname">ta2.search.</code><code class="sig-name descname">ScoringError</code><a class="reference internal" href="../_modules/ta2/search.html#ScoringError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ta2.search.ScoringError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+</dd></dl>
 
-<dl class="function">
-<dt id="ta2.search.get_dataset_details">
-<code class="sig-prename descclassname">ta2.search.</code><code class="sig-name descname">get_dataset_details</code><span class="sig-paren">(</span><em class="sig-param">dataset</em>, <em class="sig-param">problem</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ta2/search.html#get_dataset_details"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ta2.search.get_dataset_details" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="ta2.search.to_dicts">
-<code class="sig-prename descclassname">ta2.search.</code><code class="sig-name descname">to_dicts</code><span class="sig-paren">(</span><em class="sig-param">hyperparameters</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ta2/search.html#to_dicts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ta2.search.to_dicts" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dl class="exception">
+<dt id="ta2.search.SubprocessTimeout">
+<em class="property">exception </em><code class="sig-prename descclassname">ta2.search.</code><code class="sig-name descname">SubprocessTimeout</code><a class="reference internal" href="../_modules/ta2/search.html#SubprocessTimeout"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ta2.search.SubprocessTimeout" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+</dd></dl>
 
 </div>
 
