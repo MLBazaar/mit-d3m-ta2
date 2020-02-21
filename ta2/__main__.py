@@ -2,12 +2,12 @@ import argparse
 import gc
 import logging
 import os
-import shutil
 import socket
 import sys
 import traceback
 from datetime import datetime
 
+import numpy as np
 import pandas as pd
 import tabulate
 from d3m.container.dataset import Dataset
@@ -31,12 +31,12 @@ def load_dataset(root_path, phase, inner_phase=None):
         return Dataset.load(dataset_uri='file://' + os.path.abspath(path))
     else:
         path = os.path.join(root_path, phase, 'dataset_' + phase, 'datasetDoc.json')
-        return Dataset.load(dataset_uri='file://' + os.path.abspath(path))
+        return Dataset.load(dataset_uri=path)
 
 
 def load_problem(root_path, phase):
     path = os.path.join(root_path, phase, 'problem_' + phase, 'problemDoc.json')
-    return Problem.load(problem_uri='file://' + os.path.abspath(path))
+    return Problem.load(problem_uri=path)
 
 
 def load_pipeline(pipeline_path):
@@ -47,47 +47,41 @@ def load_pipeline(pipeline_path):
             return Pipeline.from_yaml(pipeline_file)
 
 
-def search(dataset_root, problem, args):
-    pps = PipelineSearcher(
-        args.input,
-        args.output,
-        args.static,
-        dump=True,
-        hard_timeout=args.hard,
-        ignore_errors=args.ignore_errors,
-    )
-    dataset_root = os.path.abspath(dataset_root)
-    dataset_path = 'file://{}/TRAIN/dataset_TRAIN/datasetDoc.json'.format(dataset_root)
-
-    return pps.search(dataset_path, problem, args.timeout, args.budget, args.template)
+def _to_yaml_run(pipeline_run, output_path):
+    run_dir = os.path.join(output_path, 'pipeline_runs')
+    run_dir = os.path.join(run_dir, '{}.yml'.format(pipeline_run.get_id()))
+    with open(run_dir, 'w') as output_file:
+        pipeline_run.to_yaml(file=output_file)
 
 
-def score_pipeline(dataset_root, problem, pipeline_path, static=None):
-    train_dataset = load_dataset(dataset_root, 'TRAIN')
-    test_dataset = load_dataset(dataset_root, 'SCORE', 'TEST')
+def score_pipeline(dataset, problem, pipeline_path, static=None, output_path=None):
     pipeline = load_pipeline(pipeline_path)
 
     # Creating an instance on runtime with pipeline description and problem description.
     runtime = Runtime(
         pipeline=pipeline,
         problem_description=problem,
-        context=Context.TESTING,
+        context=Context.EVALUATION,
         volumes_dir=static,
     )
 
-    LOGGER.info("Fitting the pipeline")
-    fit_results = runtime.fit(inputs=[train_dataset])
+    LOGGER.info("Fitting pipeline %s", pipeline_path)
+    fit_results = runtime.fit(inputs=[dataset])
     fit_results.check_success()
 
+    dataset_doc_path = dataset.metadata.query(())['location_uris'][0]
+    dataset_root = dataset_doc_path[:-len('/TRAIN/dataset_TRAIN/datasetDoc.json')]
+    test_dataset = load_dataset(dataset_root, 'SCORE', 'TEST')
+
     # Producing results using the fitted pipeline.
-    LOGGER.info("Producing predictions")
+    LOGGER.info("Producing predictions for pipeline %s", pipeline_path)
     produce_results = runtime.produce(inputs=[test_dataset])
     produce_results.check_success()
 
     predictions = produce_results.values['outputs.0']
     metrics = problem['problem']['performance_metrics']
 
-    LOGGER.info("Computing the score")
+    LOGGER.info("Computing the score for pipeline %s", pipeline_path)
     scoring_pipeline = load_pipeline(DEFAULT_SCORING_PIPELINE_PATH)
     scores, scoring_pipeline_run = score(
         scoring_pipeline=scoring_pipeline,
@@ -95,80 +89,142 @@ def score_pipeline(dataset_root, problem, pipeline_path, static=None):
         predictions=predictions,
         score_inputs=[test_dataset],
         metrics=metrics,
-        context=Context.TESTING,
+        context=Context.EVALUATION,
         random_seed=0,
     )
+
+    evaluated_pipeline_run = produce_results.pipeline_run
+    evaluated_pipeline_run.is_standard_pipeline = True
+    evaluated_pipeline_run.set_scores(scores, metrics)
+    evaluated_pipeline_run.set_scoring_pipeline_run(scoring_pipeline_run.pipeline_run, [dataset])
+
+    _to_yaml_run(evaluated_pipeline_run, output_path)
+
     return scores.iloc[0].value
 
 
 def box_print(message, strong=False):
     char = '#' if strong else '*'
-    print(char * len(message))
-    print(message)
-    print(char * len(message))
-    LOGGER.info(message)
+    line = char * max(len(line) for line in message.split('\n'))
+    LOGGER.warn('\n'.join(('', line, message, line)))
 
 
-def get_datasets(args):
-    for dataset_name in args.dataset:
-        dataset_root = os.path.join(args.input, dataset_name)
-        dataset_path = os.path.join(dataset_root, 'TRAIN', 'dataset_TRAIN', 'datasetDoc.json')
+def get_datasets(input_dir, datasets=None, data_modality=None, task_type=None, task_subtype=None):
+    if not datasets:
+        datasets = os.listdir(input_dir)
+
+    for dataset_name in datasets:
+        dataset_root = os.path.join(input_dir, dataset_name)
+        if not os.path.exists(dataset_root):
+            dataset_root += '_MIN_METADATA'
+
+        dataset_root = 'file://' + os.path.abspath(dataset_root)
 
         try:
+            dataset = load_dataset(dataset_root, 'TRAIN')
             problem = load_problem(dataset_root, 'TRAIN')
-            data_modality, task_type, task_subtype = get_dataset_details(dataset_path, problem)
+            data_modality, task_type, task_subtype = get_dataset_details(dataset, problem)
         except Exception:
             continue
 
-        if args.data_modality and not args.data_modality == data_modality:
+        if data_modality and not data_modality == data_modality:
             continue
-        if args.task_type and not args.task_type == task_type:
+        if task_type and not task_type == task_type:
             continue
-        if args.task_subtype and not args.task_subtype == task_subtype:
+        if task_subtype and not task_subtype == task_subtype:
             continue
 
-        yield dataset_name, dataset_root, problem
+        yield dataset_name, dataset, problem
 
 
-def process_dataset(dataset_name, dataset_root, problem, args):
-    start_ts = datetime.utcnow()
+def _append_report(result, path):
+    report = pd.DataFrame(
+        [result],
+        columns=REPORT_COLUMNS
+    )
+
+    report['dataset'] = report['dataset'].str.replace('_MIN_METADATA', '')
+    report['template'] = report['template'].str[0:12]
+    report['host'] = socket.gethostname()
+    report['timestamp'] = datetime.utcnow()
+    report.to_csv(path, mode='a', header=False, index=False)
+
+    return report
+
+
+def _select_candidates(summary):
+    summary = summary[summary.status == 'SCORED']
+    summary = summary[['template', 'pipeline', 'score', 'normalized']]
+    candidates = summary.sort_values('normalized', ascending=False).head(20)
+    candidates['pipeline'] += '.json'
+    return candidates
+
+
+def process_dataset(dataset_name, dataset, problem, args):
     box_print("Processing dataset {}".format(dataset_name), True)
+
+    output_path = os.path.join(args.output, dataset_name)
+    os.makedirs(output_path, exist_ok=True)
 
     LOGGER.info("Searching Pipeline for dataset {}".format(dataset_name))
     try:
-        result = search(dataset_root, problem, args)
-        result['elapsed_time'] = datetime.utcnow() - start_ts
+        start_ts = datetime.utcnow()
+        pps = PipelineSearcher(
+            args.input,
+            output_path,
+            args.static,
+            dump=True,
+            hard_timeout=args.hard,
+            ignore_errors=args.ignore_errors,
+            cv_folds=args.folds,
+            subprocess_timeout=args.subprocess_timeout,
+            max_errors=args.max_errors,
+            store_summary=True
+        )
+        result = pps.search(dataset, problem, args.timeout, args.budget, args.templates_csv)
+
+        result['elapsed'] = datetime.utcnow() - start_ts
         result['dataset'] = dataset_name
 
-        pipeline_id = result['pipeline']
-        cv_score = result['cv_score']
-        if cv_score is not None:
-            box_print("Best Pipeline: {} - CV Score: {}".format(pipeline_id, cv_score))
-
-            pipeline_path = os.path.join(args.output, 'pipelines_ranked', pipeline_id + '.json')
-            test_score = score_pipeline(dataset_root, problem, pipeline_path, args.static)
-            box_print("Test Score for pipeline {}: {}".format(pipeline_id, test_score))
-
-            result['test_score'] = test_score
-
-        return result
-    except Exception:
-        return {
+    except Exception as ex:
+        result = {
             'dataset': dataset_name,
-            'pipeline': None,
-            'cv_score': None,
-            'template': None,
-            'data_modality': None,
-            'task_type': None,
-            'task_subtype': None,
-            'tuning_iterations': None,
-            'error': 'error from main',
-            'killed_by_timeout': None,
-            'pipelines_scheduled': None,
-            'found_by_name': None,
-            'test_score': None,
-            'elapsed_time': None
+            'error': '{}: {}'.format(type(ex).__name__, ex),
         }
+    else:
+        try:
+            summary = result.pop('summary')
+            candidates = _select_candidates(summary)
+            if candidates.empty:
+                box_print('No valid pipelines found for dataset {}'.format(dataset_name))
+            else:
+                ranked_path = os.path.join(output_path, 'pipelines_ranked')
+                test_scores = list()
+                for _, candidate in candidates.iterrows():
+                    try:
+                        pipeline = candidate.pipeline
+                        pipeline_path = os.path.join(ranked_path, pipeline)
+                        test_score = score_pipeline(dataset, problem, pipeline_path,
+                                                    args.static, output_path)
+                        test_scores.append(test_score)
+                    except Exception:
+                        test_scores.append(None)
+
+                candidates['test_score'] = test_scores
+                candidates = candidates.sort_values('test_score', ascending=False)
+
+                best = candidates.iloc[0]
+                result['test_score'] = best.test_score
+                result['template'] = best.template
+                result['cv_score'] = best.score
+                box_print('Best pipelines for dataset {}:\n{}'.format(
+                    dataset_name, candidates.to_string()))
+
+        except Exception as ex:
+            LOGGER.exception('Error while testing the winner pipeline')
+            result['error'] = 'TEST Error: {}'.format(ex)
+
+    return result
 
 
 REPORT_COLUMNS = [
@@ -176,27 +232,25 @@ REPORT_COLUMNS = [
     'template',
     'cv_score',
     'test_score',
-    'elapsed_time',
-    'tuning_iterations',
-    'data_modality',
-    'task_type',
-    'error',
-    'killed_by_timeout',
+    'metric',
+    'elapsed',
+    'templates',
+    'iterations',
+    'scored',
+    'errored',
+    'invalid',
+    'timedout',
+    'killed',
+    'modality',
+    'type',
+    'subtype',
+    'host',
+    'timestamp'
 ]
 
 
 def _ta2_test(args):
-
-    # Cleanup output dir
-    shutil.rmtree(os.path.join(args.output, 'pipelines_ranked'), ignore_errors=True)
-    shutil.rmtree(os.path.join(args.output, 'pipelines_scored'), ignore_errors=True)
-    shutil.rmtree(os.path.join(args.output, 'pipelines_searched'), ignore_errors=True)
-    shutil.rmtree(os.path.join(args.output, 'predictions'), ignore_errors=True)
-
-    results = list()
-    if args.all:
-        args.dataset = os.listdir(args.input)
-    elif not args.dataset:
+    if not args.all and not args.dataset:
         print('ERROR: provide at least one dataset name or set --all')
         sys.exit(1)
 
@@ -205,32 +259,32 @@ def _ta2_test(args):
     else:
         report_name = os.path.join(args.output, 'results.csv')
 
-    if os.path.exists(report_name):
-        os.remove(report_name)
+    report = pd.DataFrame(columns=REPORT_COLUMNS)
+    if not os.path.exists(report_name):
+        report.to_csv(report_name, index=False)
 
-    report = None
-    for dataset_name, dataset_root, problem in get_datasets(args):
+    datasets = get_datasets(args.input, args.dataset, args.data_modality,
+                            args.task_type, args.task_subtype)
+    for dataset_name, dataset, problem in datasets:
         try:
-            results.append(process_dataset(dataset_name, dataset_root, problem, args))
+            result = process_dataset(dataset_name, dataset, problem, args)
             gc.collect()
         except Exception as ex:
             box_print("Error processing dataset {}".format(dataset_name), True)
             traceback.print_exc()
-            results.append({
+            result = {
                 'dataset': dataset_name,
                 'error': '{}: {}'.format(type(ex).__name__, ex)
-            })
+            }
 
-        report = pd.DataFrame(
-            results,
-            columns=REPORT_COLUMNS
-        ).sort_values('dataset')
-        report['host'] = socket.gethostname()
+        report = report.append(
+            _append_report(result, report_name),
+            sort=False,
+            ignore_index=True
+        )
 
-        report.to_csv(report_name, index=False)
-
-    if report is None:
-        print("No matiching datasets found")
+    if report.empty:
+        print("No matching datasets found")
         sys.exit(1)
 
     # print to stdout
@@ -264,7 +318,7 @@ def _ta3_test_dataset(client, dataset, timeout):
     request_id = score_response.request_id
 
     print('### {} => client.GetScoreSolutionsResults("{}")'.format(dataset, request_id))
-    client.get_score_solution_results(request_id)
+    score_solution_results = client.get_score_solution_results(request_id)
 
     print('### {} => client.FitSolution("{}")'.format(dataset, solution_id))
     fit_response = client.fit_solution(solution_id, dataset)
@@ -287,6 +341,11 @@ def _ta3_test_dataset(client, dataset, timeout):
     print('### {} => client.EndSearchSolutions("{}")'.format(dataset, search_id))
     client.end_search_solutions(search_id)
 
+    return np.mean([
+        score.value.raw.double
+        for score in score_solution_results.scores
+    ])
+
 
 def _ta3_test(args):
     local_input = args.input
@@ -299,11 +358,28 @@ def _ta3_test(args):
     if args.all:
         args.dataset = os.listdir(args.input)
 
+    results = list()
     for dataset in args.dataset:
         try:
-            _ta3_test_dataset(client, dataset, args.timeout / 60)
-        except Exception as e:
-            print('An error occurred trying to process the dataset {}, produced by {}'.format(dataset, e))
+            score = _ta3_test_dataset(client, dataset, args.timeout / 60)
+            results.append({
+                'dataset': dataset,
+                'score': score
+            })
+        except Exception as ex:
+            results.append({
+                'dataset': dataset,
+                'score': 'ERROR'
+            })
+            print('TA3 Error on dataset {}: {}'.format(dataset, ex))
+
+    results = pd.DataFrame(results)
+    print(tabulate.tabulate(
+        results[['dataset', 'score']],
+        showindex=False,
+        tablefmt='github',
+        headers=['dataset', 'score']
+    ))
 
 
 def _server(args):
@@ -388,8 +464,16 @@ def parse_args():
         '-I', '--ignore-errors', action='store_true',
         help='Ignore errors when counting tuning iterations.')
     ta2_parser.add_argument(
-        '-e', '--template', action='append',
-        help='Name of the template to Use.')
+        '-e', '--templates-csv', help='Path to the templates csv file to use.')
+    ta2_parser.add_argument(
+        '-f', '--folds', type=int, default=5,
+        help='Number of folds to use for cross validation')
+    ta2_parser.add_argument(
+        '-p', '--subprocess-timeout', type=int,
+        help='Maximum time allowed per pipeline execution, in seconds')
+    ta2_parser.add_argument(
+        '-m', '--max-errors', type=int, default=5,
+        help='Maximum amount of errors per template.')
 
     # TA3 Mode
     ta3_parents = [logging_args, io_args, search_args, ta3_args, dataset_args]
@@ -422,10 +506,12 @@ def parse_args():
     if not os.path.exists(args.output):
         os.makedirs(args.output, exist_ok=True)
 
-    if args.mode is _ta2_test and not args.logfile:
-        args.logfile = os.path.join(args.output, 'ta2.log')
-        if os.path.exists(args.logfile):
-            os.remove(args.logfile)
+    if args.logfile:
+        if not os.path.isabs(args.logfile):
+            args.logfile = os.path.join(args.output, args.logfile)
+
+        logdir = os.path.dirname(args.logfile)
+        os.makedirs(logdir, exist_ok=True)
 
     logging_setup(args.verbose, args.logfile, stdout=args.stdout)
     logging.getLogger("d3m").setLevel(logging.ERROR)

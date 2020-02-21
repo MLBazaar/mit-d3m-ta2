@@ -105,8 +105,8 @@ ENV/
 # vim
 .*.swp
 
-input*
+input
 output/
-static/
 notebooks/
-templates.bak/
+primitives/
+static

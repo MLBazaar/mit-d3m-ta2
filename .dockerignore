@@ -8,3 +8,4 @@ static/
 notebooks/
 .tox/
 .git/
+primitives/

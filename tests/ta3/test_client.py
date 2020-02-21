@@ -54,7 +54,7 @@ def test_apiclient_search_solutions(search_solutions_request_mock, logger_mock):
 
     search_solutions_request_mock.assert_called_once_with(
         user_agent='ta3_api_test.py',
-        version='2019.12.4',
+        version='2020.2.11',
         time_bound_search=1.,
         priority=0.,
         allowed_value_types=[

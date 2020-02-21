@@ -16,6 +16,7 @@ from d3m.metadata.problem import Problem
 from d3m.runtime import Runtime
 from google.protobuf.timestamp_pb2 import Timestamp
 from ta3ta2_api import core_pb2, core_pb2_grpc, pipeline_pb2, primitive_pb2, problem_pb2, value_pb2
+from ta3ta2_api.utils import ValueType as D3MValueType
 from ta3ta2_api.utils import decode_performance_metric, decode_problem_description, encode_score
 
 from ta2.search import PipelineSearcher
@@ -827,7 +828,7 @@ class CoreServicer(core_pb2_grpc.CoreServicer):
         time_bound_search = request.time_bound_search
         problem_description = request.problem
         inputs = request.inputs
-        allowed_value_types = request.allowed_value_types
+        allowed_value_types = [D3MValueType(value) for value in request.allowed_value_types]
 
         # Ignored:
         # user_agent = request.user_agent
@@ -851,12 +852,13 @@ class CoreServicer(core_pb2_grpc.CoreServicer):
         searcher = PipelineSearcher(self.input_dir, self.output_dir, self.static_dir)
 
         dataset_doc = inputs[0].dataset_uri
+        dataset = Dataset.load(dataset_doc)
 
         self._start_session(
             search_id,
             'search',
             searcher.search,
-            dataset_doc,
+            dataset,
             problem,
             timeout,
             searcher=searcher,
@@ -1195,6 +1197,7 @@ class CoreServicer(core_pb2_grpc.CoreServicer):
             metric = decode_performance_metric(metric)
 
             searcher.score_pipeline(dataset, problem, pipeline, [metric], **cv_args)
+            LOGGER.info('Pipeline %s obtained score %s', pipeline.id, pipeline.score)
 
     def ScoreSolution(self, request, context):
         LOGGER.info("\n######## ScoreSolution ########\n%s########", request)

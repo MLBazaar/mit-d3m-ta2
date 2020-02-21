@@ -7,6 +7,7 @@ import yaml
 from btb.tuning.hyperparams.boolean import BooleanHyperParam
 from btb.tuning.hyperparams.categorical import CategoricalHyperParam
 from btb.tuning.hyperparams.numerical import FloatHyperParam, IntHyperParam
+from btb.tuning.tunable import Tunable
 from d3m.metadata.hyperparams import Bounded, Enumeration, Uniform, UniformBool, UniformInt
 from d3m.metadata.pipeline import Pipeline
 
@@ -131,3 +132,23 @@ def load_pipeline(path, tunables=True, defaults=True):
         return pipeline, tunable_hyperparameters
 
     return pipeline
+
+
+class LazyLoader(dict):
+    def __init__(self, keys, templates_dir):
+        super().__init__({key: None for key in keys})
+        self._templates_dir = templates_dir
+
+    def __getitem__(self, key):
+        value = super().__getitem__(key)
+        if value is not None:
+            return value
+
+        path = os.path.join(self._templates_dir, key)
+        if not path.endswith('.json'):
+            path += '.json'
+
+        template, tunable_hp = load_pipeline(path)
+        self[key] = template
+
+        return Tunable(tunable_hp)

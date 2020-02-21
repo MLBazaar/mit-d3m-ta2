@@ -1,41 +1,13 @@
 # -*- coding: utf-8 -*-
 
-import io
 import json
 import logging
 import os
-import tarfile
-import urllib
+from collections import defaultdict
+
+import numpy as np
 
 LOGGER = logging.getLogger(__name__)
-
-DATA_PATH = os.path.join(
-    os.path.dirname(__file__),
-    'data'
-)
-DATA_URL = 'https://d3m-data-dai.s3.amazonaws.com/datasets/{}.tar.gz'
-
-
-def _download(dataset_name, data_path):
-    LOGGER.info('Downloading dataset %s into %s folder', dataset_name, data_path)
-    url = DATA_URL.format(dataset_name)
-
-    response = urllib.request.urlopen(url)
-    bytes_io = io.BytesIO(response.read())
-
-    LOGGER.debug('Extracting dataset %s into %s folder', dataset_name, data_path)
-    with tarfile.open(fileobj=bytes_io, mode='r:gz') as tf:
-        tf.extractall(data_path)
-
-
-def ensure_downloaded(dataset_name, data_path=DATA_PATH):
-    if not os.path.exists(data_path):
-        LOGGER.debug('Creating data folder %s', data_path)
-        os.makedirs(data_path)
-
-    dataset_path = os.path.join(data_path, dataset_name)
-    if not os.path.exists(dataset_path):
-        _download(dataset_name, data_path)
 
 
 def dump_pipeline(pipeline, dump_dir, rank=None):
@@ -77,3 +49,56 @@ def logging_setup(verbosity=1, logfile=None, logger_name=None, stdout=True):
         console_handler.setLevel(log_level)
         console_handler.setFormatter(formatter)
         logger.addHandler(console_handler)
+
+
+def detect_data_modality(dataset):
+    dataset_doc_path = dataset.metadata.query(())['location_uris'][0]
+    with open(dataset_doc_path[7:]) as f:
+        dataset_doc = json.load(f)
+
+    resources = list()
+    for resource in dataset_doc['dataResources']:
+        resources.append(resource['resType'])
+
+    if len(resources) == 1:
+        return 'single_table'
+    else:
+        for resource in resources:
+            if resource == 'edgeList':
+                return 'graph'
+            elif resource not in ('table', 'raw'):
+                return resource
+
+    return 'multi_table'
+
+
+def get_dataset_details(dataset, problem):
+    data_modality = detect_data_modality(dataset)
+    task_type = problem['problem']['task_keywords'][0].name.lower()
+    task_subtype = problem['problem']['task_keywords'][1].name.lower()
+
+    return data_modality, task_type, task_subtype
+
+
+def to_dicts(hyperparameters):
+
+    params_tree = defaultdict(dict)
+    for (block, hyperparameter), value in hyperparameters.items():
+        if isinstance(value, np.integer):
+            value = int(value)
+
+        elif isinstance(value, np.floating):
+            value = float(value)
+
+        elif isinstance(value, np.ndarray):
+            value = value.tolist()
+
+        elif isinstance(value, np.bool_):
+            value = bool(value)
+
+        elif value == 'None':
+            value = None
+
+        params_tree[block][hyperparameter] = value
+
+    return params_tree
