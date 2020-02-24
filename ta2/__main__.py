@@ -77,17 +77,16 @@ def _ta2_test(args):
     _start_report(args.summary, SUMMARY_COLUMNS)
 
     datasets = get_datasets(args.input, args.dataset, args.data_modality, args.task_type)
-    for dataset_name, dataset, problem, data_modality, task_type in datasets:
+    for dataset, problem, data_modality, task_type in datasets:
         extra_columns = {
             'data_modality': data_modality,
             'task_type': task_type
         }
         try:
-            output_path = os.path.join(args.output, dataset_name)
+            output_path = os.path.join(args.output, dataset.name)
             os.makedirs(output_path, exist_ok=True)
 
             result = process_dataset(
-                dataset_name,
                 dataset,
                 problem,
                 args.input,
@@ -108,15 +107,15 @@ def _ta2_test(args):
             gc.collect()
 
         except Exception as ex:
-            LOGGER.exception("Error processing dataset %s", dataset_name)
+            LOGGER.exception("Error processing dataset %s", dataset.name)
             traceback.print_exc()
             result = {
-                'dataset': dataset_name,
+                'dataset': dataset.name,
                 'error': '{}: {}'.format(type(ex).__name__, ex)
             }
 
         extra_columns.update({
-            'dataset': dataset_name.replace('_MIN_METADATA', ''),
+            'dataset': dataset.name,
             'template': result.get('template', '')[0:12],
             'host': socket.gethostname(),
             'timestamp': datetime.utcnow(),

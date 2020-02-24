@@ -77,10 +77,10 @@ def _select_candidates(summary):
     return candidates
 
 
-def process_dataset(dataset_name, dataset, problem, input_path, output_path, static_path,
+def process_dataset(dataset, problem, input_path, output_path, static_path,
                     hard_timeout, ignore_errors, folds, subprocess_timeout, max_errors,
                     timeout, budget, templates_csv):
-    box_log("Processing dataset {}".format(dataset_name), True)
+    box_log("Processing dataset {}".format(dataset.name), True)
     try:
         start_ts = datetime.utcnow()
         ta2_core = TA2Core(
@@ -107,7 +107,7 @@ def process_dataset(dataset_name, dataset, problem, input_path, output_path, sta
         try:
             candidates = _select_candidates(result['summary'])
             if candidates.empty:
-                box_log('No valid pipelines found for dataset {}'.format(dataset_name))
+                box_log('No valid pipelines found for dataset {}'.format(dataset.name))
             else:
                 ranked_path = os.path.join(output_path, 'pipelines_ranked')
                 test_scores = list()
@@ -129,7 +129,7 @@ def process_dataset(dataset_name, dataset, problem, input_path, output_path, sta
                 result['template'] = best.template
                 result['cv_score'] = best.score
                 box_log('Best pipelines for dataset {}:\n{}'.format(
-                    dataset_name, candidates.to_string()))
+                    dataset.name, candidates.to_string()))
 
         except Exception as ex:
             LOGGER.exception('Error while testing the winner pipeline')

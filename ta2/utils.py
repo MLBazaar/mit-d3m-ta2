@@ -167,4 +167,5 @@ def get_datasets(input_dir, datasets=None, data_modality=None, task_type=None):
         if task_type and not task_type == task_type:
             continue
 
-        yield dataset_name, dataset, problem, data_modality, task_type
+        dataset.name = dataset_name.replace('_MIN_METADATA', '')
+        yield dataset, problem, data_modality, task_type
