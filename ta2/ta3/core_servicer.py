@@ -1,7 +1,5 @@
-import json
 import logging
 import os
-import tempfile
 import threading
 import time
 import uuid
@@ -12,14 +10,13 @@ from urllib.parse import urlparse
 from d3m.container.dataset import Dataset
 from d3m.metadata.base import Context
 from d3m.metadata.pipeline import Pipeline
-from d3m.metadata.problem import Problem
 from d3m.runtime import Runtime
 from google.protobuf.timestamp_pb2 import Timestamp
 from ta3ta2_api import core_pb2, core_pb2_grpc, pipeline_pb2, primitive_pb2, problem_pb2, value_pb2
 from ta3ta2_api.utils import ValueType as D3MValueType
 from ta3ta2_api.utils import decode_performance_metric, decode_problem_description, encode_score
 
-from ta2.search import PipelineSearcher
+from ta2.core import TA2Core
 from ta2.utils import dump_pipeline
 
 
@@ -681,54 +678,6 @@ class CoreServicer(core_pb2_grpc.CoreServicer):
         self.timeout = timeout
         self.debug = debug
 
-    def _build_problem(self, problem_description):
-        # TODO: it might be removed, it's not being used.
-        problem = problem_description.problem
-        inputs = problem_description.inputs
-
-        problem_dict = {
-            "about": {
-                "problemID": problem.id,
-                "problemName": problem.name,
-                "taskType": problem_pb2.TaskType.Name(problem.task_type).lower(),
-                "taskSubType": problem_pb2.TaskSubtype.Name(problem.task_subtype),
-                "problemVersion": problem.version,
-                "problemSchemaVersion": "3.0"
-            },
-            "inputs": {
-                "data": [
-                    {
-                        "datasetID": problem_input.dataset_id,
-                        "targets": [
-                            {
-                                "targetIndex": target.target_index,
-                                "resID": target.resource_id,
-                                "colIndex": target.column_index,
-                                "colName": target.column_name
-                            }
-                            for target in problem_input.targets
-                        ]
-                    }
-                    for problem_input in inputs
-                ],
-                "performanceMetrics": [
-                    {
-                        "metric": camel_case(
-                            problem_pb2.PerformanceMetric.Name(metric.metric).lower()
-                        )
-                    }
-                    for metric in problem.performance_metrics
-                ]
-            },
-            "expectedOutputs": {
-                "predictionsFile": "predictions.csv"
-            }
-        }
-        with tempfile.NamedTemporaryFile('w', delete=False) as tmp_file:
-            json.dump(problem_dict, tmp_file)
-
-        return Problem.load(problem_uri='file://' + os.path.abspath(tmp_file.name))
-
     def _run_session(self, session, method, *args, **kwargs):
         exception = None
         try:
@@ -849,7 +798,7 @@ class CoreServicer(core_pb2_grpc.CoreServicer):
 
         problem = decode_problem_description(problem_description)
 
-        searcher = PipelineSearcher(self.input_dir, self.output_dir, self.static_dir)
+        ta2_core = TA2Core(self.input_dir, self.output_dir, self.static_dir)
 
         dataset_doc = inputs[0].dataset_uri
         dataset = Dataset.load(dataset_doc)
@@ -857,11 +806,11 @@ class CoreServicer(core_pb2_grpc.CoreServicer):
         self._start_session(
             search_id,
             'search',
-            searcher.search,
+            ta2_core.search,
             dataset,
             problem,
             timeout,
-            searcher=searcher,
+            ta2_core=ta2_core,
             problem=problem,
             allowed_value_types=allowed_value_types
         )
@@ -905,7 +854,7 @@ class CoreServicer(core_pb2_grpc.CoreServicer):
                 time.sleep(1)
 
     def _get_search_soltuion_results(self, session, returned):
-        solutions = session['searcher'].solutions
+        solutions = session['ta2_core'].solutions
 
         if len(solutions) > returned:
             solution = solutions[returned]
@@ -920,14 +869,6 @@ class CoreServicer(core_pb2_grpc.CoreServicer):
                 internal_score=solution['score'],
                 scores=[
                     core_pb2.SolutionSearchScore(
-                        # scoring_configuration=core_pb2.ScoringConfiguration(
-                        #     method=core_pb2.EvaluationMethod.Value('K_FOLD'),
-                        #     folds=5,
-                        #     train_test_ratio=0.,
-                        #     shuffle=True,
-                        #     random_seed=0,
-                        #     stratified=False
-                        # ),
                         scores=[
                             core_pb2.Score(
                                 metric=problem_pb2.ProblemPerformanceMetric(
@@ -940,31 +881,6 @@ class CoreServicer(core_pb2_grpc.CoreServicer):
                             )
                         ]
                     ),
-                    # core_pb2.SolutionSearchScore(
-                    #     scoring_configuration=core_pb2.ScoringConfiguration(
-                    #         method=core_pb2.EvaluationMethod.Value('K_FOLD'),
-                    #         folds=5,
-                    #         train_test_ratio=0.,
-                    #         shuffle=True,
-                    #         random_seed=0,
-                    #         stratified=False
-                    #     ),
-                    #     scores=[
-                    #         core_pb2.Score(
-                    #             fold=0,
-                    #             targets=[
-                    #                 ProblemTarget(
-                    #                     target_index=0,
-                    #                     resource_id="0",
-                    #                     # column_index=0,
-                    #                     # column_name="dummy",
-                    #                     # clusters_number=0
-                    #                 )
-                    #             ],
-                    #             value=value_pb2.Value(int64=1)
-                    #         )
-                    #     ]
-                    # )
                 ]
             )
 
@@ -1040,15 +956,12 @@ class CoreServicer(core_pb2_grpc.CoreServicer):
         session = self.DB['search_sessions'].pop(search_id, dict())
 
         if session:
-            searcher = session['searcher']
-            searcher.stop()
+            ta2_core = session['ta2_core']
+            ta2_core.stop()
 
             # cleanup pipelines
-            for solution in searcher.solutions:
+            for solution in ta2_core.solutions:
                 self.DB['solutions'].pop(solution['id'], None)
-
-            # while not searcher.done:
-            #     time.sleep(1)
 
         return core_pb2.EndSearchSolutionsResponse()
 
@@ -1072,11 +985,8 @@ class CoreServicer(core_pb2_grpc.CoreServicer):
         session = self.DB['search_sessions'].get(search_id)
 
         if session:
-            searcher = session['searcher']
-            searcher.stop()
-
-            # while not searcher.done:
-            #     time.sleep(1)
+            ta2_core = session['ta2_core']
+            ta2_core.stop()
 
         return core_pb2.StopSearchSolutionsResponse()
 
@@ -1190,13 +1100,13 @@ class CoreServicer(core_pb2_grpc.CoreServicer):
         else:
             raise ValueError(method)
 
-    def _score_solution(self, searcher, dataset, problem, metric_pipelines, configuration):
+    def _score_solution(self, ta2_core, dataset, problem, metric_pipelines, configuration):
         cv_args = self._get_cv_args(configuration)
 
         for metric, pipeline in metric_pipelines:
             metric = decode_performance_metric(metric)
 
-            searcher.score_pipeline(dataset, problem, pipeline, [metric], **cv_args)
+            ta2_core.score_pipeline(dataset, problem, pipeline, [metric], **cv_args)
             LOGGER.info('Pipeline %s obtained score %s', pipeline.id, pipeline.score)
 
     def ScoreSolution(self, request, context):
@@ -1238,14 +1148,14 @@ class CoreServicer(core_pb2_grpc.CoreServicer):
 
         dataset = Dataset.load(inputs[0].dataset_uri)
         problem = session['problem']
-        searcher = session['searcher']
+        ta2_core = session['ta2_core']
         allowed_value_types = session['allowed_value_types']
 
         self._start_session(
             pipeline.id,
             'score',
             self._score_solution,
-            searcher,
+            ta2_core,
             dataset,
             problem,
             metric_pipelines,

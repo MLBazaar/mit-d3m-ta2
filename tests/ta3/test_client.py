@@ -3,7 +3,7 @@ from unittest.mock import MagicMock, patch
 
 from ta3ta2_api.value_pb2 import Value, ValueType
 
-from ta2.ta3.client import TA3APIClient, pythonize
+from ta2.ta3.client import TA3Client, pythonize
 
 
 def test_pythonize():
@@ -15,7 +15,7 @@ def test_pythonize():
 def test_apiclient_get_dataset_doc_path():
     # with default args
     remote_input = 'input'
-    instance = TA3APIClient(port=9999)
+    instance = TA3Client(port=9999)
     dataset = 'test_dataset'
 
     doc_path = instance._get_dataset_doc_path(dataset)
@@ -27,7 +27,7 @@ def test_apiclient_get_dataset_doc_path():
 
     # custom args
     remote_input = 'my-remote-input'
-    instance = TA3APIClient(port=9999, remote_input=remote_input)
+    instance = TA3Client(port=9999, remote_input=remote_input)
 
     doc_path = instance._get_dataset_doc_path(dataset)
     expected_doc_path = 'file://{}/{}/{}/TRAIN/dataset_TRAIN/datasetDoc.json'.format(
@@ -40,7 +40,7 @@ def test_apiclient_get_dataset_doc_path():
 @patch('ta2.ta3.client.LOGGER.debug')
 @patch('ta2.ta3.client.core_pb2.SearchSolutionsRequest')
 def test_apiclient_search_solutions(search_solutions_request_mock, logger_mock):
-    instance = TA3APIClient(port=9999)
+    instance = TA3Client(port=9999)
     dataset = 'test_dataset'
     expected_value = 'response'
 
@@ -74,7 +74,7 @@ def test_apiclient_search_solutions(search_solutions_request_mock, logger_mock):
 @patch('ta2.ta3.client.LOGGER.debug')
 @patch('ta2.ta3.client.core_pb2.GetSearchSolutionsResultsRequest')
 def test_apiclient_get_search_solutions_results(get_search_solutions_results_request_mock, logger_mock):
-    instance = TA3APIClient(port=9999)
+    instance = TA3Client(port=9999)
     search_id = 'search-id'
 
     # 1. no solutions
@@ -124,7 +124,7 @@ def test_apiclient_get_search_solutions_results(get_search_solutions_results_req
 @patch('ta2.ta3.client.LOGGER.debug')
 @patch('ta2.ta3.client.core_pb2.EndSearchSolutionsRequest')
 def test_apiclient_end_search_solutions(end_search_solutions_request_mock, logger_mock):
-    instance = TA3APIClient(port=9999)
+    instance = TA3Client(port=9999)
     search_id = 'search-id'
     expected_response = 'response'
 
@@ -144,7 +144,7 @@ def test_apiclient_end_search_solutions(end_search_solutions_request_mock, logge
 @patch('ta2.ta3.client.LOGGER.debug')
 @patch('ta2.ta3.client.core_pb2.StopSearchSolutionsRequest')
 def test_apiclient_stop_search_solutions(stop_search_solutions_request_mock, logger_mock):
-    instance = TA3APIClient(port=9999)
+    instance = TA3Client(port=9999)
     search_id = 'search-id'
     expected_response = 'response'
 
@@ -164,7 +164,7 @@ def test_apiclient_stop_search_solutions(stop_search_solutions_request_mock, log
 @patch('ta2.ta3.client.LOGGER.debug')
 @patch('ta2.ta3.client.core_pb2.DescribeSolutionRequest')
 def test_apiclient_describe_solution(describe_solution_request_mock, logger_mock):
-    instance = TA3APIClient(port=9999)
+    instance = TA3Client(port=9999)
     solution_id = 'solution-id'
     expected_response = 'response'
 
@@ -184,7 +184,7 @@ def test_apiclient_describe_solution(describe_solution_request_mock, logger_mock
 @patch('ta2.ta3.client.LOGGER.debug')
 @patch('ta2.ta3.client.core_pb2.ScoreSolutionRequest')
 def test_apiclient_score_solution(score_solution_request_mock, logger_mock):
-    instance = TA3APIClient(port=9999)
+    instance = TA3Client(port=9999)
     solution_id = 'solution-id'
     dataset = 'test-dataset'
     expected_response = 'response'
@@ -209,7 +209,7 @@ def test_apiclient_score_solution(score_solution_request_mock, logger_mock):
 @patch('ta2.ta3.client.LOGGER.debug')
 @patch('ta2.ta3.client.core_pb2.GetScoreSolutionResultsRequest')
 def test_apiclient_get_score_solution(get_score_solution_results_request_mock, logger_mock):
-    instance = TA3APIClient(port=9999)
+    instance = TA3Client(port=9999)
     request_id = 'request-id'
 
     # 1. no scores
@@ -246,7 +246,7 @@ def test_apiclient_get_score_solution(get_score_solution_results_request_mock, l
 @patch('ta2.ta3.client.LOGGER.debug')
 @patch('ta2.ta3.client.core_pb2.FitSolutionRequest')
 def test_apiclient_fit_solution(fit_solution_request_mock, logger_mock):
-    instance = TA3APIClient(port=9999)
+    instance = TA3Client(port=9999)
     solution_id = 'solution-id'
     dataset = 'test-dataset'
     expected_response = 'response'
@@ -280,7 +280,7 @@ def test_apiclient_fit_solution(fit_solution_request_mock, logger_mock):
 @patch('ta2.ta3.client.LOGGER.debug')
 @patch('ta2.ta3.client.core_pb2.GetFitSolutionResultsRequest')
 def test_apiclient_get_fit_solution_results(get_fit_solution_results_request_mock, logger_mock):
-    instance = TA3APIClient(port=9999)
+    instance = TA3Client(port=9999)
     request_id = 'request-id'
 
     # 1. no solutions
@@ -334,7 +334,7 @@ def test_apiclient_get_fit_solution_results(get_fit_solution_results_request_moc
 @patch('ta2.ta3.client.LOGGER.debug')
 @patch('ta2.ta3.client.core_pb2.ProduceSolutionRequest')
 def test_apiclient_produce_solution(produce_solution_request_mock, logger_mock):
-    instance = TA3APIClient(port=9999)
+    instance = TA3Client(port=9999)
     solution_id = 'solution-id'
     dataset = 'test-dataset'
     expected_response = 'response'
@@ -375,7 +375,7 @@ def test_apiclient_get_produce_solution_results(get_produce_solution_results_req
 @patch('ta2.ta3.client.LOGGER.debug')
 @patch('ta2.ta3.client.core_pb2.SolutionExportRequest')
 def test_apiclient_solution_export(solution_export_request_mock, logger_mock):
-    instance = TA3APIClient(port=9999)
+    instance = TA3Client(port=9999)
     solution_id = 'solution-id'
     rank = 'rank'
     expected_response = 'response'
@@ -396,7 +396,7 @@ def test_apiclient_solution_export(solution_export_request_mock, logger_mock):
 @patch('ta2.ta3.client.LOGGER.debug')
 @patch('ta2.ta3.client.core_pb2.ListPrimitivesRequest')
 def test_apiclient_list_primitives(list_primitives_request_mock, logger_mock):
-    instance = TA3APIClient(port=9999)
+    instance = TA3Client(port=9999)
     expected_response = 'response'
 
     # mocks
@@ -415,7 +415,7 @@ def test_apiclient_list_primitives(list_primitives_request_mock, logger_mock):
 @patch('ta2.ta3.client.LOGGER.debug')
 @patch('ta2.ta3.client.core_pb2.HelloRequest')
 def test_apiclient_hello(hello_request_mock, logger_mock):
-    instance = TA3APIClient(port=9999)
+    instance = TA3Client(port=9999)
     expected_response = 'response'
 
     # mocks

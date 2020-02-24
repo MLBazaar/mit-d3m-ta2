@@ -19,7 +19,7 @@ def pythonize(name):
     return re.sub(r'[A-Z]', r'_\g<0>', name).upper()
 
 
-class TA3APIClient(object):
+class TA3Client(object):
 
     def __init__(self, port, local_input='input', remote_input='input', verbose=False):
         channel = grpc.insecure_channel('localhost:' + str(port))

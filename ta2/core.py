@@ -20,12 +20,13 @@ from datamart import DatamartQuery
 from datamart_rest import RESTDatamart
 
 from ta2.loader import LazyLoader
-from ta2.utils import dump_pipeline, get_dataset_details, to_dicts
+from ta2.utils import dump_pipeline, get_dataset_details, get_dataset_name, load_pipeline, to_dicts
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
-PIPELINES_DIR = os.path.join(BASE_DIR, 'pipelines')
 TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')
 TEMPLATES_CSV = os.path.join(BASE_DIR, 'templates.csv')
+
+DATA_PIPELINE_PATH = os.path.join(BASE_DIR, 'pipelines', 'kfold_pipeline.yml')
 
 DATAMART_URL = os.getenv('DATAMART_URL_NYU', 'https://datamart.d3m.vida-nyu.org')
 
@@ -42,19 +43,7 @@ class ScoringError(Exception):
     pass
 
 
-class PipelineSearcher:
-
-    def _load_pipeline(self, pipeline):
-        if pipeline.endswith('.yml'):
-            loader = Pipeline.from_yaml
-        else:
-            loader = Pipeline.from_json
-            if not pipeline.endswith('.json'):
-                pipeline += '.json'
-
-        path = os.path.join(PIPELINES_DIR, pipeline)
-        with open(path, 'r') as pipeline_file:
-            return loader(string_or_file=pipeline_file)
+class TA2Core:
 
     def _valid_template(self, template):
         try:
@@ -118,8 +107,8 @@ class PipelineSearcher:
         os.makedirs(self.searched_dir, exist_ok=True)
 
         self.solutions = list()
-        self.data_pipeline = self._load_pipeline('kfold_pipeline.yml')
-        self.scoring_pipeline = self._load_pipeline(DEFAULT_SCORING_PIPELINE_PATH)
+        self.data_pipeline = load_pipeline(DATA_PIPELINE_PATH)
+        self.scoring_pipeline = load_pipeline(DEFAULT_SCORING_PIPELINE_PATH)
         self.ignore_errors = ignore_errors
         self.folds = cv_folds
         self.subprocess_timeout = subprocess_timeout
@@ -164,8 +153,7 @@ class PipelineSearcher:
                        folds=None, stratified=False, shuffle=False, template_name=None):
 
         folds = folds or self.folds
-        problem_metrics = problem['problem']['performance_metrics']
-        metrics = metrics or problem_metrics
+        metrics = metrics or problem['problem']['performance_metrics']
         data_params = {
             'number_of_folds': json.dumps(folds),
             'stratified': json.dumps(stratified),
@@ -200,6 +188,9 @@ class PipelineSearcher:
 
         pipeline.cv_scores = [score.value[0] for score in all_scores]
         pipeline.score = np.mean(pipeline.cv_scores)
+
+        metric = metrics[0]['metric']
+        pipeline.normalized_score = metric.normalize(pipeline.score)
 
     def _save_pipeline(self, pipeline):
         pipeline_dict = pipeline.to_json_structure()
@@ -266,7 +257,7 @@ class PipelineSearcher:
 
         return new_pipeline
 
-    def check_stop(self):
+    def _check_stop(self):
         now = datetime.now()
 
         if (self._stop or (self.timeout and (now > self.max_end_time))):
@@ -283,8 +274,10 @@ class PipelineSearcher:
         self.killed = True
         raise KeyboardInterrupt()
 
-    def setup_search(self):
+    def _setup_search(self, timeout):
+        self.timeout = timeout
         self.solutions = list()
+        self.summary = list()
         self._stop = False
         self.done = False
 
@@ -300,7 +293,19 @@ class PipelineSearcher:
         LOGGER.info("Timeout: %s (Hard: %s); Max end: %s",
                     self.timeout, self.hard_timeout, self.max_end_time)
 
-    def get_data_augmentation(self, dataset, problem):
+        self.killed = False
+        self.best_pipeline = None
+        self.best_score = None
+        self.best_normalized = -np.inf
+        self.best_template_name = None
+        self.spent = 0
+        self.iterations = 0
+        self.scored = 0
+        self.errored = 0
+        self.invalid = 0
+        self.timedout = 0
+
+    def _get_data_augmentation(self, dataset, problem):
         datamart = RESTDatamart(DATAMART_URL)
         data_augmentation = problem.get('data_augmentation')
         if data_augmentation:
@@ -318,15 +323,10 @@ class PipelineSearcher:
             except Exception:
                 LOGGER.exception("DATA AUGMENTATION ERROR")
 
-        # TODO: Replace this with the real DataMart query
-        # if problem['id'] == 'DA_ny_taxi_demand_problem_TRAIN':
-        #     LOGGER.info('DATA AUGMENTATION!!!!!!')
-        #     with open(os.path.join(BASE_DIR, 'da.json')) as f:
-        #         return json.dumps(json.load(f))
+    def _make_btb_scorer(self, dataset, problem, templates):
 
-    def make_btb_scorer(self, dataset, problem, templates, metric):
         def btb_scorer(template_name, proposal):
-            self.check_stop()
+            self._check_stop()
             self.iterations += 1
             LOGGER.info('Scoring template %s', template_name)
 
@@ -338,7 +338,7 @@ class PipelineSearcher:
                 pipeline = self._new_pipeline(templates[template_name], proposal)
 
                 self.score_pipeline(dataset, problem, pipeline)
-                pipeline.normalized_score = metric.normalize(pipeline.score)
+
                 if pipeline.normalized_score > self.best_normalized:
                     self.best_normalized = pipeline.normalized_score
                     self.best_score = pipeline.score
@@ -367,26 +367,28 @@ class PipelineSearcher:
                 raise
 
             finally:
+                pipeline_id = None
+                if pipeline:
+                    try:
+                        self._save_pipeline(pipeline)
+                        pipeline_id = pipeline.id
+                    except Exception:
+                        LOGGER.exception('Error saving pipeline %s', pipeline.id)
+
                 self.summary.append({
                     'template': template_name,
+                    'pipeline': pipeline_id,
                     'status': status,
                     'score': score,
                     'normalized': normalized
                 })
-                if pipeline:
-                    pipeline_id = pipeline.id
-                    try:
-                        self._save_pipeline(pipeline)
-                        self.summary[-1]['pipeline'] = pipeline_id
-                    except Exception:
-                        LOGGER.exception('Error saving pipeline %s', pipeline.id)
 
         return btb_scorer
 
-    def start_session(self, template_names, dataset, problem, metric, budget):
+    def _start_session(self, template_names, dataset, problem, budget):
         LOGGER.warning('Selected %s templates', len(template_names))
         template_loader = LazyLoader(template_names, TEMPLATES_DIR)
-        btb_scorer = self.make_btb_scorer(dataset, problem, template_loader, metric)
+        btb_scorer = self._make_btb_scorer(dataset, problem, template_loader)
 
         session = BTBSession(template_loader, btb_scorer, max_errors=self.max_errors)
 
@@ -406,40 +408,18 @@ class PipelineSearcher:
             session.run()
 
     def search(self, dataset, problem, timeout=None, budget=None, templates_csv=None):
-        self.timeout = timeout
-        self.killed = False
-        self.best_pipeline = None
-        self.best_score = None
-        self.best_normalized = -np.inf
-        self.best_template_name = None
-        self.found_by_name = True
-        data_modality = None
-        task_type = None
-        task_subtype = None
-        self.spent = 0
-        self.iterations = 0
-        self.scored = 0
-        self.errored = 0
-        self.invalid = 0
-        self.timedout = 0
-        self.summary = list()
 
-        dataset_name = problem['inputs'][0]['dataset_id']
-        if dataset_name.endswith('_dataset'):
-            dataset_name = dataset_name[:-len('_dataset')]
-
-        metric = problem['problem']['performance_metrics'][0]['metric']
-
+        dataset_name = get_dataset_name(problem)
         data_modality, task_type, task_subtype = get_dataset_details(dataset, problem)
-
-        # data_augmentation = self.get_data_augmentation(dataset, problem)
 
         LOGGER.info("Searching dataset %s: %s/%s/%s",
                     dataset_name, data_modality, task_type, task_subtype)
 
+        # data_augmentation = self._get_data_augmentation(dataset, problem)
+
         try:
-            self.setup_search()
-            LOGGER.info("Loading the template and the tuner")
+            self._setup_search(timeout)
+
             if not templates_csv:
                 templates_csv = TEMPLATES_CSV
 
@@ -450,7 +430,7 @@ class PipelineSearcher:
                 budget = len(template_names) * -budget
 
             try:
-                self.start_session(template_names, dataset, problem, metric, budget)
+                self._start_session(template_names, dataset, problem, budget)
             except StopTuning:
                 LOGGER.warning('All selected templates failed. Falling back to the rest')
                 all_templates = self._get_all_templates()
@@ -459,7 +439,7 @@ class PipelineSearcher:
                     for template in all_templates
                     if template not in template_names
                 ]
-                self.start_session(untried_templates, dataset, problem, metric, budget)
+                self._start_session(untried_templates, dataset, problem, budget)
 
         except KeyboardInterrupt:
             pass
@@ -470,34 +450,15 @@ class PipelineSearcher:
             if self.timeout and self.hard_timeout:
                 signal.alarm(0)
 
-        if self.store_summary and self.summary:
-            # TODO: Do this outside, in __main__.py
-            # Store all the summary at once
-            summary_path = os.path.join(self.output, 'summary.csv')
-            self.summary = pd.DataFrame(self.summary)
-            self.summary['dataset'] = dataset_name
-            self.summary['data_modality'] = data_modality
-            self.summary['type'] = task_type
-            self.summary['subtype'] = task_subtype
-            self.summary.to_csv(summary_path, index=False)
-
         self.done = True
 
         return {
-            'pipeline': self.best_pipeline,
             'summary': self.summary,
-            'cv_score': self.best_score,
-            'template': self.best_template_name,
-            'modality': data_modality,
-            'type': task_type,
-            'subtype': task_subtype,
             'iterations': self.iterations,
-            'templates': len(template_names or []),
+            'templates': len(template_names),
             'scored': self.scored,
             'errored': self.errored,
             'invalid': self.invalid,
             'timedout': self.timedout,
-            'killed': self.killed,
-            'found': self.found_by_name,
-            'metric': metric.name.lower()
+            'killed': self.killed
         }

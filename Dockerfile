@@ -22,6 +22,5 @@ COPY setup.py MANIFEST.in /user_dev/
 RUN pip3 install -e /user_dev ipdb
 
 COPY ta2 /user_dev/ta2
-# RUN chown -R $UID:$UID /user_dev
 
 CMD ["python3", "/user_dev/ta2/ta3/server.py", "-v"]

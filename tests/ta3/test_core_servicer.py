@@ -139,13 +139,13 @@ def test_core_servicer_start_session(thread_mock, logger_mock):
 
 @patch('ta2.ta3.core_servicer.Dataset.load')
 @patch('ta2.ta3.core_servicer.decode_problem_description')
-@patch('ta2.ta3.core_servicer.PipelineSearcher')
+@patch('ta2.ta3.core_servicer.TA2Core')
 @patch('ta2.ta3.core_servicer.core_pb2.SearchSolutionsResponse')
-def test_core_servicer_searchsolutions(searcher_mock, pipeline_searcher_mock, decode_mock, load_mock):
+def test_core_servicer_searchsolutions(ta2_core_mock, pipeline_ta2_core_mock, decode_mock, load_mock):
     instance = CoreServicer('/input', '/output', '/static', 0.5)
     instance._start_session = MagicMock()
     expected_result = 'result'
-    searcher_mock.return_value = expected_result
+    ta2_core_mock.return_value = expected_result
     inputs = [MagicMock(dataset_uri=1)]
 
     # wrong version
@@ -167,7 +167,7 @@ def test_core_servicer_searchsolutions(searcher_mock, pipeline_searcher_mock, de
     result = instance.SearchSolutions(request, None)  # context (None) is not used
 
     decode_mock.assert_called_once_with(problem)
-    pipeline_searcher_mock.assert_called_once_with(
+    pipeline_ta2_core_mock.assert_called_once_with(
         instance.input_dir, instance.output_dir, instance.static_dir)
 
     assert instance._start_session.call_count == 1
@@ -211,8 +211,8 @@ def test_core_servicer_get_search_soltuion_results(solutions_results_mock):
     }
 
     # case 1: len(solutions) < returned
-    searcher = MagicMock(solutions=solutions)
-    session = {'searcher': searcher}
+    ta2_core = MagicMock(solutions=solutions)
+    session = {'ta2_core': ta2_core}
 
     result = instance._get_search_soltuion_results(session, 10)
 
@@ -270,15 +270,15 @@ def test_core_servicer_endsearchsolutions(end_search_mock):
 
     assert result == expected_result
 
-    # session with searcher
-    searcher = MagicMock(done=True, solutions={})
-    searcher.stop = MagicMock()
+    # session with ta2_core
+    ta2_core = MagicMock(done=True, solutions={})
+    ta2_core.stop = MagicMock()
 
-    instance.DB['search_sessions'] = {search_id: {'searcher': searcher}}
+    instance.DB['search_sessions'] = {search_id: {'ta2_core': ta2_core}}
 
     result = instance.EndSearchSolutions(request, None)
 
-    searcher.stop.assert_called_once()
+    ta2_core.stop.assert_called_once()
     assert result == expected_result
     assert end_search_mock.call_count == 2
 
@@ -301,14 +301,14 @@ def test_core_servicer_stopsearchsolutions(stop_search_mock):
 
     assert result == expected_result
 
-    # session with searcher
-    searcher = MagicMock(done=True)
-    searcher.stop = MagicMock()
+    # session with ta2_core
+    ta2_core = MagicMock(done=True)
+    ta2_core.stop = MagicMock()
 
-    instance.DB['search_sessions'] = {search_id: {'searcher': searcher}}
+    instance.DB['search_sessions'] = {search_id: {'ta2_core': ta2_core}}
 
     instance.StopSearchSolutions(request, None)
 
-    searcher.stop.assert_called_once()
+    ta2_core.stop.assert_called_once()
     assert result == expected_result
     assert stop_search_mock.call_count == 2

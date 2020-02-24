@@ -71,28 +71,15 @@ clean: clean-build clean-pyc clean-test clean-coverage clean-docs ## remove all 
 
 .PHONY: install
 install: clean-build clean-pyc ## install the package to the active Python's site-packages
-	pip install . && pip install -r requirements.txt
+	pip install . -r requirements.txt
 
 .PHONY: install-test
 install-test: clean-build clean-pyc ## install the package and test dependencies
-	pip install .[test] && pip install -r requirements.txt
+	pip install .[test] -r requirements.txt
 
 .PHONY: install-develop
 install-develop: clean-build clean-pyc ## install the package in editable mode and dependencies for development
-	pip install -e .[dev] && pip install -r requirements.txt
-
-.PHONY: install-primitives
-install-primitives: ## install the primitive packages to the active Python's site-packages
-	pip install -r primitive_requirements.txt
-
-.PHONY: install-system
-install-system: ## install system requirements
-	sudo apt-get install -y $(shell cat system_requirements.txt)
-
-.PHONY: install-all
-install-all: clean-build clean-pyc install-system install-develop install-primitives ## install-develop + additional requirements
-	pip install -r devel_requirements.txt
-	python -m d3m.index download -o static
+	pip install -e .[dev] -r requirements.txt
 
 
 # LINT TARGETS
@@ -219,32 +206,17 @@ release-minor: check-release bumpversion-minor release
 release-major: check-release bumpversion-major release
 
 
-# SUBMISSION TARGETS
+# DOCKER TARGETS
 
 .PHONY: login
 login: ## Login to the d3m docker registry
-	docker login registry.datadrivendiscovery.org
+	docker login
 
 .PHONY: build
 build: ## build the mit-d3m-ta2 docker image
 	docker build -t mit-d3m-ta2 .
 
-.PHONY: submit
-submit: login build ## push to TA2 submission registry
-	docker tag mit-d3m-ta2:latest registry.datadrivendiscovery.org/ta2-submissions/ta2-mit/winter2020evaluation
-	docker push registry.datadrivendiscovery.org/ta2-submissions/ta2-mit/winter2020evaluation
-
-.PHONY: submit-ci
-submit-ci: login build ## push to TA2 submission registry
-	docker tag mit-d3m-ta2:latest registry.datadrivendiscovery.org/jkanter/mit-fl-ta2:ci
-	docker push registry.datadrivendiscovery.org/jkanter/mit-fl-ta2:ci
-
-.PHONY: share
-share: login build ## push to TA2 sharing registry
-	docker tag mit-d3m-ta2:latest registry.datadrivendiscovery.org/jkanter/mit-fl-ta2:stable
-	docker push registry.datadrivendiscovery.org/jkanter/mit-fl-ta2:stable
-
-.PHONY: share
-docker-test: login build ## push to TA2 sharing registry
-	docker tag mit-d3m-ta2:latest registry.datadrivendiscovery.org/csala/mit-d3m-ta2:latest
-	docker push registry.datadrivendiscovery.org/csala/mit-d3m-ta2:latest
+.PHONY: push
+push: login build ## push to TA2 submission registry
+	docker tag mit-d3m-ta2:latest mlbazaar/mit-d3m-ta2:latest
+	docker push mlbazaar/mit-d3m-ta2:latest

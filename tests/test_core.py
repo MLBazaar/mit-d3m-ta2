@@ -1,13 +1,13 @@
 import json
 from collections import defaultdict
 from datetime import timedelta
-from unittest.mock import MagicMock, call, mock_open, patch
+from unittest.mock import MagicMock, call, patch
 
 import numpy as np
 import pytest
 from d3m.metadata.base import Context
 
-from ta2.search import PIPELINES_DIR, PipelineSearcher, to_dicts
+from ta2.core import TA2Core, to_dicts
 
 
 def test_to_dicts():
@@ -41,10 +41,10 @@ def test_to_dicts():
     assert result == expected_hyperparams
 
 
-@patch('ta2.search.Pipeline.from_yaml')
-@patch('ta2.search.os.makedirs')
+@patch('ta2.core.Pipeline.from_yaml')
+@patch('ta2.core.os.makedirs')
 def test_pipelinesearcher_defaults(makedirs_mock, from_yaml_mock):
-    instance = PipelineSearcher()
+    instance = TA2Core()
 
     expected_calls = [
         call('output/pipeline_runs', exist_ok=True),
@@ -64,10 +64,10 @@ def test_pipelinesearcher_defaults(makedirs_mock, from_yaml_mock):
     assert instance.scoring_pipeline == from_yaml_mock.return_value
 
 
-@patch('ta2.search.Pipeline.from_yaml')
-@patch('ta2.search.os.makedirs')
+@patch('ta2.core.Pipeline.from_yaml')
+@patch('ta2.core.os.makedirs')
 def test_pipelinesearcher(makedirs_mock, from_yaml_mock):
-    instance = PipelineSearcher(input_dir='new-input', output_dir='new-output', dump=True)
+    instance = TA2Core(input_dir='new-input', output_dir='new-output', dump=True)
 
     expected_calls = [
         call('new-output/pipeline_runs', exist_ok=True),
@@ -108,7 +108,7 @@ def test_pipelinesearcher_find_datasets(tmp_path):
         file = dataset_dir / 'datasetDoc.json'
         file.write_text(json.dumps(content))
 
-    result = PipelineSearcher._find_datasets(input_dir)
+    result = TA2Core._find_datasets(input_dir)
 
     assert len(result) == num_datasets
 
@@ -119,48 +119,11 @@ def test_pipelinesearcher_find_datasets(tmp_path):
         assert result[dataset_id] == 'file://{}/{}/datasetDoc.json'.format(input_dir, dataset_id)
 
 
-@patch('ta2.search.Pipeline.from_yaml')
-@patch('ta2.search.Pipeline.from_json')
-def test_pipelinesearcher_load_pipeline(json_loader_mock, yaml_loader_mock):
-    instance = PipelineSearcher()
-    open_mock = mock_open(read_data='data')
-
-    json_loader_mock.reset_mock()
-    yaml_loader_mock.reset_mock()
-
-    # yaml file
-    with patch('ta2.search.open', open_mock) as _:
-        instance._load_pipeline('test.yml')
-
-    open_mock.assert_called_with('{}/test.yml'.format(PIPELINES_DIR), 'r')
-
-    assert yaml_loader_mock.call_count == 1
-    assert json_loader_mock.call_count == 0
-
-    # json file
-    with patch('ta2.search.open', open_mock) as _:
-        instance._load_pipeline('test.json')
-
-    open_mock.assert_called_with('{}/test.json'.format(PIPELINES_DIR), 'r')
-
-    assert yaml_loader_mock.call_count == 1
-    assert json_loader_mock.call_count == 1
-
-    # without file extension
-    with patch('ta2.search.open', open_mock) as _:
-        instance._load_pipeline('test')
-
-    open_mock.assert_called_with('{}/test.json'.format(PIPELINES_DIR), 'r')
-
-    assert yaml_loader_mock.call_count == 1
-    assert json_loader_mock.call_count == 2
-
-
 @pytest.mark.skip(reason="no way of currently testing this")
-@patch('ta2.search.d3m_evaluate')
-@patch('ta2.search.Pipeline.from_yaml', new=MagicMock())
+@patch('ta2.core.d3m_evaluate')
+@patch('ta2.core.Pipeline.from_yaml', new=MagicMock())
 def test_pipelinesearcher_score_pipeline(evaluate_mock):
-    instance = PipelineSearcher()
+    instance = TA2Core()
     expected_scores = [MagicMock(value=[1])]
     evaluate_mock.return_value = (expected_scores, expected_scores)
 
@@ -230,23 +193,23 @@ def test_pipelinesearcher_score_pipeline(evaluate_mock):
     assert pipeline_mock.cv_scores == [score.value[0] for score in expected_scores]
 
 
-@patch('ta2.search.datetime')
-@patch('ta2.search.Pipeline.from_yaml', new=MagicMock())
-def test_pipelinesearcher_check_stop(datetime_mock):
+@patch('ta2.core.datetime')
+@patch('ta2.core.Pipeline.from_yaml', new=MagicMock())
+def test_pipelinesearcher__check_stop(datetime_mock):
     datetime_mock.now = MagicMock(return_value=10)
 
     # no stop
-    instance = PipelineSearcher()
-    instance._stop = False       # normally, setted in `PipelineSearcher.setup_search`
-    instance.timeout = None      # normally, setted in `PipelineSearcher.setup_search`
+    instance = TA2Core()
+    instance._stop = False       # normally, set in `TA2Core._setup_search`
+    instance.timeout = None      # normally, set in `TA2Core._setup_search`
 
-    assert instance.check_stop() is None
+    assert instance._check_stop() is None
 
     # stop by `_stop` attribute
     instance._stop = True
 
     with pytest.raises(KeyboardInterrupt):
-        instance.check_stop()
+        instance._check_stop()
 
     # stop by `max_end_time`
     instance._stop = False
@@ -254,12 +217,12 @@ def test_pipelinesearcher_check_stop(datetime_mock):
     instance.max_end_time = 5
 
     with pytest.raises(KeyboardInterrupt):
-        instance.check_stop()
+        instance._check_stop()
 
 
-@patch('ta2.search.Pipeline.from_yaml', new=MagicMock())
+@patch('ta2.core.Pipeline.from_yaml', new=MagicMock())
 def test_pipelinesearcher_stop():
-    instance = PipelineSearcher()
+    instance = TA2Core()
 
     assert not hasattr(instance, '_stop')
 
@@ -268,9 +231,9 @@ def test_pipelinesearcher_stop():
     assert instance._stop
 
 
-@patch('ta2.search.Pipeline.from_yaml', new=MagicMock())
-def test_pipelinesearcher_setup_search():
-    instance = PipelineSearcher()
+@patch('ta2.core.Pipeline.from_yaml', new=MagicMock())
+def test_pipelinesearcher__setup_search():
+    instance = TA2Core()
 
     assert hasattr(instance, 'solutions')
     assert not hasattr(instance, '_stop')
@@ -281,7 +244,7 @@ def test_pipelinesearcher_setup_search():
 
     # without timeout
     instance.timeout = None
-    instance.setup_search()
+    instance._setup_search(None)
 
     assert instance.solutions == []
     assert instance._stop is False
@@ -291,8 +254,7 @@ def test_pipelinesearcher_setup_search():
     assert instance.max_end_time is None
 
     # with timeout
-    instance.timeout = 0.5
-    instance.setup_search()
+    instance._setup_search(0.5)
 
     assert instance.timeout == 0.5
     assert instance.max_end_time == instance.start_time + timedelta(seconds=0.5)

@@ -6,6 +6,9 @@ import os
 from collections import defaultdict
 
 import numpy as np
+from d3m.container.dataset import Dataset
+from d3m.metadata.pipeline import Pipeline
+from d3m.metadata.problem import Problem
 
 LOGGER = logging.getLogger(__name__)
 
@@ -30,6 +33,12 @@ def dump_pipeline(pipeline, dump_dir, rank=None):
             print(rank, file=rank_file)
 
 
+def box_log(message, strong=False):
+    char = '#' if strong else '*'
+    line = char * max(len(line) for line in message.split('\n'))
+    LOGGER.warn('\n'.join(('', line, message, line)))
+
+
 def logging_setup(verbosity=1, logfile=None, logger_name=None, stdout=True):
     logger = logging.getLogger(logger_name)
     log_level = (3 - verbosity) * 10
@@ -49,6 +58,14 @@ def logging_setup(verbosity=1, logfile=None, logger_name=None, stdout=True):
         console_handler.setLevel(log_level)
         console_handler.setFormatter(formatter)
         logger.addHandler(console_handler)
+
+
+def get_dataset_name(problem):
+    dataset_name = problem['inputs'][0]['dataset_id']
+    if dataset_name.endswith('_dataset'):
+        dataset_name = dataset_name[:-len('_dataset')]
+
+    return dataset_name
 
 
 def detect_data_modality(dataset):
@@ -102,3 +119,52 @@ def to_dicts(hyperparameters):
         params_tree[block][hyperparameter] = value
 
     return params_tree
+
+
+def load_dataset(root_path, phase, inner_phase=None):
+    inner_phase = inner_phase or phase
+    path = os.path.join(root_path, phase, 'dataset_' + inner_phase, 'datasetDoc.json')
+    if os.path.exists(path):
+        return Dataset.load(dataset_uri='file://' + os.path.abspath(path))
+    else:
+        path = os.path.join(root_path, phase, 'dataset_' + phase, 'datasetDoc.json')
+        return Dataset.load(dataset_uri=path)
+
+
+def load_problem(root_path, phase):
+    path = os.path.join(root_path, phase, 'problem_' + phase, 'problemDoc.json')
+    return Problem.load(problem_uri=path)
+
+
+def load_pipeline(pipeline_path):
+    with open(pipeline_path, 'r') as pipeline_file:
+        if pipeline_path.endswith('.json'):
+            return Pipeline.from_json(pipeline_file)
+        else:
+            return Pipeline.from_yaml(pipeline_file)
+
+
+def get_datasets(input_dir, datasets=None, data_modality=None, task_type=None):
+    if not datasets:
+        datasets = os.listdir(input_dir)
+
+    for dataset_name in datasets:
+        dataset_root = os.path.join(input_dir, dataset_name)
+        if not os.path.exists(dataset_root):
+            dataset_root += '_MIN_METADATA'
+
+        dataset_root = 'file://' + os.path.abspath(dataset_root)
+
+        try:
+            dataset = load_dataset(dataset_root, 'TRAIN')
+            problem = load_problem(dataset_root, 'TRAIN')
+            data_modality, task_type = get_dataset_details(dataset, problem)[:2]
+        except Exception:
+            continue
+
+        if data_modality and not data_modality == data_modality:
+            continue
+        if task_type and not task_type == task_type:
+            continue
+
+        yield dataset_name, dataset, problem, data_modality, task_type
