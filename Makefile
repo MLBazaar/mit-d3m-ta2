@@ -208,10 +208,6 @@ release-major: check-release bumpversion-major release
 
 # DOCKER TARGETS
 
-.PHONY: login
-login: ## Login to the d3m docker registry
-	docker login
-
 .PHONY: build
 build: ## build the mit-d3m-ta2 docker image
 	docker build -t mit-d3m-ta2 .
