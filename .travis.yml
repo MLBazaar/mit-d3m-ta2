@@ -6,7 +6,7 @@ python:
 # Command to install dependencies
 install:
   - sudo apt-get install libgnutls28-dev
-  - pip install -U pip tox-travis codecov
+  - pip install -U pip virtualenv tox-travis codecov
 
 # Command to run tests
 script: tox
