@@ -51,21 +51,21 @@ SUMMARY_COLUMNS = [
     'task_type'
 ]
 
-DOCKER_CMDS = 'docker run -i -t --rm -p45042:45042 '\
-              '-e D3MTIMEOUT=60 -e D3MINPUTDIR=/input ' \
-              '-e D3MOUTPUTDIR=/output -e D3MSTATICDIR=/static ' \
-              '-v {input}:/input ' \
-              '-v {output}:/output ' \
-              '-v {static}:/static ' \
-              '-u {uid} {image}'
+DOCKER_CMDS = (
+    'docker run -i -t --rm -p45042:45042 '
+    '-v {input}:/input '
+    '-v {output}:/output '
+    '-v {static}:/static '
+    '-u {uid} {image}'
+)
 
-DOCKER_CMDS_JUPYTER = 'docker run --hostname localhost -i -t --rm -p8888:8888 --expose 8888 '\
-                      '-e D3MTIMEOUT=60 -e D3MINPUTDIR=/input ' \
-                      '-e D3MOUTPUTDIR=/output -e D3MSTATICDIR=/static ' \
-                      '-v {input}:/input ' \
-                      '-v {output}:/output ' \
-                      '-v {static}:/static ' \
-                      'mlbazaar/mit-d3m-ta2'
+DOCKER_CMDS_JUPYTER = (
+    'docker run --hostname localhost -i -t --rm -p8888:8888 '
+    '-v {input}:/input '
+    '-v {output}:/output '
+    '-v {static}:/static '
+    '{image}'
+)
 
 
 def _start_report(report_path, columns):
@@ -86,24 +86,30 @@ def _append_report(data, columns, path, **extra_columns):
     return report
 
 
-def _run_docker(args):
+def _standalone_docker(args):
     """Runs docker through subprocess."""
     argv = sys.argv.copy()
     argv[0] = 'ta2'
-    argv.extend(['-e', 'standalone'])
+    argv.extend(['-e', 'native'])
+
+    args.input = os.path.abspath(os.getenv('D3MINPUTDIR', args.input))
+    args.output = os.path.abspath(os.getenv('D3MOUTPUTDIR', args.output))
+    args.static = os.path.abspath(os.getenv('D3MSTATICDIR', args.static))
+
     docker_cmd = DOCKER_CMDS.format(
         input=args.input,
         output=args.output,
         static=args.static,
-        uid=os.getuid()
+        uid=os.getuid(),
+        image=DOCKER_IMAGE
     ).split(' ')
     LOGGER.info('Launching docker.')
+    LOGGER.info(docker_cmd)
     subprocess.run(docker_cmd + argv)
 
 
-def run_standalone(args):
-    """Run in standalone mode."""
-
+def _standalone_native(args):
+    """Run in native mode."""
     results = _start_report(args.results, RESULTS_COLUMNS)
     _start_report(args.summary, SUMMARY_COLUMNS)
 
@@ -179,9 +185,9 @@ def _ta2_run(args):
     args.summary = args.summary or os.path.join(args.output, 'summary.csv')
 
     if args.environment == 'docker':
-        _run_docker(args)
+        _standalone_docker(args)
     else:
-        run_standalone(args)
+        _standalone_native(args)
 
 def _ta3_test_dataset(client, dataset, timeout):
     print('### Testing dataset {} ###'.format(dataset))
@@ -283,26 +289,27 @@ def _server(args):
     serve(args.port, input_dir, output_dir, args.static, timeout, args.debug)
 
 
-def _run_jupyter_docker(args):
+def _jupyter_docker(args):
     docker_cmd = DOCKER_CMDS_JUPYTER.format(
         input=args.input,
         output=args.output,
-        static=args.static
+        static=args.static,
+        image=DOCKER_IMAGE
     ).split(' ')
     jupyter_cmd = 'jupyter notebook --ip 0.0.0.0 --NotebookApp.token="" --allow-root'.split(' ')
     LOGGER.info('Launching up docker in jupyter-notebook mode')
     subprocess.run(docker_cmd + jupyter_cmd)
 
 
-def _run_jupyter_standalone(args):
+def _jupyter_native(args):
     subprocess.run('jupyter-notebook')
 
 
 def _jupyter(args):
     if args.environment == 'docker':
-        _run_jupyter_docker(args)
+        _jupyter_docker(args)
     else:
-        _run_jupyter_standalone(args)
+        _jupyter_native(args)
 
 
 def parse_args():
@@ -352,7 +359,7 @@ def parse_args():
     # Environment
     environment_args = argparse.ArgumentParser(add_help=False)
     environment_args.add_argument('-e', '--environment', default='docker',
-                                  choices=['docker', 'standalone'],
+                                  choices=['docker', 'native'],
                                   help='Execution environment mode.')
 
     parser = argparse.ArgumentParser(
@@ -366,14 +373,14 @@ def parse_args():
 
     # TA2 Mode
     ta2_parents = [logging_args, io_args, search_args, dataset_args, environment_args]
-    ta2_parser = subparsers.add_parser('run', parents=ta2_parents,
+    ta2_parser = subparsers.add_parser('standalone', parents=ta2_parents,
                                        help='Run TA2 in Standalone Mode.')
     ta2_parser.set_defaults(mode=_ta2_run)
     ta2_parser.add_argument(
-        '-r', '--results', default=None,
+        '-r', '--results',
         help='Path to the CSV file where the results will be dumped.')
     ta2_parser.add_argument(
-        '-u', '--summary', default=None,
+        '-u', '--summary',
         help='Path to the CSV file where search summary will be dumped.')
     ta2_parser.add_argument(
         '-b', '--budget', type=int,
@@ -382,7 +389,7 @@ def parse_args():
         '-I', '--ignore-errors', action='store_true',
         help='Ignore errors when counting tuning iterations.')
     ta2_parser.add_argument(
-        '-csv', '--templates-csv', help='Path to the templates csv file to use.')
+        '-c', '--templates-csv', help='Path to the templates csv file to use.')
     ta2_parser.add_argument(
         '-f', '--folds', type=int, default=5,
         help='Number of folds to use for cross validation')
@@ -422,10 +429,6 @@ def parse_args():
     jupyter_parser.set_defaults(mode=_jupyter)
 
     args = parser.parse_args()
-
-    args.input = os.path.abspath(os.getenv('D3MINPUTDIR', args.input))
-    args.output = os.path.abspath(os.getenv('D3MOUTPUTDIR', args.output))
-    args.static = os.path.abspath(os.getenv('D3MSTATICDIR', args.static))
 
     if not os.path.exists(args.output):
         os.makedirs(args.output, exist_ok=True)
