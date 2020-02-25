@@ -12,13 +12,14 @@ import numpy as np
 import pandas as pd
 import tabulate
 
+import ta2
 from ta2.standalone import process_dataset
 from ta2.ta3.client import TA3Client
 from ta2.ta3.server import serve
 from ta2.utils import get_datasets, logging_setup
 
 LOGGER = logging.getLogger(__name__)
-DOCKER_IMAGE = 'mlbazaar/mit-d3m-ta2'
+DOCKER_IMAGE = 'mlbazaar/mit-d3m-ta2:{}'.format(ta2.__version__)
 
 
 RESULTS_COLUMNS = [
@@ -52,7 +53,7 @@ SUMMARY_COLUMNS = [
 ]
 
 
-def get_docker_cmd(args, jupyter=False):
+def _get_docker_cmd(args, jupyter=False):
 
     image = args.image or DOCKER_IMAGE
 
@@ -60,14 +61,17 @@ def get_docker_cmd(args, jupyter=False):
     docker_port = ' -p{0}:{0} '.format(args.port)
 
     if jupyter:
-        return docker_cmd + ' --hostname localhost' + docker_port + image
+        docker_cmd = docker_cmd + ' --hostname localhost'
+        docker_path = ' -v {}:/user_dev/'.format(os.getcwd())
+
+        return docker_cmd + docker_path + docker_port + image
 
     docker_inputs = ' -v {}:/input'.format(args.input)
     docker_outputs = ' -v {}:/output'.format(args.output)
     docker_statics = ' -v {}:/static'.format(args.static)
-    docker_uid = ' -u {}'.format(os.getuid())
+    # docker_uid = ' -u {}'.format(os.getuid())
 
-    docker_cmd = docker_cmd + docker_inputs + docker_outputs + docker_statics + docker_uid
+    docker_cmd = docker_cmd + docker_inputs + docker_outputs + docker_statics
     docker_cmd = docker_cmd + docker_port + image
 
     return docker_cmd
@@ -97,7 +101,7 @@ def _standalone_docker(args):
     argv[0] = 'ta2'
     argv.extend(['-e', 'native'])
 
-    docker_cmd = get_docker_cmd(args)
+    docker_cmd = _get_docker_cmd(args)
     docker_cmd = docker_cmd.split(' ')
     LOGGER.info('Launching docker.')
     LOGGER.info(docker_cmd)
@@ -287,10 +291,17 @@ def _server(args):
 
 
 def _jupyter_docker(args):
-    docker_cmd = get_docker_cmd(args, jupyter=True)
+    docker_cmd = _get_docker_cmd(args, jupyter=True)
     docker_cmd = docker_cmd.split(' ')
-    jupyter_cmd = "jupyter notebook --ip 0.0.0.0 --NotebookApp.token='' --allow-root".split(' ')
-    LOGGER.info('Launching jupyter-notebook from docker.')
+    jupyter_cmd = (
+        "jupyter notebook"
+        " --ip 0.0.0.0"
+        " --NotebookApp.token=''"
+        " --allow-root"
+        " --port {}"
+    ).format(args.port).split(' ')
+
+    LOGGER.info('Launching jupyter-notebook using docker.')
     subprocess.run(docker_cmd + jupyter_cmd)
 
 
@@ -357,7 +368,7 @@ def parse_args():
     environment_args.add_argument('--image', required=False,
                                   help='Registry image to use.')
     environment_args.add_argument('--port', type=int, default=45042,
-                                  help='Port to use, both for client and server.')
+                                  help='Port to use for docker.')
 
     parser = argparse.ArgumentParser(
         description='TA2 Command Line Interface',
