@@ -51,21 +51,26 @@ SUMMARY_COLUMNS = [
     'task_type'
 ]
 
-DOCKER_CMDS = (
-    'docker run -i -t --rm -p45042:45042 '
-    '-v {input}:/input '
-    '-v {output}:/output '
-    '-v {static}:/static '
-    '-u {uid} {image}'
-)
 
-DOCKER_CMDS_JUPYTER = (
-    'docker run --hostname localhost -i -t --rm -p8888:8888 '
-    '-v {input}:/input '
-    '-v {output}:/output '
-    '-v {static}:/static '
-    '{image}'
-)
+def get_docker_cmd(args, jupyter=False):
+
+    image = args.image or DOCKER_IMAGE
+
+    docker_cmd = 'docker run -i -t --rm'
+    docker_port = ' -p{0}:{0} '.format(args.port)
+
+    if jupyter:
+        return docker_cmd + ' --hostname localhost' + docker_port + image
+
+    docker_inputs = ' -v {}:/input'.format(args.input)
+    docker_outputs = ' -v {}:/output'.format(args.output)
+    docker_statics = ' -v {}:/static'.format(args.static)
+    docker_uid = ' -u {}'.format(os.getuid())
+
+    docker_cmd = docker_cmd + docker_inputs + docker_outputs + docker_statics + docker_uid
+    docker_cmd = docker_cmd + docker_port + image
+
+    return docker_cmd
 
 
 def _start_report(report_path, columns):
@@ -92,17 +97,8 @@ def _standalone_docker(args):
     argv[0] = 'ta2'
     argv.extend(['-e', 'native'])
 
-    args.input = os.path.abspath(os.getenv('D3MINPUTDIR', args.input))
-    args.output = os.path.abspath(os.getenv('D3MOUTPUTDIR', args.output))
-    args.static = os.path.abspath(os.getenv('D3MSTATICDIR', args.static))
-
-    docker_cmd = DOCKER_CMDS.format(
-        input=args.input,
-        output=args.output,
-        static=args.static,
-        uid=os.getuid(),
-        image=DOCKER_IMAGE
-    ).split(' ')
+    docker_cmd = get_docker_cmd(args)
+    docker_cmd = docker_cmd.split(' ')
     LOGGER.info('Launching docker.')
     LOGGER.info(docker_cmd)
     subprocess.run(docker_cmd + argv)
@@ -176,7 +172,7 @@ def _standalone_native(args):
     ))
 
 
-def _ta2_run(args):
+def _ta2_standalone(args):
     if not args.all and not args.dataset:
         print('ERROR: provide at least one dataset name or set --all')
         sys.exit(1)
@@ -188,6 +184,7 @@ def _ta2_run(args):
         _standalone_docker(args)
     else:
         _standalone_native(args)
+
 
 def _ta3_test_dataset(client, dataset, timeout):
     print('### Testing dataset {} ###'.format(dataset))
@@ -290,14 +287,10 @@ def _server(args):
 
 
 def _jupyter_docker(args):
-    docker_cmd = DOCKER_CMDS_JUPYTER.format(
-        input=args.input,
-        output=args.output,
-        static=args.static,
-        image=DOCKER_IMAGE
-    ).split(' ')
-    jupyter_cmd = 'jupyter notebook --ip 0.0.0.0 --NotebookApp.token="" --allow-root'.split(' ')
-    LOGGER.info('Launching up docker in jupyter-notebook mode')
+    docker_cmd = get_docker_cmd(args, jupyter=True)
+    docker_cmd = docker_cmd.split(' ')
+    jupyter_cmd = "jupyter notebook --ip 0.0.0.0 --NotebookApp.token='' --allow-root".split(' ')
+    LOGGER.info('Launching jupyter-notebook from docker.')
     subprocess.run(docker_cmd + jupyter_cmd)
 
 
@@ -361,6 +354,10 @@ def parse_args():
     environment_args.add_argument('-e', '--environment', default='docker',
                                   choices=['docker', 'native'],
                                   help='Execution environment mode.')
+    environment_args.add_argument('--image', required=False,
+                                  help='Registry image to use.')
+    environment_args.add_argument('--port', type=int, default=45042,
+                                  help='Port to use, both for client and server.')
 
     parser = argparse.ArgumentParser(
         description='TA2 Command Line Interface',
@@ -375,7 +372,7 @@ def parse_args():
     ta2_parents = [logging_args, io_args, search_args, dataset_args, environment_args]
     ta2_parser = subparsers.add_parser('standalone', parents=ta2_parents,
                                        help='Run TA2 in Standalone Mode.')
-    ta2_parser.set_defaults(mode=_ta2_run)
+    ta2_parser.set_defaults(mode=_ta2_standalone)
     ta2_parser.add_argument(
         '-r', '--results',
         help='Path to the CSV file where the results will be dumped.')
@@ -430,6 +427,10 @@ def parse_args():
 
     args = parser.parse_args()
 
+    args.input = os.path.abspath(os.getenv('D3MINPUTDIR', args.input))
+    args.output = os.path.abspath(os.getenv('D3MOUTPUTDIR', args.output))
+    args.static = os.path.abspath(os.getenv('D3MSTATICDIR', args.static))
+
     if not os.path.exists(args.output):
         os.makedirs(args.output, exist_ok=True)
 
@@ -449,7 +450,7 @@ def parse_args():
 
 def ta2_test():
     args = parse_args('ta2')
-    _ta2_run(args)
+    _ta2_standalone(args)
 
 
 def ta3_test():
