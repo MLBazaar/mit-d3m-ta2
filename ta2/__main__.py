@@ -105,7 +105,7 @@ def _get_docker_base(args, jupyter=False):
     return cmd
 
 
-def _standalone_docker(args):
+def _run_docker(args):
     """Runs docker through subprocess."""
     docker_cmd = _get_docker_base(args)
     docker_cmd.append('ta2')
@@ -209,7 +209,7 @@ def _standalone_native(args):
 
 def _ta2_standalone(args):
     if args.environment == 'docker':
-        _standalone_docker(args)
+        _run_docker(args)
     else:
         _standalone_native(args)
 
@@ -269,6 +269,13 @@ def _ta3_test(args):
     local_input = args.input
     remote_input = '/input' if args.docker else args.input
     client = TA3Client(args.port, local_input, remote_input)
+    timeout = args.timeout or os.getenv('D3MTIMEOUT', 600)
+
+    try:
+        timeout = int(timeout)
+    except ValueError:
+        # FIXME This is just to be sure that it does not crash
+        timeout = 600
 
     print('### Hello ###')
     client.hello()
@@ -279,7 +286,7 @@ def _ta3_test(args):
     results = list()
     for dataset in args.dataset:
         try:
-            score = _ta3_test_dataset(client, dataset, args.timeout / 60)
+            score = _ta3_test_dataset(client, dataset, timeout / 60)
             results.append({
                 'dataset': dataset,
                 'score': score
@@ -300,7 +307,8 @@ def _ta3_test(args):
     ))
 
 
-def _server(args):
+def _serve_native(args):
+
     input_dir = args.input or os.getenv('D3MINPUTDIR', 'input')
     output_dir = args.output or os.getenv('D3MOUTPUTDIR', 'output')
     timeout = args.timeout or os.getenv('D3MTIMEOUT', 600)
@@ -312,6 +320,13 @@ def _server(args):
         timeout = 600
 
     serve(args.port, input_dir, output_dir, args.static, timeout, args.debug)
+
+
+def _server(args):
+    if args.environment == 'docker':
+        _run_docker(args)
+    else:
+        _serve_native(args)
 
 
 def _jupyter_docker(args):
