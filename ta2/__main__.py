@@ -393,7 +393,7 @@ def parse_args():
     # standalone Mode
     standalone_parents = [logging_args, io_args, search_args, dataset_args, environment_args]
     standalone_parser = subparsers.add_parser('standalone', parents=standalone_parents,
-                                       help='Run TA2 in Standalone Mode.')
+                                              help='Run TA2 in Standalone Mode.')
     standalone_parser.set_defaults(mode=_ta2_standalone)
     standalone_parser.add_argument(
         '-r', '--results',
