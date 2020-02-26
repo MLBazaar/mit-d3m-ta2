@@ -4,17 +4,19 @@
 from setuptools import setup, find_packages
 
 
+def d3m_dependency(name, commit):
+    return f'{name} @ git+https://gitlab.com/datadrivendiscovery/{name}@{commit}#egg={name}'
+
+
 install_requires = [
-    'baytune>=0.3.6.dev0',
+    'baytune>=0.3.6.dev1',
     'tabulate>=0.8.3,<0.9',
     'd3m==2020.1.9',
     'datamart-rest==0.2.3',
     'gitdb2>=2,<3.0.2',
-    'jupyter>=1.0.0',
-    # 'numpy==1.17.3',
-    # 'scikit-learn[alldeps]==0.21.3',
-    # 'Cython==0.29.7',
-    # 'PyYAML==5.1.2',
+    'jupyter>=1.0.0,<2',
+    'requests<=2.22.0,>=2.19.1',   # to fix conflicts
+    d3m_dependency('ta3ta2-api', '1214abaac7cccd3f578e9589509b279bd820a758'),
 ]
 
 
