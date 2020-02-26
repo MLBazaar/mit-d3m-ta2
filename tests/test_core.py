@@ -1,6 +1,6 @@
-from datetime import timedelta
+from datetime import datetime, timedelta
 from unittest import TestCase
-from unittest.mock import MagicMock, call, patch
+from unittest.mock import MagicMock, Mock, call, patch
 
 import pytest
 
@@ -76,97 +76,95 @@ class TestTA2Core(TestCase):
         assert instance.data_pipeline == from_yaml_mock.return_value
         assert instance.scoring_pipeline == from_yaml_mock.return_value
 
-    @patch('ta2.core.TA2Core.subprocess_evaluate')
-    @patch('ta2.core.Pipeline.from_yaml', new=MagicMock())
-    def test_pipelinesearcher_score_pipeline_failed(self, mock_subprocess):
-        mock_subprocess.return_value = (False, [MagicMock()])
-        instance = TA2Core()
+    def test_pipelinesearcher_score_pipeline_failed(self):
+        instance = MagicMock(autospec=TA2Core)
+        instance.folds = 5
+        instance.subprocess_evaluate.return_value = (False, [MagicMock()])
 
         with pytest.raises(ScoringError):
-            instance.score_pipeline({}, {'problem': {'performance_metrics': None}}, MagicMock())
+            TA2Core.score_pipeline(
+                instance, {}, {'problem': {'performance_metrics': None}}, MagicMock()
+            )
 
     @patch('yaml.dump_all')
     @patch('builtins.open')
-    @patch('ta2.core.TA2Core.subprocess_evaluate')
-    @patch('ta2.core.Pipeline.from_yaml', new=MagicMock())
-    def test_score_pipeline_dump_summary(self, mock_subprocess, mock_file, mock_yaml):
+    def test_score_pipeline_dump_summary(self, mock_file, mock_yaml):
         all_results = [MagicMock()]
-        mock_subprocess.return_value = ([MagicMock()], all_results)
-        instance = TA2Core(store_summary=True)
+
+        instance = MagicMock(autospec=TA2Core)
+        instance.runs_dir = 'output/pipeline_runs'
+        instance.folds = 5
+        instance.store_summary = True
+        instance.subprocess_evaluate.return_value = ([MagicMock()], all_results)
 
         pipeline = MagicMock()
-        mock_file.reset_mock()
 
-        instance.score_pipeline({}, {'problem': {'performance_metrics': MagicMock()}}, pipeline)
+        mock_file.reset_mock()
+        TA2Core.score_pipeline(
+            instance, {}, {'problem': {'performance_metrics': MagicMock()}}, pipeline
+        )
 
         runs = [res.pipeline_run.to_json_structure() for res in all_results]
 
         mock_file.assert_called_once_with('output/pipeline_runs/{}.yml'.format(pipeline.id), 'w')
         mock_yaml.assert_called_once_with(runs, mock_file().__enter__(), default_flow_style=False)
 
+    def test__check_stop_continue(self):
+        instance = MagicMock(autospec=TA2Core)
+        instance._stop = False
+        instance.timeout = None
+        TA2Core._check_stop(instance)
 
-@patch('ta2.core.datetime')
-@patch('ta2.core.Pipeline.from_yaml', new=MagicMock())
-def test_pipelinesearcher__check_stop(datetime_mock):
-    datetime_mock.now = MagicMock(return_value=10)
+    def test__check_stop_true(self):
+        instance = MagicMock(autospec=TA2Core)
+        instance._stop = True
+        with pytest.raises(KeyboardInterrupt):
+            TA2Core._check_stop(instance)
 
-    # no stop
-    instance = TA2Core()
-    instance._stop = False       # normally, set in `TA2Core._setup_search`
-    instance.timeout = None      # normally, set in `TA2Core._setup_search`
+    def test__check_stop_timeout(self):
+        instance = MagicMock(autospec=TA2Core)
+        instance._stop = False
+        instance.timeout = 10
+        instance.max_end_time = datetime.now() - timedelta(seconds=1)
+        with pytest.raises(KeyboardInterrupt):
+            TA2Core._check_stop(instance)
 
-    assert instance._check_stop() is None
+    def test_stop_subprocess(self):
+        instance = MagicMock(autospec=TA2Core)
+        instance.subprocess = Mock()
 
-    # stop by `_stop` attribute
-    instance._stop = True
+        TA2Core.stop(instance)
 
-    with pytest.raises(KeyboardInterrupt):
-        instance._check_stop()
+        assert instance._stop
+        assert not instance.subprocess
 
-    # stop by `max_end_time`
-    instance._stop = False
-    instance.timeout = 10
-    instance.max_end_time = 5
+    def test_stop_no_subprocess(self):
+        instance = MagicMock(autospec=TA2Core)
+        instance.subprocess = None
 
-    with pytest.raises(KeyboardInterrupt):
-        instance._check_stop()
+        TA2Core.stop(instance)
 
+        assert instance._stop
+        assert not instance.subprocess
 
-@patch('ta2.core.Pipeline.from_yaml', new=MagicMock())
-def test_pipelinesearcher_stop():
-    instance = TA2Core()
+    def test__setup_search(self):
+        instance = MagicMock(autospec=TA2Core)
 
-    assert not hasattr(instance, '_stop')
+        TA2Core._setup_search(instance, None)
 
-    # setting _stop
-    instance.stop()
-    assert instance._stop
+        assert instance.solutions == list()
+        assert not instance._stop
+        assert not instance.done
+        assert not instance.timeout
+        assert not instance.max_end_time
 
+    def test__setup_search_with_timeout(self):
+        instance = MagicMock(autospec=TA2Core)
 
-@patch('ta2.core.Pipeline.from_yaml', new=MagicMock())
-def test_pipelinesearcher__setup_search():
-    instance = TA2Core()
+        TA2Core._setup_search(instance, 5)
 
-    assert hasattr(instance, 'solutions')
-    assert not hasattr(instance, '_stop')
-    assert not hasattr(instance, 'done')
-    assert not hasattr(instance, 'start_time')
-    assert not hasattr(instance, 'timeout')
-    assert not hasattr(instance, 'max_end_time')
-
-    # without timeout
-    instance.timeout = None
-    instance._setup_search(None)
-
-    assert instance.solutions == []
-    assert instance._stop is False
-    assert instance.done is False
-    assert hasattr(instance, 'start_time')
-    assert instance.timeout is None
-    assert instance.max_end_time is None
-
-    # with timeout
-    instance._setup_search(0.5)
-
-    assert instance.timeout == 0.5
-    assert instance.max_end_time == instance.start_time + timedelta(seconds=0.5)
+        assert instance.solutions == list()
+        assert not instance._stop
+        assert not instance.done
+        assert instance.timeout == 5
+        assert instance.max_end_time
