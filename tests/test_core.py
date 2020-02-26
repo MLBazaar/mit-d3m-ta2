@@ -4,23 +4,34 @@ from unittest.mock import MagicMock, Mock, call, patch
 
 import pytest
 
-from ta2.core import ScoringError, TA2Core
+from ta2.core import DATA_PIPELINE_PATH, DEFAULT_SCORING_PIPELINE_PATH, ScoringError, TA2Core
 
 
 class TestTA2Core(TestCase):
 
-    @patch('ta2.core.Pipeline.from_yaml')
+    @patch('ta2.core.load_pipeline')
     @patch('ta2.core.os.makedirs')
-    def test_pipelinesearcher_defaults(self, makedirs_mock, from_yaml_mock):
+    def test___init__defaults(self, makedirs_mock, load_pipeline_mock):
+        # setup
+        load_pipeline_mock.side_effect = ['data_pipeline', 'default_scoring_pipeline']
+
+        # run
         instance = TA2Core()
 
-        expected_calls = [
+        # assert
+        expected_makedirs_calls = [
             call('output/pipeline_runs', exist_ok=True),
             call('output/pipelines_ranked', exist_ok=True),
             call('output/pipelines_scored', exist_ok=True),
             call('output/pipelines_searched', exist_ok=True),
         ]
-        assert makedirs_mock.call_args_list == expected_calls
+
+        expceted_load_pipeline_calls = [
+            call(DATA_PIPELINE_PATH),
+            call(DEFAULT_SCORING_PIPELINE_PATH),
+        ]
+
+        assert makedirs_mock.call_args_list == expected_makedirs_calls
 
         assert instance.input == 'input'
         assert instance.output == 'output'
@@ -38,23 +49,36 @@ class TestTA2Core(TestCase):
         assert instance.scored_dir == 'output/pipelines_scored'
         assert instance.searched_dir == 'output/pipelines_searched'
 
-        assert instance.data_pipeline == from_yaml_mock.return_value
-        assert instance.scoring_pipeline == from_yaml_mock.return_value
+        assert instance.data_pipeline == 'data_pipeline'
+        assert instance.scoring_pipeline == 'default_scoring_pipeline'
 
-    @patch('ta2.core.Pipeline.from_yaml')
+        assert load_pipeline_mock.call_args_list == expceted_load_pipeline_calls
+
+    @patch('ta2.core.load_pipeline')
     @patch('ta2.core.os.makedirs')
-    def test_pipelinesearcher(self, makedirs_mock, from_yaml_mock):
+    def test___init__not_defaults(self, makedirs_mock, load_pipeline_mock):
+        # setup
+        load_pipeline_mock.side_effect = ['data_pipeline', 'default_scoring_pipeline']
+
+        # run
         instance = TA2Core(input_dir='new-input', output_dir='new-output', static_dir='new-static',
                            dump=True, hard_timeout=True, ignore_errors=True, cv_folds=7,
                            subprocess_timeout=720, max_errors=7, store_summary=True)
 
-        expected_calls = [
+        # assert
+        expected_makedirs_calls = [
             call('new-output/pipeline_runs', exist_ok=True),
             call('new-output/pipelines_ranked', exist_ok=True),
             call('new-output/pipelines_scored', exist_ok=True),
             call('new-output/pipelines_searched', exist_ok=True),
         ]
-        assert makedirs_mock.call_args_list == expected_calls
+
+        expceted_load_pipeline_calls = [
+            call(DATA_PIPELINE_PATH),
+            call(DEFAULT_SCORING_PIPELINE_PATH),
+        ]
+
+        assert makedirs_mock.call_args_list == expected_makedirs_calls
 
         assert instance.input == 'new-input'
         assert instance.output == 'new-output'
@@ -73,10 +97,9 @@ class TestTA2Core(TestCase):
         assert instance.scored_dir == 'new-output/pipelines_scored'
         assert instance.searched_dir == 'new-output/pipelines_searched'
 
-        assert instance.data_pipeline == from_yaml_mock.return_value
-        assert instance.scoring_pipeline == from_yaml_mock.return_value
+        assert load_pipeline_mock.call_args_list == expceted_load_pipeline_calls
 
-    def test_pipelinesearcher_score_pipeline_failed(self):
+    def test_score_pipeline_failed(self):
         instance = MagicMock(autospec=TA2Core)
         instance.folds = 5
         instance.subprocess_evaluate.return_value = (False, [MagicMock()])
