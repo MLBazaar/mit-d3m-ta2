@@ -23,7 +23,7 @@ def test__jupyter_native(mock_jupyter_native):
     mock_jupyter_native.assert_called_once_with(args)
 
 
-@patch('ta2.__main__._standalone_docker')
+@patch('ta2.__main__._run_docker')
 def test__ta2_standalone_docker(mock_standalone_docker):
     """Run ta2 standalone on Docker mode."""
     args = Mock()
