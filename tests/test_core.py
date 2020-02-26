@@ -1,196 +1,108 @@
-import json
-from collections import defaultdict
 from datetime import timedelta
+from unittest import TestCase
 from unittest.mock import MagicMock, call, patch
 
-import numpy as np
 import pytest
-from d3m.metadata.base import Context
 
-from ta2.core import TA2Core, to_dicts
-
-
-def test_to_dicts():
-    hyperparams = {
-        # (block, hyperparameter): value
-        ('block-1', 'param-1'): np.int_(1),                    # np.integer
-        ('block-2', 'param-1'): np.float32(1.0),               # np.floating
-        ('block-2', 'param-2'): np.arange(3, dtype=np.uint8),  # np.ndarray
-        ('block-3', 'param-1'): np.bool_(True),                # np.bool_
-        ('block-3', 'param-2'): 'None',                        # None
-        ('block-3', 'param-3'): 1,
-        ('block-4', 'param-1'): 1.0,
-        ('block-4', 'param-2'): [1, 2, 3],
-        ('block-4', 'param-3'): True,
-        ('block-4', 'param-4'): None,
-        ('block-5', 'param-4'): 'other value'
-    }
-
-    result = to_dicts(hyperparams)
-
-    expected_hyperparams = defaultdict(dict)
-    for (block, hyperparameter), value in hyperparams.items():
-        expected_hyperparams[block][hyperparameter] = value
-
-    expected_hyperparams['block-1']['param-1'] = 1
-    expected_hyperparams['block-2']['param-1'] = 1.0
-    expected_hyperparams['block-2']['param-2'] = [0, 1, 2]
-    expected_hyperparams['block-3']['param-1'] = True
-    expected_hyperparams['block-3']['param-2'] = None
-
-    assert result == expected_hyperparams
+from ta2.core import ScoringError, TA2Core
 
 
-@patch('ta2.core.Pipeline.from_yaml')
-@patch('ta2.core.os.makedirs')
-def test_pipelinesearcher_defaults(makedirs_mock, from_yaml_mock):
-    instance = TA2Core()
+class TestTA2Core(TestCase):
 
-    expected_calls = [
-        call('output/pipeline_runs', exist_ok=True),
-        call('output/pipelines_ranked', exist_ok=True),
-        call('output/pipelines_scored', exist_ok=True),
-        call('output/pipelines_searched', exist_ok=True),
-    ]
-    assert makedirs_mock.call_args_list == expected_calls
+    @patch('ta2.core.Pipeline.from_yaml')
+    @patch('ta2.core.os.makedirs')
+    def test_pipelinesearcher_defaults(self, makedirs_mock, from_yaml_mock):
+        instance = TA2Core()
 
-    assert instance.input == 'input'
-    assert instance.output == 'output'
-    assert not instance.dump
-    assert instance.ranked_dir == 'output/pipelines_ranked'
-    assert instance.scored_dir == 'output/pipelines_scored'
-    assert instance.searched_dir == 'output/pipelines_searched'
-    assert instance.data_pipeline == from_yaml_mock.return_value
-    assert instance.scoring_pipeline == from_yaml_mock.return_value
+        expected_calls = [
+            call('output/pipeline_runs', exist_ok=True),
+            call('output/pipelines_ranked', exist_ok=True),
+            call('output/pipelines_scored', exist_ok=True),
+            call('output/pipelines_searched', exist_ok=True),
+        ]
+        assert makedirs_mock.call_args_list == expected_calls
 
+        assert instance.input == 'input'
+        assert instance.output == 'output'
+        assert instance.static == 'static'
+        assert instance.folds == 5
+        assert instance.max_errors == 5
+        assert not instance.dump
+        assert not instance.hard_timeout
+        assert not instance.ignore_errors
+        assert not instance.subprocess_timeout
+        assert not instance.store_summary
 
-@patch('ta2.core.Pipeline.from_yaml')
-@patch('ta2.core.os.makedirs')
-def test_pipelinesearcher(makedirs_mock, from_yaml_mock):
-    instance = TA2Core(input_dir='new-input', output_dir='new-output', dump=True)
+        assert instance.runs_dir == 'output/pipeline_runs'
+        assert instance.ranked_dir == 'output/pipelines_ranked'
+        assert instance.scored_dir == 'output/pipelines_scored'
+        assert instance.searched_dir == 'output/pipelines_searched'
 
-    expected_calls = [
-        call('new-output/pipeline_runs', exist_ok=True),
-        call('new-output/pipelines_ranked', exist_ok=True),
-        call('new-output/pipelines_scored', exist_ok=True),
-        call('new-output/pipelines_searched', exist_ok=True),
-    ]
-    assert makedirs_mock.call_args_list == expected_calls
+        assert instance.data_pipeline == from_yaml_mock.return_value
+        assert instance.scoring_pipeline == from_yaml_mock.return_value
 
-    assert instance.input == 'new-input'
-    assert instance.output == 'new-output'
-    assert instance.dump
-    assert instance.ranked_dir == 'new-output/pipelines_ranked'
-    assert instance.scored_dir == 'new-output/pipelines_scored'
-    assert instance.searched_dir == 'new-output/pipelines_searched'
-    assert instance.data_pipeline == from_yaml_mock.return_value
-    assert instance.scoring_pipeline == from_yaml_mock.return_value
+    @patch('ta2.core.Pipeline.from_yaml')
+    @patch('ta2.core.os.makedirs')
+    def test_pipelinesearcher(self, makedirs_mock, from_yaml_mock):
+        instance = TA2Core(input_dir='new-input', output_dir='new-output', static_dir='new-static',
+                           dump=True, hard_timeout=True, ignore_errors=True, cv_folds=7,
+                           subprocess_timeout=720, max_errors=7, store_summary=True)
 
+        expected_calls = [
+            call('new-output/pipeline_runs', exist_ok=True),
+            call('new-output/pipelines_ranked', exist_ok=True),
+            call('new-output/pipelines_scored', exist_ok=True),
+            call('new-output/pipelines_searched', exist_ok=True),
+        ]
+        assert makedirs_mock.call_args_list == expected_calls
 
-@pytest.mark.skip(reason="this needs to be fixed")
-def test_pipelinesearcher_find_datasets(tmp_path):
-    input_dir = tmp_path / 'test-input'
-    input_dir.mkdir()
+        assert instance.input == 'new-input'
+        assert instance.output == 'new-output'
+        assert instance.static == 'new-static'
+        assert instance.folds == 7
+        assert instance.max_errors == 7
+        assert instance.subprocess_timeout == 720
 
-    content = {
-        'about': {
-            'datasetID': None
-        }
-    }
+        assert instance.dump
+        assert instance.hard_timeout
+        assert instance.ignore_errors
+        assert instance.store_summary
 
-    num_datasets = 3
-    for i in range(num_datasets):
-        dataset_dir = input_dir / 'dataset-{}'.format(i)
-        dataset_dir.mkdir()
+        assert instance.runs_dir == 'new-output/pipeline_runs'
+        assert instance.ranked_dir == 'new-output/pipelines_ranked'
+        assert instance.scored_dir == 'new-output/pipelines_scored'
+        assert instance.searched_dir == 'new-output/pipelines_searched'
 
-        content['about']['datasetID'] = 'dataset-{}'.format(i)
+        assert instance.data_pipeline == from_yaml_mock.return_value
+        assert instance.scoring_pipeline == from_yaml_mock.return_value
 
-        file = dataset_dir / 'datasetDoc.json'
-        file.write_text(json.dumps(content))
+    @patch('ta2.core.TA2Core.subprocess_evaluate')
+    @patch('ta2.core.Pipeline.from_yaml', new=MagicMock())
+    def test_pipelinesearcher_score_pipeline_failed(self, mock_subprocess):
+        mock_subprocess.return_value = (False, [MagicMock()])
+        instance = TA2Core()
 
-    result = TA2Core._find_datasets(input_dir)
+        with pytest.raises(ScoringError):
+            instance.score_pipeline({}, {'problem': {'performance_metrics': None}}, MagicMock())
 
-    assert len(result) == num_datasets
+    @patch('yaml.dump_all')
+    @patch('builtins.open')
+    @patch('ta2.core.TA2Core.subprocess_evaluate')
+    @patch('ta2.core.Pipeline.from_yaml', new=MagicMock())
+    def test_score_pipeline_dump_summary(self, mock_subprocess, mock_file, mock_yaml):
+        all_results = [MagicMock()]
+        mock_subprocess.return_value = ([MagicMock()], all_results)
+        instance = TA2Core(store_summary=True)
 
-    for i in range(num_datasets):
-        dataset_id = 'dataset-{}'.format(i)
+        pipeline = MagicMock()
+        mock_file.reset_mock()
 
-        assert dataset_id in result
-        assert result[dataset_id] == 'file://{}/{}/datasetDoc.json'.format(input_dir, dataset_id)
+        instance.score_pipeline({}, {'problem': {'performance_metrics': MagicMock()}}, pipeline)
 
+        runs = [res.pipeline_run.to_json_structure() for res in all_results]
 
-@pytest.mark.skip(reason="no way of currently testing this")
-@patch('ta2.core.d3m_evaluate')
-@patch('ta2.core.Pipeline.from_yaml', new=MagicMock())
-def test_pipelinesearcher_score_pipeline(evaluate_mock):
-    instance = TA2Core()
-    expected_scores = [MagicMock(value=[1])]
-    evaluate_mock.return_value = (expected_scores, expected_scores)
-
-    # parameters
-    dataset = {}
-    problem = {'problem': {'performance_metrics': None}}
-    pipeline_mock = MagicMock()
-    metrics = {'test': 'metric'}
-    random_seed = 0
-    folds = 5
-    stratified = False
-    shuffle = False
-
-    data_params = {
-        'number_of_folds': json.dumps(folds),
-        'stratified': json.dumps(stratified),
-        'shuffle': json.dumps(shuffle),
-    }
-
-    # with custom metrics
-    instance.score_pipeline(
-        dataset, problem, pipeline_mock,
-        metrics=metrics, random_seed=random_seed,
-        folds=folds, stratified=stratified, shuffle=shuffle
-    )
-
-    evaluate_mock.assert_called_with(
-        pipeline=pipeline_mock,
-        inputs=[dataset],
-        data_pipeline=instance.data_pipeline,
-        scoring_pipeline=instance.scoring_pipeline,
-        problem_description=problem,
-        data_params=data_params,            # folds, stratified, shuffle
-        metrics=metrics,                    # custom metrics
-        context=Context.TESTING,
-        random_seed=random_seed,
-        data_random_seed=random_seed,
-        scoring_random_seed=random_seed,
-        volumes_dir=instance.static
-    )
-
-    assert pipeline_mock.cv_scores == [score.value[0] for score in expected_scores]
-
-    # with problem metrics
-
-    instance.score_pipeline(
-        dataset, problem, pipeline_mock,
-        metrics=None, random_seed=random_seed,
-        folds=folds, stratified=stratified, shuffle=shuffle
-    )
-
-    evaluate_mock.assert_called_with(
-        pipeline=pipeline_mock,
-        inputs=[dataset],
-        data_pipeline=instance.data_pipeline,
-        scoring_pipeline=instance.scoring_pipeline,
-        problem_description=problem,
-        data_params=data_params,                            # folds, stratified, shuffle
-        metrics=problem['problem']['performance_metrics'],  # custom metrics
-        context=Context.TESTING,
-        random_seed=random_seed,
-        data_random_seed=random_seed,
-        scoring_random_seed=random_seed,
-        volumes_dir=instance.static
-    )
-
-    assert pipeline_mock.cv_scores == [score.value[0] for score in expected_scores]
+        mock_file.assert_called_once_with('output/pipeline_runs/{}.yml'.format(pipeline.id), 'w')
+        mock_yaml.assert_called_once_with(runs, mock_file().__enter__(), default_flow_style=False)
 
 
 @patch('ta2.core.datetime')

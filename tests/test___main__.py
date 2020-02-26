@@ -1,25 +1,43 @@
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 from ta2 import __main__
 
 
-@patch('ta2.__main__._server')
-@patch('ta2.__main__.parse_args')
-def test_ta2_server(mock_parse_args, mock__server):
-    # run
-    __main__.ta2_server()
+@patch('ta2.__main__._jupyter_docker')
+def test__jupyter_docker(mock_jupyter_docker):
+    """Run jupyter notebook on Docker mode."""
+    args = Mock()
+    args.environment = 'docker'
 
-    # assert
-    mock_parse_args.assert_called_once_with('server')
-    mock__server.assert_called_once_with(mock_parse_args.return_value)
+    __main__._jupyter(args)
+    mock_jupyter_docker.assert_called_once_with(args)
 
 
-@patch('ta2.__main__._ta2_test')
-@patch('ta2.__main__.parse_args')
-def test_ta2_test(mock_parse_args, mock__ta2_test):
-    # run
-    __main__.ta2_test()
+@patch('ta2.__main__._jupyter_native')
+def test__jupyter_native(mock_jupyter_native):
+    """Run jupyter notebook on Native mode."""
+    args = Mock()
+    args.environment = 'native'
 
-    # assert
-    mock_parse_args.assert_called_once_with('ta2')
-    mock__ta2_test.assert_called_once_with(mock_parse_args.return_value)
+    __main__._jupyter(args)
+    mock_jupyter_native.assert_called_once_with(args)
+
+
+@patch('ta2.__main__._standalone_docker')
+def test__ta2_standalone_docker(mock_standalone_docker):
+    """Run ta2 standalone on Docker mode."""
+    args = Mock()
+    args.environment = 'docker'
+
+    __main__._ta2_standalone(args)
+    mock_standalone_docker.assert_called_once_with(args)
+
+
+@patch('ta2.__main__._standalone_native')
+def test__ta2_standalone_native(mock_standalone_native):
+    """Run ta2 standalone on Native mode."""
+    args = Mock()
+    args.environment = 'native'
+
+    __main__._ta2_standalone(args)
+    mock_standalone_native.assert_called_once_with(args)
