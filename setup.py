@@ -14,6 +14,7 @@ install_requires = [
     'd3m==2020.1.9',
     'datamart-rest==0.2.3',
     'gitdb2>=2,<3.0.2',
+    'grpcio>=1.27.2',
     'jupyter>=1.0.0,<2',
     'requests<=2.22.0,>=2.19.1',   # to fix conflicts
     d3m_dependency('ta3ta2-api', '1214abaac7cccd3f578e9589509b279bd820a758'),
@@ -92,6 +93,6 @@ setup(
     test_suite='tests',
     tests_require=tests_require,
     url='https://github.com/HDI-Project/mit-d3m-ta2',
-    version='0.2.0-dev',
+    version='0.2.0.dev0',
     zip_safe=False,
 )
