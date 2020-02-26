@@ -13,14 +13,11 @@ RUN ln -s /output /user_dev/output && \
     ln -s /input /user_dev/input && \
     ln -s /static /user_dev/static
 
-# Install requirements
-COPY requirements.txt /user_dev/
-RUN pip3 install -r /user_dev/requirements.txt
-
 # Copy code
 COPY setup.py MANIFEST.in /user_dev/
 RUN pip3 install -e /user_dev ipdb
 
 COPY ta2 /user_dev/ta2
+RUN mkdir -p /.local && chmod 777 /.local
 
 CMD ["python3", "/user_dev/ta2/ta3/server.py", "-v"]

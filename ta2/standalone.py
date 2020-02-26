@@ -78,7 +78,7 @@ def _select_candidates(summary):
 
 
 def process_dataset(dataset, problem, input_path, output_path, static_path,
-                    hard_timeout, ignore_errors, folds, subprocess_timeout, max_errors,
+                    ignore_errors, folds, subprocess_timeout, max_errors,
                     timeout, budget, templates_csv):
     box_log("Processing dataset {}".format(dataset.name), True)
     try:
@@ -87,12 +87,12 @@ def process_dataset(dataset, problem, input_path, output_path, static_path,
             input_path,
             output_path,
             static_path,
-            dump=True,
-            hard_timeout=hard_timeout,
             ignore_errors=ignore_errors,
             cv_folds=folds,
             subprocess_timeout=subprocess_timeout,
             max_errors=max_errors,
+            dump=True,
+            hard_timeout=True,
             store_summary=True
         )
         result = ta2_core.search(dataset, problem, timeout, budget, templates_csv)
@@ -100,6 +100,7 @@ def process_dataset(dataset, problem, input_path, output_path, static_path,
         result['elapsed'] = datetime.utcnow() - start_ts
 
     except Exception as ex:
+        LOGGER.exception("Exception processing dataset %s", dataset.name)
         result = {
             'error': '{}: {}'.format(type(ex).__name__, ex),
         }
